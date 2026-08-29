@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Ảnh CFC đang chờ cập nhật">
+  <defs>
+    <linearGradient id="g" gradientTransform="rotate(79)">
+      <stop offset="0%" stop-color="#F6EFE4"/>
+      <stop offset="100%" stop-color="#EADFC8"/>
+    </linearGradient>
+    <pattern id="p" width="48" height="48" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="48" stroke="#E67E22" stroke-opacity="0.06" stroke-width="12"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <rect width="1200" height="630" fill="url(#p)"/>
+  <g fill="#E67E22" font-family="system-ui,-apple-system,Segoe UI,sans-serif" text-anchor="middle">
+    <text x="50%" y="48%" font-size="35" font-weight="800" letter-spacing="2" opacity="0.55">CFC</text>
+    <text x="50%" y="56%" font-size="19" font-weight="600" opacity="0.4">og · 1200×630</text>
+    <text x="50%" y="62%" font-size="15" font-weight="500" opacity="0.3">Ảnh thật sẽ thay vào đây</text>
+  </g>
+</svg>

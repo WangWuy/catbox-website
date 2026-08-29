@@ -1,0 +1,84 @@
+---
+/**
+ * Layout gốc dùng chung cho cả 3 site. Site chỉ truyền `brand` + import file
+ * theme CSS của mình — mọi thứ còn lại giống hệt nhau.
+ */
+import { BRANDS, type BrandId } from "@config/brands";
+import SEOHead from "../seo/SEOHead.astro";
+import JsonLd from "../seo/JsonLd.astro";
+import TopbarSwitcher from "./TopbarSwitcher.astro";
+import MainHeader from "./MainHeader.astro";
+import CategoryNav from "./CategoryNav.astro";
+import EcosystemBlock from "./EcosystemBlock.astro";
+import Footer from "./Footer.astro";
+import FloatingCta from "../islands/FloatingCta.astro";
+
+interface Props {
+  brand: BrandId;
+  title: string;
+  description: string;
+  ogImage?: string;
+  ogType?: "website" | "article" | "product";
+  noindex?: boolean;
+  /** Schema bổ sung cho trang này (Product, Article, FAQPage…) */
+  jsonLd?: Record<string, unknown>[];
+  /** Ẩn khối Ecosystem (ví dụ trang 404) */
+  hideEcosystem?: boolean;
+  fonts?: string;
+}
+
+const {
+  brand,
+  title,
+  description,
+  ogImage,
+  ogType,
+  noindex,
+  jsonLd = [],
+  hideEcosystem = false,
+  fonts,
+} = Astro.props;
+
+const b = BRANDS[brand];
+const current = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="vi" data-brand={brand}>
+  <head>
+    <SEOHead {brand} {title} {description} {ogImage} {ogType} {noindex} {fonts} />
+    <JsonLd {brand} extra={jsonLd} />
+    <slot name="head" />
+  </head>
+  <body id="top">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-100 focus:rounded-chip focus:bg-primary focus:px-4 focus:py-2 focus:text-white"
+    >
+      Bỏ qua tới nội dung chính
+    </a>
+
+    <TopbarSwitcher {brand} />
+    <MainHeader {brand} />
+    <CategoryNav {brand} {current} />
+
+    <main id="main" data-pagefind-body>
+      <slot />
+    </main>
+
+    {!hideEcosystem && <EcosystemBlock {brand} />}
+    <Footer {brand} />
+    <FloatingCta {brand} />
+
+    <script is:inline define:vars={{ hotline: b.hotline }}>
+      // GA4 events (§12.12) — chỉ gắn listener, không kéo thêm thư viện.
+      document.addEventListener("click", (e) => {
+        const el = (e.target instanceof Element ? e.target : null)?.closest("[data-analytics]");
+        if (!el) return;
+        const name = el.getAttribute("data-analytics");
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: name, hotline });
+      });
+    </script>
+  </body>
+</html>

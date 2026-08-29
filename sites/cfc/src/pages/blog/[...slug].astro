@@ -1,0 +1,117 @@
+---
+import type { ImageMetadata } from "astro";
+import { getCollection, render } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumb from "@ui/seo/Breadcrumb.astro";
+import SmartImage from "@ui/media/SmartImage.astro";
+import { BRANDS } from "@config/brands";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }));
+}
+
+const assets = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/**/*.{png,jpg,jpeg,webp,avif}",
+  { eager: true },
+);
+
+const { post } = Astro.props;
+const { data } = post;
+const { Content } = await render(post);
+const b = BRANDS.cfc;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString("vi-VN", { day: "2-digit", month: "long", year: "numeric" });
+
+const jsonLd: Record<string, unknown>[] = [
+  {
+    "@type": "BlogPosting",
+    headline: data.title,
+    description: data.description,
+    datePublished: data.date.toISOString(),
+    ...(data.updated && { dateModified: data.updated.toISOString() }),
+    author: { "@type": "Organization", name: data.author, url: b.site },
+    publisher: { "@id": `${b.site}/#organization` },
+    mainEntityOfPage: new URL(`/blog/${post.id}`, Astro.site).href,
+  },
+];
+
+if (data.faq.length) {
+  jsonLd.push({
+    "@type": "FAQPage",
+    mainEntity: data.faq.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  });
+}
+---
+
+<Layout
+  title={data.title}
+  description={data.seoDescription ?? data.description}
+  ogImage={data.ogImage ?? data.cover}
+  ogType="article"
+  {jsonLd}
+>
+  <Breadcrumb items={[{ label: "Tin tức", href: "/blog" }, { label: data.title }]} />
+
+  <article class="site-container pb-16">
+    <header class="mx-auto mb-8 flex max-w-3xl flex-col gap-4">
+      <h1 class="text-3xl leading-tight font-extrabold tracking-tight md:text-[42px]">
+        {data.title}
+      </h1>
+      <p class="text-lg leading-relaxed text-ink-muted">{data.description}</p>
+      <div class="flex flex-wrap items-center gap-3 text-[13px] text-ink-faint">
+        <time datetime={data.date.toISOString()}>{fmt(data.date)}</time>
+        <span aria-hidden="true">·</span>
+        <span>{data.author}</span>
+      </div>
+    </header>
+
+    {
+      data.cover && (
+        <div class="mx-auto mb-10 max-w-4xl overflow-hidden rounded-panel bg-surface-tint">
+          <SmartImage
+            {assets}
+            src={data.cover}
+            alt={data.title}
+            width={1200}
+            height={675}
+            ratio="16x9"
+            priority
+            class="aspect-video w-full object-cover"
+          />
+        </div>
+      )
+    }
+
+    <div class="prose-catbox mx-auto">
+      <Content />
+    </div>
+
+    <aside class="mx-auto mt-12 max-w-3xl rounded-panel bg-surface-alt p-8">
+      <h2 class="font-display text-xl font-bold">Cần báo giá cho chuỗi của bạn?</h2>
+      <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+        Gửi số lượng và chất liệu mong muốn, xưởng báo giá trong 30 phút.
+      </p>
+      <div class="mt-5 flex flex-wrap gap-3">
+        <a
+          href="/contact"
+          class="pill h-11 bg-cta px-6 text-white transition-colors hover:bg-cta-hover"
+        >
+          Nhận báo giá
+        </a>
+        <a
+          href={`tel:${b.hotline.replace(/\D/g, "")}`}
+          data-analytics="click_hotline"
+          class="pill h-11 border border-line px-6 text-ink transition-colors hover:bg-surface"
+        >
+          📞 {b.hotline}
+        </a>
+      </div>
+    </aside>
+  </article>
+</Layout>

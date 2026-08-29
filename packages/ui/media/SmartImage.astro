@@ -1,0 +1,81 @@
+---
+/**
+ * Ảnh "chịu được việc chưa có ảnh".
+ *
+ * Nhận vào một chuỗi từ MDX và tự quyết định:
+ *   - ảnh trong src/assets  → <Image> của astro:assets (WebP/AVIF, srcset)
+ *   - ảnh trong public/ hoặc URL ngoài → <img> thường
+ *   - không có gì            → placeholder SVG theo brand
+ *
+ * Mọi trường hợp đều có width/height cố định → CLS = 0 kể cả khi ảnh thật thay
+ * vào sau (§4.3 TECH_STACK_v2).
+ */
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { isRawSrc, placeholder, resolveImage, type AssetMap } from "../lib/images";
+
+interface Props {
+  /** Bản đồ ảnh do site truyền vào (import.meta.glob) */
+  assets: AssetMap;
+  src?: string;
+  alt: string;
+  width: number;
+  height: number;
+  ratio?: "1x1" | "4x3" | "16x9" | "3x4" | "16x10";
+  /** Đổi biến thể placeholder để các ô trong grid không giống hệt nhau */
+  variant?: number;
+  class?: string;
+  loading?: "lazy" | "eager";
+  /** Ảnh LCP (hero) nên đặt true — thêm fetchpriority=high */
+  priority?: boolean;
+  sizes?: string;
+}
+
+const {
+  assets,
+  src,
+  alt,
+  width,
+  height,
+  ratio = "1x1",
+  variant = 1,
+  class: className = "",
+  loading,
+  priority = false,
+  sizes,
+} = Astro.props;
+
+const asset: ImageMetadata | undefined = resolveImage(assets, src);
+const rawSrc = isRawSrc(src) ? src : undefined;
+const fallback = placeholder(ratio, variant);
+
+const loadingAttr = loading ?? (priority ? "eager" : "lazy");
+---
+
+{
+  asset ? (
+    <Image
+      src={asset}
+      {alt}
+      {width}
+      {height}
+      {sizes}
+      widths={sizes ? [400, 800, 1200, width] : undefined}
+      loading={loadingAttr}
+      decoding={priority ? "sync" : "async"}
+      fetchpriority={priority ? "high" : "auto"}
+      class={className}
+    />
+  ) : (
+    <img
+      src={rawSrc ?? fallback}
+      {alt}
+      {width}
+      {height}
+      loading={loadingAttr}
+      decoding={priority ? "sync" : "async"}
+      fetchpriority={priority ? "high" : "auto"}
+      class={className}
+    />
+  )
+}

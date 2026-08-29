@@ -1,0 +1,54 @@
+---
+/**
+ * Ba lối vào đặt hàng — dữ liệu `steps` trong mockup CFC.
+ *
+ * Đây là khối chuyển đổi quan trọng: khách F&B thường tắc ở chỗ "chưa có file
+ * thiết kế". Nói thẳng ba tình huống ngay trên trang chủ giúp họ tự xác định
+ * mình thuộc nhóm nào thay vì bỏ đi.
+ */
+interface Step {
+  num: string;
+  title: string;
+  desc: string;
+  cta?: { label: string; href: string };
+}
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+  steps: Step[];
+}
+
+const { title = "Đặt hàng thế nào?", subtitle, steps } = Astro.props;
+---
+
+<section class="site-container" aria-labelledby="steps-heading">
+  <div class="mb-7 flex flex-col gap-1.5">
+    <h2 id="steps-heading" class="text-3xl font-extrabold tracking-tight uppercase md:text-section">
+      {title}
+    </h2>
+    {subtitle && <p class="text-[15px] text-ink-muted">{subtitle}</p>}
+  </div>
+
+  <ol class="grid gap-4 md:grid-cols-3">
+    {
+      steps.map((s) => (
+        <li class="flex flex-col gap-3 rounded-panel border border-line bg-surface p-6 shadow-card">
+          <span class="font-display text-3xl leading-none font-extrabold text-primary/25">
+            {s.num}
+          </span>
+          <h3 class="font-display text-lg font-bold">{s.title}</h3>
+          <p class="text-sm leading-relaxed text-ink-muted">{s.desc}</p>
+          {s.cta && (
+            <a
+              href={s.cta.href}
+              class="mt-auto pt-2 text-[13px] font-bold text-primary transition-colors hover:text-primary-hover"
+            >
+              {s.cta.label} →
+            </a>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</section>

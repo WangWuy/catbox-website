@@ -1,0 +1,68 @@
+---
+/**
+ * Promo Banner split 50/50 — nửa trái ảnh sản phẩm nền pastel, nửa phải khối
+ * màu thương hiệu đậm + tiêu đề trắng + 2 nút pill (mockup: cao 380px).
+ */
+import type { AssetMap } from "../lib/images";
+import SmartImage from "../media/SmartImage.astro";
+
+interface Props {
+  assets: AssetMap;
+  image?: string;
+  title: string;
+  description?: string;
+  primaryCta: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+}
+
+const { assets, image, title, description, primaryCta, secondaryCta } = Astro.props;
+---
+
+<section class="site-container">
+  <div class="grid overflow-hidden rounded-panel shadow-card md:grid-cols-2">
+    <div class="bg-surface-tint">
+      <SmartImage
+        {assets}
+        src={image}
+        alt=""
+        width={800}
+        height={760}
+        ratio="1x1"
+        variant={3}
+        class="h-56 w-full object-cover md:h-[380px]"
+      />
+    </div>
+
+    <div class="flex flex-col justify-center gap-4 bg-primary-deep p-10 md:p-13">
+      <h2 class="text-2xl leading-tight font-extrabold tracking-tight text-white md:text-[34px]">
+        {title}
+      </h2>
+      {
+        description && (
+          <p class="max-w-md text-[15px] leading-relaxed text-white/72 md:text-base">
+            {description}
+          </p>
+        )
+      }
+      <div class="mt-2 flex flex-col gap-2.5 sm:flex-row sm:items-center">
+        {
+          secondaryCta && (
+            <a
+              href={secondaryCta.href}
+              class="pill h-12 justify-center border-2 border-white/50 px-6 text-[15px] text-white transition-colors hover:border-white"
+            >
+              {secondaryCta.label}
+            </a>
+          )
+        }
+        <a
+          href={primaryCta.href}
+          data-analytics={primaryCta.href.startsWith("tel:") ? "click_hotline" : "promo_cta"}
+          class="pill h-12 justify-center bg-primary px-6 text-[15px] text-white transition-colors hover:bg-primary-hover"
+        >
+          {primaryCta.label}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

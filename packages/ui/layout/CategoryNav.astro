@@ -1,0 +1,76 @@
+---
+/**
+ * Category Navigation — menu ngang có icon + pill khuyến mãi bên phải.
+ * Mockup: chiều cao 54px, dropdown 4 cột khi mục có children.
+ *
+ * Dropdown chạy bằng <details> thuần (0 KB JS) — mở bằng chuột và bàn phím,
+ * crawler vẫn thấy toàn bộ link con trong HTML.
+ */
+import { NAV } from "@config/nav";
+import { BRANDS, type BrandId } from "@config/brands";
+
+interface Props {
+  brand: BrandId;
+  /** Pathname hiện tại để tô mục đang xem */
+  current?: string;
+}
+
+const { brand, current = "/" } = Astro.props;
+const items = NAV[brand];
+const b = BRANDS[brand];
+
+const isActive = (href: string) =>
+  href === "/" ? current === "/" : current.startsWith(href);
+---
+
+<nav aria-label="Danh mục chính" class="relative z-20 border-b border-line bg-surface">
+  <div class="site-container flex h-(--height-catnav) items-center justify-between gap-6">
+    <ul class="flex items-center gap-5 overflow-x-auto lg:gap-7 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {
+        items.map((item) => (
+          <li class="flex-none">
+            {item.children ? (
+              <details class="group relative [&[open]>summary>.chev]:rotate-180">
+                <summary
+                  class={`flex cursor-pointer list-none items-center gap-1.5 text-[14.5px] whitespace-nowrap ${
+                    isActive(item.href) ? "font-bold text-primary" : "font-medium text-ink"
+                  }`}
+                >
+                  {item.icon && <span aria-hidden="true">{item.icon}</span>}
+                  {item.label}
+                  <span class="chev text-[10px] text-ink-faint transition-transform">▼</span>
+                </summary>
+                <div class="absolute top-[calc(var(--height-catnav)/2+14px)] left-0 z-30 grid w-max min-w-[240px] grid-cols-1 gap-1 rounded-b-panel border border-line bg-surface p-4 shadow-panel sm:grid-cols-2">
+                  {item.children.map((c) => (
+                    <a
+                      href={c.href}
+                      class="rounded-chip px-3 py-2 text-sm font-medium text-ink transition-colors hover:bg-surface-tint hover:text-primary"
+                    >
+                      {c.label}
+                    </a>
+                  ))}
+                </div>
+              </details>
+            ) : (
+              <a
+                href={item.href}
+                class={`flex items-center gap-1.5 text-[14.5px] whitespace-nowrap ${
+                  isActive(item.href) ? "font-bold text-primary" : "font-medium text-ink"
+                }`}
+              >
+                {item.icon && <span aria-hidden="true">{item.icon}</span>}
+                {item.label}
+              </a>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+
+    <span
+      class="pill hidden h-8 flex-none border border-line bg-surface-alt px-4 text-[12.5px] font-semibold text-ink-muted lg:inline-flex"
+    >
+      {b.promoPill}
+    </span>
+  </div>
+</nav>

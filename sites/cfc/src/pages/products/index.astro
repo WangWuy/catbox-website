@@ -1,0 +1,141 @@
+---
+/**
+ * Danh mục sản phẩm — lưới đầy đủ + bộ lọc island (chất liệu / kiểu dáng / giá).
+ *
+ * Toàn bộ sản phẩm nằm trong HTML ngay từ đầu; filter chỉ ẩn/hiện. Xem chú
+ * thích trong packages/ui/catalog/ProductFilter.astro.
+ */
+import type { ImageMetadata } from "astro";
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumb from "@ui/seo/Breadcrumb.astro";
+import ProductCard from "@ui/catalog/ProductCard.astro";
+import ProductFilter, { type FilterGroup } from "@ui/catalog/ProductFilter.astro";
+
+const assets = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/**/*.{png,jpg,jpeg,webp,avif}",
+  { eager: true },
+);
+
+const products = (await getCollection("products", ({ data }) => !data.draft)).sort(
+  (a, z) => a.data.order - z.data.order,
+);
+
+const MATERIAL_LABEL: Record<string, string> = {
+  kraft: "Giấy Kraft",
+  "mg-trang": "Giấy MG trắng",
+};
+const SHAPE_LABEL: Record<string, string> = {
+  "tui-det": "Túi dẹt",
+  "tui-quai": "Túi có quai",
+  hop: "Hộp giấy",
+  "giay-goi": "Giấy gói",
+};
+
+/** Đếm số sản phẩm cho từng lựa chọn — người dùng biết trước lọc ra bao nhiêu */
+const countBy = (field: "material" | "shape", value: string) =>
+  products.filter((p) => p.data[field].includes(value)).length;
+
+const priceBand = (p: (typeof products)[number]) => {
+  const v = p.data.priceFrom ?? 0;
+  if (v < 500) return "duoi-500";
+  if (v < 2000) return "500-2000";
+  return "tren-2000";
+};
+
+const groups: FilterGroup[] = [
+  {
+    key: "material",
+    label: "Chất liệu",
+    options: Object.entries(MATERIAL_LABEL).map(([value, label]) => ({
+      value,
+      label,
+      count: countBy("material", value),
+    })),
+  },
+  {
+    key: "shape",
+    label: "Kiểu dáng",
+    options: Object.entries(SHAPE_LABEL)
+      .map(([value, label]) => ({ value, label, count: countBy("shape", value) }))
+      .filter((o) => o.count > 0),
+  },
+  {
+    key: "price",
+    label: "Khoảng giá",
+    options: [
+      { value: "duoi-500", label: "Dưới 500đ", count: products.filter((p) => priceBand(p) === "duoi-500").length },
+      { value: "500-2000", label: "500đ – 2.000đ", count: products.filter((p) => priceBand(p) === "500-2000").length },
+      { value: "tren-2000", label: "Trên 2.000đ", count: products.filter((p) => priceBand(p) === "tren-2000").length },
+    ].filter((o) => o.count > 0),
+  },
+];
+
+const description =
+  "Danh mục túi giấy, giấy gói và hộp đựng thực phẩm của xưởng CFC. Lọc theo chất liệu Kraft / MG, kiểu dáng và khoảng giá.";
+
+const jsonLd = [
+  {
+    "@type": "CollectionPage",
+    name: "Danh mục sản phẩm CFC",
+    description,
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: products.length,
+      itemListElement: products.map((p, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: p.data.title,
+        url: new URL(`/products/${p.id}`, Astro.site).href,
+      })),
+    },
+  },
+];
+---
+
+<Layout title="Danh mục sản phẩm" {description} {jsonLd}>
+  <Breadcrumb items={[{ label: "Sản phẩm" }]} />
+
+  <div class="site-container grid gap-10 pb-16 lg:grid-cols-[240px_1fr]">
+    <aside class="lg:sticky lg:top-6 lg:self-start">
+      <h1 class="mb-6 text-2xl font-extrabold tracking-tight uppercase">Sản phẩm</h1>
+      <ProductFilter {groups} />
+    </aside>
+
+    <div class="flex flex-col gap-5">
+      <p class="text-sm text-ink-muted">
+        Hiển thị <strong data-result-count class="text-ink">{products.length}</strong> sản phẩm
+      </p>
+
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-3" data-product-grid>
+        {
+          products.map((p, i) => (
+            <ProductCard
+              {assets}
+              title={p.data.title}
+              category={p.data.category}
+              href={`/products/${p.id}`}
+              image={p.data.image}
+              badge={p.data.badge}
+              priceLabel={p.data.priceLabel}
+              unit={p.data.unit}
+              swatches={p.data.swatches}
+              swatchNote="Kraft / MG"
+              variant={i + 1}
+              filterData={{
+                material: p.data.material.join(","),
+                shape: p.data.shape.join(","),
+                price: priceBand(p),
+              }}
+            />
+          ))
+        }
+      </div>
+
+      <p data-empty hidden class="py-12 text-center text-ink-muted">
+        Không có sản phẩm nào khớp bộ lọc. Thử bỏ bớt điều kiện, hoặc
+        <a href="/contact" class="font-semibold text-primary">gửi yêu cầu riêng</a>.
+      </p>
+    </div>
+  </div>
+</Layout>

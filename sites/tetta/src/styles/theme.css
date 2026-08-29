@@ -1,0 +1,7 @@
+/* Entry CSS cho site tetta — chỉ 1 dòng import theme, mọi token nằm ở packages/tokens */
+@import "@catbox/tokens/tetta.css";
+
+/* Tailwind v4 mặc định chỉ quét trong project. Component dùng chung nằm ngoài
+ * nên phải khai báo thêm — thiếu dòng này là class ở packages/ui bị tree-shake. */
+@source "../../../../packages/ui";
+@source "../../../../packages/config";

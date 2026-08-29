@@ -1,0 +1,18 @@
+---
+/**
+ * Layout của site TETTA — nạp theme Bordeaux/Gold + font Playfair/Montserrat.
+ */
+import BaseLayout from "@ui/layout/BaseLayout.astro";
+import "../styles/theme.css";
+
+const FONTS =
+  "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Montserrat:wght@400;500;600;700;800&display=swap";
+
+type BaseProps = Omit<Parameters<typeof BaseLayout>[0], "brand" | "fonts">;
+const props = Astro.props as BaseProps;
+---
+
+<BaseLayout brand="tetta" fonts={FONTS} {...props}>
+  <slot name="head" slot="head" />
+  <slot />
+</BaseLayout>

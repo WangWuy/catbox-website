@@ -1,0 +1,23 @@
+{
+  "name": "@catbox/site-tetta",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && pagefind --site dist",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.6",
+    "@astrojs/sitemap": "^3.6.0",
+    "@catbox/config": "workspace:*",
+    "@catbox/tokens": "workspace:*",
+    "@catbox/ui": "workspace:*",
+    "@tailwindcss/vite": "^4.1.14",
+    "astro": "^5.14.1",
+    "pagefind": "^1.4.0",
+    "tailwindcss": "^4.1.14"
+  }
+}

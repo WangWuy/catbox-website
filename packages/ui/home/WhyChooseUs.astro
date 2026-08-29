@@ -1,0 +1,128 @@
+---
+/**
+ * VÌ SAO NÊN CHỌN CHÚNG TÔI ? — 2 cột: ảnh dọc bên trái, text + 3 cam kết +
+ * khối nửa vòm (dome) chứa video xưởng bên phải.
+ *
+ * Video dùng <video preload="none"> + poster tĩnh: 0 KB JS, không tải byte nào
+ * cho tới khi người dùng bấm play (§3, island #6).
+ */
+import type { AssetMap } from "../lib/images";
+import SmartImage from "../media/SmartImage.astro";
+
+export interface Promise_ {
+  icon: string;
+  title: string;
+  desc: string;
+}
+
+interface Props {
+  assets: AssetMap;
+  title?: string;
+  intro: string;
+  promises: Promise_[];
+  /** Ảnh dọc 3:4 bên trái */
+  image?: string;
+  imageAlt?: string;
+  /** "contain" cho ảnh sản phẩm nền trắng (không cắt mất mép), "cover" cho ảnh chụp bối cảnh */
+  imageFit?: "cover" | "contain";
+  /** Video xưởng trong khối dome */
+  video?: string;
+  videoPoster?: string;
+  videoLabel?: string;
+}
+
+const {
+  assets,
+  title = "Vì sao nên chọn chúng tôi ?",
+  intro,
+  promises,
+  image,
+  imageAlt = "Kỹ thuật viên vận hành máy in tại xưởng",
+  imageFit = "cover",
+  video,
+  videoPoster,
+  videoLabel = "Xem xưởng vận hành",
+} = Astro.props;
+---
+
+<section class="site-container" aria-labelledby="why-heading">
+  <h2
+    id="why-heading"
+    class="mb-8 text-3xl font-extrabold tracking-tight uppercase md:text-section"
+  >
+    {title}
+  </h2>
+
+  <div class="grid items-start gap-10 lg:grid-cols-2">
+    <div class="overflow-hidden rounded-panel bg-surface-tint">
+      <SmartImage
+        {assets}
+        src={image}
+        alt={imageAlt}
+        width={900}
+        height={1200}
+        ratio="3x4"
+        variant={2}
+        class={`w-full ${imageFit === "contain" ? "aspect-square object-contain p-6" : "aspect-3/4 object-cover"}`}
+      />
+    </div>
+
+    <div class="flex flex-col gap-7">
+      <p class="text-[15px] leading-relaxed text-ink-muted md:text-base">{intro}</p>
+
+      <ul class="flex flex-col gap-5">
+        {
+          promises.map((p) => (
+            <li class="flex gap-4">
+              <span
+                aria-hidden="true"
+                class="grid size-11 flex-none place-items-center rounded-chip bg-surface-tint text-xl"
+              >
+                {p.icon}
+              </span>
+              <span class="flex flex-col gap-1">
+                <span class="font-display text-[17px] font-bold">{p.title}</span>
+                <span class="text-sm leading-relaxed text-ink-muted">{p.desc}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <!-- Khối nửa vòm chứa video: nửa trên bo tròn hoàn toàn (mockup §2,
+           hàng "VÌ SAO NÊN CHỌN"). Tỉ lệ 16/11 để vòm không bị hụt hai bên. -->
+      <div class="overflow-hidden rounded-t-full bg-primary-deep px-2.5 pt-2.5 pb-0">
+        <div class="overflow-hidden rounded-t-full">
+          {
+            video ? (
+              <video
+                controls
+                preload="none"
+                poster={videoPoster}
+                class="aspect-16/11 w-full object-cover"
+                aria-label={videoLabel}
+              >
+                <source src={video} type="video/mp4" />
+                Trình duyệt của bạn không phát được video này.
+              </video>
+            ) : (
+              <div class="flex aspect-16/11 flex-col items-center justify-center gap-3 bg-black/20 px-6 pt-10 text-center">
+                <span
+                  aria-hidden="true"
+                  class="grid size-16 place-items-center rounded-full bg-primary shadow-panel"
+                >
+                  <span class="ml-1 border-y-[11px] border-l-[18px] border-y-transparent border-l-white" />
+                </span>
+                <p class="text-sm font-semibold text-white/85">
+                  {videoLabel}
+                  <br />
+                  <span class="text-white/50">(video xưởng sẽ cập nhật sau)</span>
+                </p>
+              </div>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

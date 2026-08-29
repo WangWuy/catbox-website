@@ -1,0 +1,37 @@
+/* CFC — Direct Factory F&B Packaging / Industrial Fast-Commerce
+ * Nguồn: TETTA_CFC_DESIGN_SPEC.md §5.2 + mockup cfc/UI mockups cho CFC/CFC Homepage.dc.html */
+@import "./base.css";
+
+@theme {
+  --color-primary:       #E67E22;  /* Vàng cam bánh mì */
+  --color-primary-hover: #D35400;
+  --color-primary-deep:  #3E2723;  /* Nâu Kraft chocolate — Footer / Promo / Topbar */
+  --color-primary-ink:   #2A1B15;  /* Nền video xưởng */
+
+  --color-accent:        #F39C12;
+  --color-kraft:         #795548;  /* Nâu giấy Kraft — badge, swatch */
+  --color-kraft-deep:    #5D4037;
+  --color-brandmark:     #A02B1C;  /* Chữ "C" trong logo CFC */
+
+  --color-cta:           #E74C3C;  /* Đỏ rực — nút Gửi/Mua, giá tiền */
+  --color-cta-hover:     #C0392B;
+  --color-zalo:          #0088FF;
+
+  --color-surface:       #FFFFFF;
+  --color-surface-alt:   #F8F9FA;  /* Xám nhạt công nghiệp */
+  --color-surface-tint:  #F6EFE4;  /* Kem kraft — nền ảnh, logo box */
+
+  --color-ink:           #191C1D;  /* Đen xám */
+  --color-ink-muted:     #564337;  /* Xám tro */
+  --color-ink-faint:     #9A938B;
+
+  --color-line:          #EDEDED;
+  --color-line-soft:     #F1F1F1;
+
+  --font-display: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-body:    "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}

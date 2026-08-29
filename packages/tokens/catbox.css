@@ -1,0 +1,40 @@
+/* CATBOX — Flagship / Dark Luxury Studio
+ * Nguồn: REQUIREMENTS.md §1.1 + assets/figma_design_catbox/ */
+@import "./base.css";
+
+@theme {
+  --color-primary:       #FF2E93;  /* Neon hồng dạ quang */
+  --color-primary-hover: #FF5CAB;
+  --color-primary-deep:  #0B0B0B;  /* Nền đen sang trọng */
+  --color-primary-ink:   #000000;
+
+  --color-brandmark:     #F5F5F7;  /* Nửa đầu wordmark trong logo */
+
+  --color-accent:        #D4AF37;  /* Vàng ánh kim */
+  --color-cyan:          #00F2FE;  /* Neon cyan */
+
+  --color-cta:           #FF2E93;
+  --color-cta-hover:     #FF5CAB;
+
+  --color-surface:       #0B0B0B;
+  --color-surface-alt:   #131315;  /* Card nổi trên nền đen */
+  --color-surface-tint:  #1B1B1F;
+
+  --color-ink:           #F5F5F7;  /* Chữ sáng trên nền tối */
+  --color-ink-muted:     #A0A0A8;
+  --color-ink-faint:     #6B6B73;
+
+  --color-line:          #26262B;
+  --color-line-soft:     #1B1B1F;
+
+  --font-display: "Urbanist", ui-sans-serif, system-ui, sans-serif;
+  --font-body:    "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Glow neon — chỉ Catbox dùng */
+  --shadow-glow-pink: 0 0 24px rgba(255, 46, 147, 0.45);
+  --shadow-glow-cyan: 0 0 24px rgba(0, 242, 254, 0.4);
+}
+
+:root {
+  color-scheme: dark;
+}

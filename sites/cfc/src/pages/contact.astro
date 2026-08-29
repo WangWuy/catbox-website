@@ -1,0 +1,131 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Breadcrumb from "@ui/seo/Breadcrumb.astro";
+import QuoteForm from "@ui/islands/QuoteForm.astro";
+import { BRANDS } from "@config/brands";
+
+const b = BRANDS.cfc;
+
+const segments = [
+  {
+    value: "chuoi",
+    label: "Chuỗi / Quán",
+    hint: "Đặt định kỳ hàng tháng, cần giá bậc số lượng và giao đúng lịch.",
+  },
+  {
+    value: "le",
+    label: "Mua lẻ / Mẫu thử",
+    hint: "Số lượng nhỏ, muốn xem mẫu thật trước khi đặt in số lượng lớn.",
+  },
+  {
+    value: "dai-ly",
+    label: "Đại lý / Phân phối",
+    hint: "Nhập sỉ để bán lại, cần chiết khấu và chính sách công nợ.",
+  },
+];
+
+const description =
+  "Liên hệ xưởng CFC để nhận báo giá bao bì giấy F&B trong 30 phút. Nhà máy KCN Đồng Văn, Hà Nam — văn phòng Hà Đông, Hà Nội.";
+
+const jsonLd = [
+  {
+    "@type": "LocalBusiness",
+    name: b.name,
+    "@id": `${b.site}/#localbusiness`,
+    url: b.site,
+    telephone: b.hotline,
+    email: b.email,
+    priceRange: "$$",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "KCN Đồng Văn, Duy Tiên",
+      addressLocality: "Hà Nam",
+      addressCountry: "VN",
+    },
+    openingHoursSpecification: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      opens: "08:00",
+      closes: "17:30",
+    },
+  },
+];
+---
+
+<Layout title="Liên hệ & Báo giá" {description} {jsonLd}>
+  <Breadcrumb items={[{ label: "Liên hệ" }]} />
+
+  <div class="site-container grid gap-10 pb-16 lg:grid-cols-[1fr_360px]">
+    <div class="flex flex-col gap-6">
+      <header class="flex flex-col gap-3">
+        <h1 class="text-3xl font-extrabold tracking-tight uppercase md:text-section">
+          Nhận báo giá
+        </h1>
+        <p class="max-w-2xl leading-relaxed text-ink-muted">
+          Cho xưởng biết bạn thuộc nhóm nào để báo giá đúng ngay lần đầu, không phải hỏi qua lại.
+        </p>
+      </header>
+
+      <QuoteForm brand="cfc" {segments} />
+    </div>
+
+    <aside class="flex flex-col gap-4">
+      <div class="flex flex-col gap-4 rounded-panel border border-line bg-surface-alt p-6">
+        <h2 class="text-[13px] font-bold tracking-wide uppercase">Liên hệ trực tiếp</h2>
+        {
+          b.contacts.map((c) => (
+            <div class="flex items-start gap-3">
+              <span
+                aria-hidden="true"
+                class="grid size-9 flex-none place-items-center rounded-chip bg-surface text-[15px]"
+              >
+                {c.icon}
+              </span>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[11.5px] font-semibold tracking-wide text-ink-faint uppercase">
+                  {c.label}
+                </span>
+                {c.href ? (
+                  <a
+                    href={c.href}
+                    data-analytics={c.label === "Hotline" ? "click_hotline" : undefined}
+                    class="text-[14.5px] leading-snug font-semibold transition-colors hover:text-primary"
+                  >
+                    {c.value}
+                  </a>
+                ) : (
+                  <span class="text-[14.5px] leading-snug font-semibold">{c.value}</span>
+                )}
+              </div>
+            </div>
+          ))
+        }
+        <a
+          href={`https://zalo.me/${b.zalo}`}
+          target="_blank"
+          rel="noopener"
+          data-analytics="click_zalo"
+          class="pill mt-1 h-11 justify-center bg-[#0088FF] text-white transition-opacity hover:opacity-90"
+        >
+          Chat Zalo
+        </a>
+      </div>
+
+      <div class="rounded-panel border border-line p-6">
+        <h2 class="mb-2 text-[13px] font-bold tracking-wide uppercase">Giờ làm việc</h2>
+        <p class="text-sm leading-relaxed text-ink-muted">
+          Thứ 2 – Thứ 7: 8:00 – 17:30<br />
+          Chủ nhật: nghỉ (Zalo vẫn nhận tin)
+        </p>
+      </div>
+
+      <div class="rounded-panel border border-line p-6">
+        <h2 class="mb-2 text-[13px] font-bold tracking-wide uppercase">Thanh toán</h2>
+        <p class="text-sm leading-relaxed text-ink-muted">
+          KV Hà Nội / Hà Nam: thanh toán khi nhận hàng.<br />
+          Ngoài KV: thanh toán trước khi giao.
+        </p>
+      </div>
+    </aside>
+  </div>
+</Layout>

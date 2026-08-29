@@ -1,0 +1,35 @@
+---
+/**
+ * Nút nổi Zalo + Hotline góc phải dưới (theo mockup CFC).
+ * 0 KB JS — chỉ là 2 thẻ <a>. Có data-analytics cho GA4 (§12.12).
+ */
+import { BRANDS, type BrandId } from "@config/brands";
+
+interface Props {
+  brand: BrandId;
+}
+
+const { brand } = Astro.props;
+const b = BRANDS[brand];
+---
+
+<div class="fixed right-4 bottom-5 z-50 flex flex-col gap-3 print:hidden">
+  <a
+    href={`https://zalo.me/${b.zalo}`}
+    target="_blank"
+    rel="noopener"
+    aria-label="Chat Zalo"
+    data-analytics="click_zalo"
+    class="grid size-14 place-items-center rounded-full bg-[#0088FF] text-xs font-extrabold text-white shadow-[0_8px_22px_rgba(0,136,255,.35)] transition-transform hover:scale-105"
+  >
+    Zalo
+  </a>
+  <a
+    href={`tel:${b.hotline.replace(/\D/g, "")}`}
+    aria-label={`Gọi hotline ${b.hotline}`}
+    data-analytics="click_hotline"
+    class="grid size-14 place-items-center rounded-full bg-primary text-[22px] shadow-[0_8px_22px_rgba(0,0,0,.25)] transition-transform hover:scale-105"
+  >
+    📞
+  </a>
+</div>

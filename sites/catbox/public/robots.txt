@@ -1,0 +1,34 @@
+User-agent: *
+Allow: /
+
+# Mở cho AI crawler — chiến lược GEO (TECH_STACK_v2 §6B.2).
+# Được AI trích dẫn là kênh traffic mới; chặn chúng là tự loại mình khỏi
+# ChatGPT/Perplexity, nơi khách B2B đang tra cứu nhà cung cấp bao bì.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://catbox.vn/sitemap-index.xml

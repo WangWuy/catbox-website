@@ -1,0 +1,37 @@
+/* TETTA — Luxury Gift Packaging / Elegant Boutique
+ * Nguồn: TETTA_CFC_DESIGN_SPEC.md §5.1 */
+@import "./base.css";
+
+@theme {
+  --color-primary:       #8B1E2D;  /* Đỏ rượu vang Bordeaux */
+  --color-primary-hover: #6B0119;
+  --color-primary-deep:  #5E101D;  /* Nền Footer / Promo / Dome */
+  --color-primary-ink:   #40000B;
+
+  --color-brandmark:     #8B1E2D;  /* Nửa đầu wordmark trong logo */
+
+  --color-accent:        #D4AF37;  /* Ánh kim Gold */
+  --color-accent-warm:   #F2994A;
+  --color-accent-earth:  #C06C54;  /* Cam đất */
+
+  --color-cta:           #8B1E2D;  /* Tetta dùng chính Bordeaux cho CTA */
+  --color-cta-hover:     #6B0119;
+
+  --color-surface:       #FFFFFF;
+  --color-surface-alt:   #FAF8F5;  /* Trắng kem ngọc trai */
+  --color-surface-tint:  #F7F1EC;  /* Nền ảnh / card pastel */
+
+  --color-ink:           #1B1B1C;  /* Đen than */
+  --color-ink-muted:     #574142;  /* Xám nhạt */
+  --color-ink-faint:     #9A938B;
+
+  --color-line:          #EDEDED;
+  --color-line-soft:     #F1F1F1;
+
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-body:    "Montserrat", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}

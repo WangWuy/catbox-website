@@ -1,0 +1,31 @@
+---
+import { getCollection, render } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumb from "@ui/seo/Breadcrumb.astro";
+
+export async function getStaticPaths() {
+  const policies = await getCollection("policies");
+  return policies.map((p) => ({ params: { slug: p.id }, props: { policy: p } }));
+}
+
+const { policy } = Astro.props;
+const { data } = policy;
+const { Content } = await render(policy);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString("vi-VN", { day: "2-digit", month: "long", year: "numeric" });
+---
+
+<Layout title={data.title} description={data.seoDescription ?? data.title}>
+  <Breadcrumb items={[{ label: data.title }]} />
+
+  <article class="site-container pb-16">
+    <header class="mx-auto mb-8 flex max-w-3xl flex-col gap-2">
+      <h1 class="text-3xl font-extrabold tracking-tight">{data.title}</h1>
+      <p class="text-[13px] text-ink-faint">Cập nhật {fmt(data.updated)}</p>
+    </header>
+    <div class="prose-catbox mx-auto">
+      <Content />
+    </div>
+  </article>
+</Layout>

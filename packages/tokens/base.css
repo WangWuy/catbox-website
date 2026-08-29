@@ -1,0 +1,150 @@
+/* ---------------------------------------------------------------------------
+ * DNA chung cho cả 3 site — spacing, radius, shadow, font scale, container.
+ * Màu sắc KHÔNG nằm ở đây; mỗi site import thêm 1 file theme (catbox/tetta/cfc).
+ * ------------------------------------------------------------------------- */
+@import "tailwindcss";
+
+@theme {
+  /* Container — mockup Thái Dương/CFC dùng max-width 1200px, padding 24px */
+  --container-site: 1200px;
+
+  /* Radius — DNA chung, cả 3 site giống nhau */
+  --radius-pill: 999px;
+  --radius-card: 14px;
+  --radius-panel: 16px;
+  --radius-chip: 12px;
+
+  /* Shadow */
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-panel: 0 16px 40px rgba(0, 0, 0, 0.1);
+  --shadow-float: 0 24px 64px rgba(0, 0, 0, 0.14);
+
+  /* Font scale — dùng chung, font-family do từng theme quyết định */
+  --text-hero: 3.375rem;      /* 54px */
+  --text-hero--line-height: 1.08;
+  --text-section: 2.375rem;   /* 38px — "BÁN CHẠY", "TIN TỨC" */
+  --text-section--line-height: 1.1;
+
+  /* Chiều cao các thanh cố định (theo mockup) */
+  --height-topbar: 40px;
+  --height-header: 92px;
+  --height-catnav: 54px;
+}
+
+/* Chiều rộng nội dung chuẩn — dùng như <div class="site-container"> */
+@utility site-container {
+  width: 100%;
+  max-width: var(--container-site);
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+/* Pill bo tròn dùng khắp nơi trong mockup */
+@utility pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Kiểu chữ cho nội dung MDX (mô tả sản phẩm, bài blog, chính sách).
+ * Tự viết thay vì kéo @tailwindcss/typography — chỉ cần chừng này và tránh
+ * thêm 30 KB CSS phải override lại cho 3 theme. */
+@utility prose-catbox {
+  max-width: 68ch;
+  line-height: 1.75;
+  color: var(--color-ink-muted);
+
+  & h2 {
+    margin-block: 2rem 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  & h3 {
+    margin-block: 1.5rem 0.5rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  & p {
+    margin-block: 0.85rem;
+  }
+  & ul, & ol {
+    margin-block: 0.85rem;
+    padding-inline-start: 1.35rem;
+  }
+  & ul { list-style: disc; }
+  & ol { list-style: decimal; }
+  & li { margin-block: 0.35rem; }
+  & strong { color: var(--color-ink); font-weight: 700; }
+  & a {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  & blockquote {
+    margin-block: 1.25rem;
+    border-inline-start: 3px solid var(--color-primary);
+    padding-inline-start: 1rem;
+    font-style: italic;
+  }
+  & table {
+    width: 100%;
+    margin-block: 1.25rem;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  & th, & td {
+    border-bottom: 1px solid var(--color-line);
+    padding: 0.65rem 0.5rem;
+    text-align: start;
+  }
+  & th { font-weight: 700; color: var(--color-ink); }
+  & code {
+    border-radius: 4px;
+    background: var(--color-surface-alt);
+    padding: 0.15em 0.4em;
+    font-size: 0.9em;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    color: var(--color-ink);
+  }
+
+  /* Ảnh luôn khai báo width/height ở component → CLS = 0 kể cả khi thay ảnh thật */
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

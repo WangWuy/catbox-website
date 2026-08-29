@@ -1,0 +1,99 @@
+---
+/**
+ * Trang danh mục — lọc sẵn sản phẩm theo category, kèm nội dung MDX mô tả nhóm.
+ */
+import type { ImageMetadata } from "astro";
+import { getCollection, render } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumb from "@ui/seo/Breadcrumb.astro";
+import ProductCard from "@ui/catalog/ProductCard.astro";
+
+export async function getStaticPaths() {
+  const categories = await getCollection("categories");
+  const products = await getCollection("products", ({ data }) => !data.draft);
+
+  return categories.map((c) => ({
+    params: { slug: c.id },
+    props: {
+      category: c,
+      items: products
+        .filter((p) => p.data.category === c.data.title || p.data.category === c.data.sub)
+        .sort((a, z) => a.data.order - z.data.order),
+    },
+  }));
+}
+
+const assets = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/**/*.{png,jpg,jpeg,webp,avif}",
+  { eager: true },
+);
+
+const { category, items } = Astro.props;
+const { data } = category;
+const { Content } = await render(category);
+
+const description = data.seoDescription ?? data.description ?? data.title;
+
+const jsonLd = [
+  {
+    "@type": "CollectionPage",
+    name: data.title,
+    description,
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: items.length,
+      itemListElement: items.map((p, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: p.data.title,
+        url: new URL(`/products/${p.id}`, Astro.site).href,
+      })),
+    },
+  },
+];
+---
+
+<Layout title={data.title} {description} {jsonLd}>
+  <Breadcrumb items={[{ label: "Sản phẩm", href: "/products" }, { label: data.title }]} />
+
+  <div class="site-container pb-16">
+    <h1 class="mb-2 text-3xl font-extrabold tracking-tight uppercase md:text-section">
+      {data.title}
+    </h1>
+    {data.sub && <p class="mb-6 text-ink-muted">{data.sub}</p>}
+
+    <div class="prose-catbox mb-10">
+      <Content />
+    </div>
+
+    {
+      items.length > 0 ? (
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          {items.map((p, i) => (
+            <ProductCard
+              {assets}
+              title={p.data.title}
+              category={p.data.category}
+              href={`/products/${p.id}`}
+              image={p.data.image}
+              badge={p.data.badge}
+              priceLabel={p.data.priceLabel}
+              unit={p.data.unit}
+              swatches={p.data.swatches}
+              swatchNote="Kraft / MG"
+              variant={i + 1}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="rounded-panel bg-surface-alt p-8 text-center text-ink-muted">
+          Nhóm sản phẩm này đang được cập nhật.{" "}
+          <a href="/contact" class="font-semibold text-primary">
+            Liên hệ để nhận tư vấn
+          </a>
+          .
+        </p>
+      )
+    }
+  </div>
+</Layout>

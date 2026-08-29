@@ -1,0 +1,10 @@
+{
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "files.associations": { "*.css": "tailwindcss" },
+  "tailwindCSS.experimental.configFile": {
+    "sites/catbox/src/styles/theme.css": "sites/catbox/**",
+    "sites/tetta/src/styles/theme.css": "sites/tetta/**",
+    "sites/cfc/src/styles/theme.css": "sites/cfc/**"
+  }
+}

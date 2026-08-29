@@ -1,0 +1,105 @@
+---
+/**
+ * Thẻ sản phẩm — dùng ở BÁN CHẠY, LỰA CHỌN CỦA TUẦN và trang catalog.
+ * Theo mockup: ảnh vuông + badge oval góc dưới trái, tên đậm, danh mục xám,
+ * giá nổi bật màu CTA, hàng swatches bên dưới.
+ */
+import type { AssetMap } from "../lib/images";
+import SmartImage from "../media/SmartImage.astro";
+
+export interface ProductCardData {
+  title: string;
+  category: string;
+  href: string;
+  image?: string;
+  badge?: string;
+  priceLabel?: string;
+  unit?: string;
+  swatches?: { label: string; color: string }[];
+  /** Nhãn gộp cạnh dãy swatch, ví dụ "Kraft / MG" */
+  swatchNote?: string;
+}
+
+interface Props extends ProductCardData {
+  assets: AssetMap;
+  variant?: number;
+  /** Thuộc tính lọc cho island filter — render sẵn trong HTML để crawler thấy */
+  filterData?: Record<string, string>;
+}
+
+const {
+  assets,
+  title,
+  category,
+  href,
+  image,
+  badge,
+  priceLabel,
+  unit = "chiếc",
+  swatches = [],
+  swatchNote,
+  variant = 1,
+  filterData = {},
+} = Astro.props;
+---
+
+<article
+  class="group flex flex-col overflow-hidden rounded-card border border-line bg-surface shadow-card transition-shadow hover:shadow-panel"
+  data-product
+  {...Object.fromEntries(Object.entries(filterData).map(([k, v]) => [`data-${k}`, v]))}
+>
+  <a href={href} class="relative block bg-surface">
+    <SmartImage
+      {assets}
+      src={image}
+      alt={title}
+      width={600}
+      height={600}
+      ratio="1x1"
+      {variant}
+      class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+    />
+    {
+      badge && (
+        <span class="pill pointer-events-none absolute bottom-3 left-3 bg-kraft px-3.5 py-1.5 text-[11px] text-white">
+          {badge}
+        </span>
+      )
+    }
+  </a>
+
+  <div class="flex flex-1 flex-col gap-2 p-4">
+    <h3 class="text-[15px] leading-snug font-bold">
+      <a href={href} class="transition-colors hover:text-primary">{title}</a>
+    </h3>
+    <p class="text-[12.5px] text-ink-faint">{category}</p>
+
+    {
+      priceLabel && (
+        <p class="flex items-baseline gap-1">
+          <span class="font-display text-[22px] leading-none font-extrabold text-cta">
+            {priceLabel}
+          </span>
+          <span class="text-[12.5px] font-medium text-ink-faint">/{unit}</span>
+        </p>
+      )
+    }
+
+    {
+      swatches.length > 0 && (
+        <div class="mt-auto flex items-center gap-1.5 pt-1">
+          {swatches.slice(0, 4).map((s, i) => (
+            <span
+              title={s.label}
+              class={`size-[22px] rounded-[6px] border border-line ${
+                i === 0 ? "outline-2 outline-offset-2 outline-ink" : ""
+              }`}
+              style={`background:${s.color}`}
+            />
+          ))}
+          {swatchNote && <span class="ml-1 text-[11.5px] text-ink-faint">{swatchNote}</span>}
+        </div>
+      )
+    }
+  </div>
+</article>

@@ -1,0 +1,115 @@
+---
+/**
+ * Hero — banner full-width bo góc, có lớp phủ chứa headline + CTA.
+ *
+ * Mockup CFC dùng một banner ảnh lớn (cao 520px, padding 8px hai bên) thay cho
+ * hero 2 cột của mẫu Thái Dương. Giữ đúng mockup, nhưng thêm lớp text đè lên
+ * để trang có H1 thật — banner ảnh trơn thì SEO không có gì để đọc.
+ */
+import type { AssetMap } from "../lib/images";
+import SmartImage from "../media/SmartImage.astro";
+
+interface Props {
+  assets: AssetMap;
+  image?: string;
+  eyebrow?: string;
+  /** Phần headline in thường */
+  title: string;
+  /** Phần headline tô màu thương hiệu (thường là tên brand) */
+  titleAccent?: string;
+  subtitle?: string;
+  primaryCta: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+  hashtag?: string;
+}
+
+const {
+  assets,
+  image,
+  eyebrow,
+  title,
+  titleAccent,
+  subtitle,
+  primaryCta,
+  secondaryCta,
+  hashtag,
+} = Astro.props;
+---
+
+<section class="px-2 pt-2">
+  <div class="relative overflow-hidden rounded-panel bg-surface-tint">
+    <SmartImage
+      {assets}
+      src={image}
+      alt=""
+      width={1536}
+      height={1024}
+      ratio="16x10"
+      priority
+      sizes="100vw"
+      class="h-[380px] w-full object-cover md:h-[520px]"
+    />
+
+    <!-- Gradient từ trái sang giúp chữ đọc được trên mọi ảnh khách gửi sau -->
+    <div
+      aria-hidden="true"
+      class="absolute inset-0 bg-gradient-to-r from-black/72 via-black/45 to-transparent"
+    >
+    </div>
+
+    <div class="absolute inset-0 flex items-center">
+      <div class="site-container">
+        <div class="flex max-w-2xl flex-col items-start gap-5">
+          {
+            eyebrow && (
+              <span class="pill bg-white/15 px-4 py-2 text-[11.5px] tracking-[1.2px] text-white uppercase backdrop-blur-sm">
+                {eyebrow}
+              </span>
+            )
+          }
+
+          <h1 class="text-3xl leading-[1.08] font-extrabold tracking-tight text-white uppercase md:text-hero">
+            {title}
+            {titleAccent && <span class="text-primary"> {titleAccent}</span>}
+          </h1>
+
+          {
+            subtitle && (
+              <p class="max-w-lg text-[15px] leading-relaxed text-white/85 md:text-base">
+                {subtitle}
+              </p>
+            )
+          }
+
+          <div class="mt-1 flex flex-wrap items-center gap-3">
+            <a
+              href={primaryCta.href}
+              data-analytics="hero_cta"
+              class="pill h-13 bg-primary px-8 text-[15px] text-white transition-colors hover:bg-primary-hover"
+            >
+              {primaryCta.label}
+            </a>
+            {
+              secondaryCta && (
+                <a
+                  href={secondaryCta.href}
+                  class="pill h-13 border-2 border-white/50 px-8 text-[15px] text-white transition-colors hover:border-white"
+                >
+                  {secondaryCta.label}
+                </a>
+              )
+            }
+          </div>
+
+          {
+            hashtag && (
+              <p class="text-sm font-semibold text-white/80">
+                #nhận nhiều <span class="text-cta">{hashtag}</span>
+              </p>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

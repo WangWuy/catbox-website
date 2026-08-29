@@ -1,0 +1,19 @@
+---
+/**
+ * Layout của site CFC — chỉ làm 2 việc: nạp theme CSS và chốt brand="cfc".
+ * Toàn bộ cấu trúc trang nằm ở @ui/layout/BaseLayout.astro dùng chung 3 site.
+ */
+import BaseLayout from "@ui/layout/BaseLayout.astro";
+import "../styles/theme.css";
+
+const FONTS =
+  "https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap";
+
+type BaseProps = Omit<Parameters<typeof BaseLayout>[0], "brand" | "fonts">;
+const props = Astro.props as BaseProps;
+---
+
+<BaseLayout brand="cfc" fonts={FONTS} {...props}>
+  <slot name="head" slot="head" />
+  <slot />
+</BaseLayout>

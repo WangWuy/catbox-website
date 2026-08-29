@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Không tìm thấy trang" description="Trang bạn tìm không tồn tại." noindex hideEcosystem>
+  <section class="site-container flex min-h-[50vh] flex-col items-center justify-center gap-4 py-20 text-center">
+    <p class="text-hero font-extrabold text-primary">404</p>
+    <h1 class="text-2xl font-bold">Không tìm thấy trang này</h1>
+    <p class="max-w-md text-ink-muted">
+      Trang có thể đã đổi đường dẫn hoặc chưa được tạo. Bạn thử tìm lại hoặc quay về trang chủ.
+    </p>
+    <div class="mt-2 flex flex-wrap justify-center gap-3">
+      <a href="/" class="pill h-11 bg-primary px-6 text-white transition-colors hover:bg-primary-hover">
+        Về trang chủ
+      </a>
+      <a href="/contact" class="pill h-11 border border-line px-6 text-ink transition-colors hover:bg-surface-alt">
+        Liên hệ báo giá
+      </a>
+    </div>
+  </section>
+</Layout>

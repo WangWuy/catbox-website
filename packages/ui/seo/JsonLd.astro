@@ -1,0 +1,84 @@
+---
+/**
+ * JSON-LD theo loại trang (§6A.2).
+ *
+ * Điểm quan trọng: Catbox khai `subOrganization` trỏ tới Tetta + CFC, hai site
+ * kia khai `parentOrganization` ngược lại → Google hiểu 3 domain là một tập
+ * đoàn, E-E-A-T dùng chung (§6A.3).
+ */
+import { BRANDS, otherBrands, type BrandId } from "@config/brands";
+
+interface Props {
+  brand: BrandId;
+  /** Các schema bổ sung cho từng loại trang */
+  extra?: Record<string, unknown>[];
+}
+
+const { brand, extra = [] } = Astro.props;
+const b = BRANDS[brand];
+const base = Astro.site?.href ?? b.site;
+
+const orgId = `${b.site}/#organization`;
+
+const organization: Record<string, unknown> = {
+  "@type": "Organization",
+  "@id": orgId,
+  name: b.name,
+  legalName: b.legalName,
+  url: b.site,
+  // TODO Pha 4: thay bằng logo PNG gốc khách gửi (Google yêu cầu raster cho Organization.logo)
+  logo: new URL("/og/default.svg", base).href,
+  email: b.email,
+  telephone: b.hotline,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "KCN Đồng Văn, Duy Tiên",
+    addressLocality: "Hà Nam",
+    addressCountry: "VN",
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: b.hotline,
+    contactType: "sales",
+    areaServed: "VN",
+    availableLanguage: ["vi", "en"],
+  },
+  sameAs: b.social.map((s) => s.href).filter((h) => h !== "#"),
+};
+
+// Liên kết 3 domain thành một tập đoàn
+if (brand === "catbox") {
+  organization.subOrganization = otherBrands(brand).map((o) => ({
+    "@type": "Organization",
+    name: o.name,
+    url: o.site,
+  }));
+} else {
+  organization.parentOrganization = {
+    "@type": "Organization",
+    name: BRANDS.catbox.name,
+    url: BRANDS.catbox.site,
+  };
+}
+
+const website = {
+  "@type": "WebSite",
+  "@id": `${b.site}/#website`,
+  url: b.site,
+  name: b.name,
+  inLanguage: "vi-VN",
+  publisher: { "@id": orgId },
+  potentialAction: {
+    "@type": "SearchAction",
+    target: { "@type": "EntryPoint", urlTemplate: `${b.site}/search?q={search_term_string}` },
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const graph = {
+  "@context": "https://schema.org",
+  "@graph": [organization, website, ...extra],
+};
+---
+
+<script is:inline type="application/ld+json" set:html={JSON.stringify(graph)} />

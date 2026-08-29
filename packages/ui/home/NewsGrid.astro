@@ -1,0 +1,64 @@
+---
+/**
+ * TIN TỨC — lưới 4 blog card trắng, mỗi card có thumbnail 16:10, ngày, tiêu đề
+ * và link "Đọc tiếp →".
+ */
+import type { AssetMap } from "../lib/images";
+import SmartImage from "../media/SmartImage.astro";
+import SectionHeader from "./SectionHeader.astro";
+
+export interface NewsItem {
+  title: string;
+  href: string;
+  date: Date;
+  cover?: string;
+}
+
+interface Props {
+  assets: AssetMap;
+  title?: string;
+  action?: { label: string; href: string };
+  items: NewsItem[];
+}
+
+const { assets, title = "Tin tức", action, items } = Astro.props;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+---
+
+<section class="site-container" aria-labelledby="news-heading">
+  <SectionHeader {title} {action} />
+
+  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      items.map((a, i) => (
+        <article class="group flex flex-col overflow-hidden rounded-card border border-line bg-surface shadow-card transition-shadow hover:shadow-panel">
+          <a href={a.href} class="block bg-surface-tint">
+            <SmartImage
+              {assets}
+              src={a.cover}
+              alt={a.title}
+              width={600}
+              height={375}
+              ratio="16x10"
+              variant={i + 1}
+              class="aspect-16/10 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+          </a>
+          <div class="flex flex-1 flex-col gap-2.5 p-4 pb-5">
+            <time datetime={a.date.toISOString()} class="text-[11.5px] font-semibold text-ink-faint">
+              {fmt(a.date)}
+            </time>
+            <h3 class="flex-1 text-[15px] leading-snug font-bold">
+              <a href={a.href} class="transition-colors hover:text-primary">
+                {a.title}
+              </a>
+            </h3>
+            <span class="text-[13px] font-bold text-primary-hover">Đọc tiếp →</span>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>

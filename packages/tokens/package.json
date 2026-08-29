@@ -1,0 +1,12 @@
+{
+  "name": "@catbox/tokens",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./base.css": "./base.css",
+    "./catbox.css": "./catbox.css",
+    "./tetta.css": "./tetta.css",
+    "./cfc.css": "./cfc.css"
+  }
+}

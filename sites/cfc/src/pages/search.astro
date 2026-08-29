@@ -1,0 +1,60 @@
+---
+/**
+ * Trang kết quả tìm kiếm — Pagefind UI dựng đầy đủ tại đây.
+ * Header search box lazy-load UI ngay tại chỗ; ai submit form (hoặc tắt JS)
+ * thì rơi về trang này.
+ */
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Tìm kiếm" description="Tìm kiếm sản phẩm và bài viết." noindex>
+  <section class="site-container py-14">
+    <h1 class="mb-6 text-section font-extrabold tracking-tight uppercase">Tìm kiếm</h1>
+    <div id="search-results"></div>
+    <noscript>
+      <p class="text-ink-muted">
+        Tìm kiếm cần JavaScript. Bạn có thể duyệt theo
+        <a href="/products" class="font-semibold text-primary">danh mục sản phẩm</a>.
+      </p>
+    </noscript>
+  </section>
+</Layout>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const css = document.createElement("link");
+  css.rel = "stylesheet";
+  css.href = "/pagefind/pagefind-ui.css";
+  document.head.append(css);
+
+  const src = "/pagefind/pagefind-ui.js";
+  import(/* @vite-ignore */ src)
+    .then(({ PagefindUI }) => {
+      new PagefindUI({
+        element: "#search-results",
+        showSubResults: true,
+        translations: {
+          placeholder: "Nhập từ khoá…",
+          clear_search: "Xoá",
+          load_more: "Xem thêm kết quả",
+          search_label: "Tìm kiếm trang này",
+          zero_results: "Không tìm thấy kết quả cho [SEARCH_TERM]",
+          many_results: "[COUNT] kết quả cho [SEARCH_TERM]",
+          one_result: "1 kết quả cho [SEARCH_TERM]",
+        },
+      });
+      const input = document.querySelector<HTMLInputElement>("#search-results input");
+      const q = params.get("q");
+      if (input && q) {
+        input.value = q;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      input?.focus();
+    })
+    .catch(() => {
+      const el = document.querySelector("#search-results");
+      if (el)
+        el.innerHTML =
+          '<p>Chỉ mục tìm kiếm sinh ra khi build. Chạy <code>pnpm build</code> rồi <code>pnpm preview</code> để thử.</p>';
+    });
+</script>

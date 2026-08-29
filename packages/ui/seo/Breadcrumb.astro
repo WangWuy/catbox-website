@@ -1,0 +1,54 @@
+---
+/**
+ * Breadcrumb hiển thị + JSON-LD BreadcrumbList trong cùng một component,
+ * để hai thứ không bao giờ lệch nhau.
+ */
+interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: Crumb[];
+}
+
+const { items } = Astro.props;
+const base = Astro.site?.href ?? "/";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [{ label: "Trang chủ", href: "/" }, ...items].map((c, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    name: c.label,
+    ...(c.href ? { item: new URL(c.href, base).href } : {}),
+  })),
+};
+---
+
+<nav aria-label="Breadcrumb" class="site-container py-4">
+  <ol class="flex flex-wrap items-center gap-2 text-[13px] text-ink-faint">
+    <li><a href="/" class="transition-colors hover:text-primary">Trang chủ</a></li>
+    {
+      items.map((c, i) => (
+        <>
+          <li aria-hidden="true">/</li>
+          <li>
+            {c.href && i < items.length - 1 ? (
+              <a href={c.href} class="transition-colors hover:text-primary">
+                {c.label}
+              </a>
+            ) : (
+              <span class="font-semibold text-ink-muted" aria-current="page">
+                {c.label}
+              </span>
+            )}
+          </li>
+        </>
+      ))
+    }
+  </ol>
+</nav>
+
+<script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
