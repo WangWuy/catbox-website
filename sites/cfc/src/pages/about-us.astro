@@ -1,9 +1,10 @@
 ---
 import type { ImageMetadata } from "astro";
+import { Icon } from "astro-icon/components";
 import Layout from "../layouts/Layout.astro";
-import Breadcrumb from "@ui/seo/Breadcrumb.astro";
-import SmartImage from "@ui/media/SmartImage.astro";
-import StatsBar from "@ui/home/StatsBar.astro";
+import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
+import SmartImage from "@ui/primitives/SmartImage.astro";
+import StatsBar from "@ui/patterns/StatsBar.astro";
 import { BRANDS } from "@config/brands";
 
 const assets = import.meta.glob<{ default: ImageMetadata }>(
@@ -54,8 +55,8 @@ const description =
         <div class="flex flex-wrap gap-2.5">
           {
             b.certifications.map((c) => (
-              <span class="pill border border-line bg-surface-alt px-4 py-2 text-[12.5px] text-ink-muted">
-                ✓ {c}
+              <span class="pill flex items-center gap-1.5 border border-line bg-surface-alt px-4 py-2 text-[12.5px] text-ink-muted">
+                <Icon name="lucide:check" class="size-3.5" aria-hidden="true" /> {c}
               </span>
             ))
           }
@@ -85,7 +86,7 @@ const description =
       <ol class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {
           process.map((s) => (
-            <li class="flex flex-col gap-2.5 rounded-panel border border-line bg-surface p-6 shadow-card">
+            <li class="flex flex-col gap-2.5 rounded-panel border border-line bg-surface p-6">
               <span class="font-display text-3xl leading-none font-extrabold text-primary/25">
                 {s.num}
               </span>

@@ -1,0 +1,59 @@
+---
+/**
+ * Logo + dòng bảo chứng "A Member of Catbox Packaging Ecosystem"
+ * — điểm đồng bộ bắt buộc #2 (REQUIREMENTS §2).
+ *
+ * CFC dùng file logo thật (public/logo.png) — đây là logo đầy đủ đã có sẵn
+ * chữ "CFC" bên trong, nên hiển thị theo tỉ lệ gốc (không bóp vào khung
+ * vuông) và KHÔNG vẽ thêm wordmark chữ để tránh lặp. Tetta chưa có
+ * file gốc nên vẫn dùng logo chữ (wordmark) trong khung vuông.
+ *
+ * Chỉ phục vụ khung F&B (CFC + Tetta). Logo Catbox nằm ở
+ * @ui/brand/catbox/BrandLogo.astro.
+ */
+import { Icon } from "astro-icon/components";
+import { BRANDS, type FnbBrandId } from "@config/brands";
+
+interface Props {
+  brand: FnbBrandId;
+  variant?: "light" | "dark";
+}
+
+const { brand, variant = "light" } = Astro.props;
+const b = BRANDS[brand];
+
+const wordmark: Record<FnbBrandId, { head: string; tail: string }> = {
+  tetta: { head: "TET", tail: "TA" },
+  cfc: { head: "C", tail: "FC" },
+};
+const mark = wordmark[brand];
+
+const boxClass =
+  variant === "dark"
+    ? "bg-white/10"
+    : "bg-surface-tint border border-line";
+const headClass = variant === "dark" ? "text-white" : "text-brandmark";
+const subClass = variant === "dark" ? "text-white/50" : "text-ink-faint";
+---
+
+{
+  brand === "cfc" ? (
+    <img src="/logo.png" alt={b.name} width="820" height="462" class="h-[80px] w-auto flex-none object-contain" />
+  ) : (
+    <>
+      <span class={`grid size-[46px] flex-none place-items-center rounded-chip text-[22px] ${boxClass}`}>
+        <Icon name={b.icon} class="size-6" aria-hidden="true" />
+      </span>
+      <span class="flex flex-col gap-1">
+        <span class="font-display text-[27px] leading-none font-extrabold tracking-tight">
+          <span class={headClass}>{mark.head}</span><span class="text-primary">{mark.tail}</span>
+        </span>
+        {
+          b.memberOf && (
+            <span class={`text-[11px] leading-none font-medium ${subClass}`}>{b.memberOf}</span>
+          )
+        }
+      </span>
+    </>
+  )
+}

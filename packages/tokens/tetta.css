@@ -16,6 +16,7 @@
 
   --color-cta:           #8B1E2D;  /* Tetta dùng chính Bordeaux cho CTA */
   --color-cta-hover:     #6B0119;
+  --color-zalo:          #0088FF;  /* Xanh Zalo — badge sale ở Footer */
 
   --color-surface:       #FFFFFF;
   --color-surface-alt:   #FAF8F5;  /* Trắng kem ngọc trai */
@@ -27,6 +28,19 @@
 
   --color-line:          #EDEDED;
   --color-line-soft:     #F1F1F1;
+
+  /* Cùng bộ token nền phụ với CFC để component F&B không phải rẽ nhánh theo
+   * brand. Tetta giữ đúng diện mạo cũ: topbar nâu đậm dùng `primary-deep`,
+   * còn pill dùng beige/`line-soft` như trước. */
+  --color-surface-topbar: #5E101D;  /* = primary-deep, topbar Tetta nền đậm */
+  --color-surface-chip:   #FAF8F5;  /* = surface-alt */
+  --color-surface-pill:   #F1F1F1;  /* = line-soft */
+  --color-surface-pill-hover: #F7F1EC;  /* = surface-tint */
+
+  --color-surface-input:  #FAF8F5;  /* = surface-alt, giữ đúng diện mạo cũ */
+
+  /* Màu thanh trình duyệt (<meta name="theme-color">) */
+  --color-theme:         #8B1E2D;
 
   --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
   --font-body:    "Montserrat", ui-sans-serif, system-ui, sans-serif;

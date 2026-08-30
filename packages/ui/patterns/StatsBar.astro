@@ -1,0 +1,39 @@
+---
+/**
+ * Dải số liệu năng lực — dữ liệu `stats` trong mockup CFC.
+ *
+ * Đây cũng là mồi GEO mạnh nhất trang (§6B.4): AI ưu tiên trích dẫn nguồn có
+ * dữ kiện gốc cụ thể mà nơi khác không có. Số ở đây phải là số thật của xưởng.
+ */
+interface Stat {
+  num: string;
+  label: string;
+  /** Tô màu CTA cho con số muốn nhấn */
+  highlight?: boolean;
+}
+
+interface Props {
+  stats: Stat[];
+}
+
+const { stats } = Astro.props;
+---
+
+<section class="bg-surface-alt py-12" aria-label="Năng lực sản xuất">
+  <div class="site-container grid grid-cols-2 gap-6 lg:grid-cols-4">
+    {
+      stats.map((s) => (
+        <div class="flex flex-col items-center gap-1.5 text-center">
+          <span
+            class={`font-display text-4xl leading-none font-extrabold tracking-tight md:text-5xl ${
+              s.highlight ? "text-cta" : "text-primary"
+            }`}
+          >
+            {s.num}
+          </span>
+          <span class="text-label font-medium text-ink-muted">{s.label}</span>
+        </div>
+      ))
+    }
+  </div>
+</section>

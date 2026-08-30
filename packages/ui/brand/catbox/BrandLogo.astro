@@ -1,0 +1,19 @@
+---
+/**
+ * Wordmark CATBOX cho nền tối — điểm đồng bộ bắt buộc #2 (REQUIREMENTS §2).
+ *
+ * Catbox là brand mẹ nên không có dòng "A Member of…"; bù lại wordmark to hơn
+ * và luôn nằm trên nền đen, nên không cần biến thể light/dark như bên fnb.
+ */
+import { Icon } from "astro-icon/components";
+import { BRANDS } from "@config/brands";
+
+const b = BRANDS.catbox;
+---
+
+<span class="grid size-[46px] flex-none place-items-center rounded-chip bg-white/8 ring-1 ring-white/10">
+  <Icon name={b.icon} class="size-6 text-primary" aria-hidden="true" />
+</span>
+<span class="font-display text-[27px] leading-none font-extrabold tracking-tight">
+  <span class="text-brandmark">CAT</span><span class="text-primary">BOX</span>
+</span>

@@ -13,12 +13,12 @@ export interface NavItem {
  */
 export const NAV: Record<BrandId, NavItem[]> = {
   catbox: [
-    { label: "Trang chủ", href: "/", icon: "🌟" },
-    { label: "Về chúng tôi", href: "/about-us", icon: "🏭" },
+    { label: "Trang chủ", href: "/", icon: "lucide:sparkles" },
+    { label: "Về chúng tôi", href: "/about-us", icon: "lucide:factory" },
     {
       label: "Lĩnh vực",
       href: "/industry",
-      icon: "🏢",
+      icon: "lucide:building-2",
       children: [
         { label: "Mỹ phẩm", href: "/industry/my-pham" },
         { label: "Thời trang", href: "/industry/thoi-trang" },
@@ -27,19 +27,19 @@ export const NAV: Record<BrandId, NavItem[]> = {
         { label: "Quà tặng doanh nghiệp", href: "/industry/qua-tang-doanh-nghiep" },
       ],
     },
-    { label: "Sản phẩm", href: "/products", icon: "📦" },
-    { label: "Dự án", href: "/case-studies", icon: "🏆" },
-    { label: "Chia sẻ", href: "/sharing", icon: "📰" },
-    { label: "Liên hệ", href: "/contact", icon: "📞" },
+    { label: "Sản phẩm", href: "/products", icon: "lucide:package" },
+    { label: "Dự án", href: "/case-studies", icon: "lucide:trophy" },
+    { label: "Chia sẻ", href: "/sharing", icon: "lucide:newspaper" },
+    { label: "Liên hệ", href: "/contact", icon: "lucide:phone" },
   ],
 
   tetta: [
-    { label: "Trang chủ", href: "/", icon: "🧧" },
-    { label: "Về chúng tôi", href: "/about-us", icon: "🏭" },
+    { label: "Trang chủ", href: "/", icon: "lucide:gift" },
+    { label: "Về chúng tôi", href: "/about-us", icon: "lucide:factory" },
     {
       label: "Bộ sưu tập",
       href: "/bo-suu-tap",
-      icon: "🎁",
+      icon: "lucide:gift",
       children: [
         { label: "Hộp quà Tết", href: "/bo-suu-tap/hop-qua-tet" },
         { label: "Hộp rượu vang", href: "/bo-suu-tap/hop-ruou-vang" },
@@ -47,29 +47,27 @@ export const NAV: Record<BrandId, NavItem[]> = {
         { label: "Quà doanh nghiệp", href: "/bo-suu-tap/qua-doanh-nghiep" },
       ],
     },
-    { label: "Sản phẩm", href: "/products", icon: "📦" },
-    { label: "Quy cách", href: "/services", icon: "📜" },
-    { label: "Tin tức", href: "/blog", icon: "📰" },
-    { label: "Liên hệ", href: "/contact", icon: "📞" },
+    { label: "Sản phẩm", href: "/products", icon: "lucide:package" },
+    { label: "Quy cách", href: "/services", icon: "lucide:scroll-text" },
+    { label: "Tin tức", href: "/blog", icon: "lucide:newspaper" },
+    { label: "Liên hệ", href: "/contact", icon: "lucide:phone" },
   ],
 
   cfc: [
-    { label: "Trang chủ", href: "/", icon: "🥖" },
-    { label: "Về chúng tôi", href: "/about-us", icon: "🏭" },
+    { label: "Trang chủ", href: "/", icon: "lucide:croissant" },
     {
-      label: "Sản phẩm",
-      href: "/products",
-      icon: "📦",
+      label: "Túi Giấy",
+      href: "/danh-muc/tui-giay-thuc-pham",
+      icon: "lucide:shopping-bag",
       children: [
-        { label: "Túi giấy thực phẩm", href: "/danh-muc/tui-giay-thuc-pham" },
-        { label: "Giấy gói thực phẩm", href: "/danh-muc/giay-goi-thuc-pham" },
-        { label: "Hộp đựng thức ăn giấy", href: "/danh-muc/hop-dung-thuc-an" },
-        { label: "Cốc giấy & ống hút", href: "/danh-muc/coc-giay-ong-hut" },
+        { label: "Túi bánh mì que", href: "/products/tui-banh-mi-que-kraft" },
+        { label: "Túi Doner Kebab", href: "/products/tui-doner-kebab" },
+        { label: "Túi giấy có quai", href: "/products/tui-giay-co-quai" },
       ],
     },
-    { label: "Bảng giá sỉ", href: "/bang-gia-si", icon: "💰" },
-    { label: "Tin tức", href: "/blog", icon: "📰" },
-    { label: "Liên hệ", href: "/contact", icon: "📞" },
+    { label: "Giấy Gói", href: "/danh-muc/giay-goi-thuc-pham", icon: "lucide:file-text" },
+    { label: "Hộp Giấy", href: "/danh-muc/hop-dung-thuc-an", icon: "lucide:package" },
+    { label: "Cốc Giấy & Ống Hút", href: "/danh-muc/coc-giay-ong-hut", icon: "lucide:cup-soda" },
   ],
 };
 
@@ -84,7 +82,7 @@ export const TOPBAR_LINKS: Record<BrandId, { label: string; href: string }[]> = 
     { label: "Bộ sưu tập Tết", href: "/bo-suu-tap/hop-qua-tet" },
   ],
   cfc: [
-    { label: "Về chúng tôi", href: "/about-us" },
-    { label: "Bảng giá sỉ", href: "/bang-gia-si" },
+    { label: "Về Chúng Tôi", href: "/about-us" },
+    { label: "Khuyến Mãi", href: "/bang-gia-si" },
   ],
 };

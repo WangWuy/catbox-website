@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
-import Breadcrumb from "@ui/seo/Breadcrumb.astro";
+import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 
 export async function getStaticPaths() {
   const policies = await getCollection("policies");

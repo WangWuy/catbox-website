@@ -1,0 +1,125 @@
+---
+/**
+ * Thẻ sản phẩm — dùng ở BÁN CHẠY, LỰA CHỌN CỦA TUẦN và trang catalog.
+ *
+ * Hai kiểu hiển thị:
+ * - `full` (mặc định, trang catalog): khung viền + badge, tên, danh mục, giá,
+ *   swatches.
+ * - `minimal` (lưới BÁN CHẠY ở trang chủ): chỉ ảnh vuông không viền + tên căn
+ *   giữa bên dưới. Mọi thông tin phụ (badge/danh mục/giá/swatch) bị lược bỏ để
+ *   lưới đọc nhanh như mockup.
+ */
+import type { AssetMap } from "../lib/images";
+import SmartImage from "@ui/primitives/SmartImage.astro";
+
+export interface ProductCardData {
+  title: string;
+  category: string;
+  href: string;
+  image?: string;
+  badge?: string;
+  priceLabel?: string;
+  unit?: string;
+  swatches?: { label: string; color: string }[];
+  /** Nhãn gộp cạnh dãy swatch, ví dụ "Kraft / MG" */
+  swatchNote?: string;
+}
+
+interface Props extends ProductCardData {
+  assets: AssetMap;
+  variant?: number;
+  /** Thuộc tính lọc cho island filter — render sẵn trong HTML để crawler thấy */
+  filterData?: Record<string, string>;
+  /** `minimal` = chỉ ảnh + tên căn giữa (lưới trang chủ) */
+  layout?: "full" | "minimal";
+}
+
+const {
+  assets,
+  title,
+  category,
+  href,
+  image,
+  badge,
+  priceLabel,
+  unit = "chiếc",
+  swatches = [],
+  swatchNote,
+  variant = 1,
+  filterData = {},
+  layout = "full",
+} = Astro.props;
+
+const minimal = layout === "minimal";
+---
+
+<article
+  class={`group flex flex-col ${
+    minimal ? "" : "overflow-hidden rounded-card border border-line bg-surface"
+  }`}
+  data-product
+  {...Object.fromEntries(Object.entries(filterData).map(([k, v]) => [`data-${k}`, v]))}
+>
+  <a href={href} class={`relative block overflow-hidden bg-surface ${minimal ? "rounded-card" : ""}`}>
+    <SmartImage
+      {assets}
+      src={image}
+      alt={title}
+      width={600}
+      height={600}
+      ratio="1x1"
+      {variant}
+      class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+    />
+    {
+      badge && !minimal && (
+        <span class="pill pointer-events-none absolute bottom-3 left-3 bg-kraft px-3.5 py-1.5 text-[11px] text-white">
+          {badge}
+        </span>
+      )
+    }
+  </a>
+
+  {
+    minimal ? (
+      <h3 class="px-2 pt-3.5 text-center text-body leading-snug font-medium text-balance">
+        <a href={href} class="transition-colors hover:text-primary">
+          {title}
+        </a>
+      </h3>
+    ) : (
+      <div class="flex flex-1 flex-col gap-2 p-4">
+        <h3 class="text-body leading-snug font-bold">
+          <a href={href} class="transition-colors hover:text-primary">
+            {title}
+          </a>
+        </h3>
+        <p class="text-micro text-ink-faint">{category}</p>
+
+        {priceLabel && (
+          <p class="flex items-baseline gap-1">
+            <span class="font-display text-[22px] leading-none font-extrabold text-cta">
+              {priceLabel}
+            </span>
+            <span class="text-micro font-medium text-ink-faint">/{unit}</span>
+          </p>
+        )}
+
+        {swatches.length > 0 && (
+          <div class="mt-auto flex items-center gap-1.5 pt-1">
+            {swatches.slice(0, 4).map((s, i) => (
+              <span
+                title={s.label}
+                class={`size-[22px] rounded-sm border border-line ${
+                  i === 0 ? "outline-2 outline-offset-2 outline-ink" : ""
+                }`}
+                style={`background:${s.color}`}
+              />
+            ))}
+            {swatchNote && <span class="ml-1 text-tiny text-ink-faint">{swatchNote}</span>}
+          </div>
+        )}
+      </div>
+    )
+  }
+</article>

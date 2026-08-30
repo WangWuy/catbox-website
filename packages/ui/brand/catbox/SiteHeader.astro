@@ -1,0 +1,96 @@
+---
+/**
+ * Header CATBOX — Dark Luxury Studio.
+ *
+ * Khác hẳn khung F&B (@ui/brand/fnb): không có topbar giá sỉ, không có
+ * CategoryNav e-commerce. Catbox là site thương hiệu/studio nên gộp tất cả
+ * vào MỘT thanh trong suốt: logo · nav inline · switcher hệ sinh thái · CTA.
+ * Nav lấy từ NAV.catbox (@config/nav) nên vẫn là một nguồn sự thật.
+ */
+import { Icon } from "astro-icon/components";
+import { BRANDS, BRAND_ORDER } from "@config/brands";
+import { NAV } from "@config/nav";
+import BrandLogo from "@ui/brand/catbox/BrandLogo.astro";
+
+interface Props {
+  /** Pathname hiện tại để tô mục đang xem */
+  current?: string;
+}
+
+const { current = "/" } = Astro.props;
+const b = BRANDS.catbox;
+const items = NAV.catbox;
+const others = BRAND_ORDER.filter((id) => id !== "catbox").map((id) => BRANDS[id]);
+
+const isActive = (href: string) =>
+  href === "/" ? current === "/" : current.startsWith(href);
+---
+
+<header class="sticky top-0 z-40 border-b border-line bg-primary-deep/85 backdrop-blur-md">
+  <div class="site-container flex h-(--height-header) items-center gap-6 lg:gap-10">
+    <a href="/" class="flex flex-none items-center gap-3" aria-label={`${b.name} — trang chủ`}>
+      <BrandLogo />
+    </a>
+
+    <nav aria-label="Điều hướng chính" class="ml-auto hidden items-center gap-7 lg:flex">
+      {
+        items
+          .filter((item) => item.href !== "/")
+          .map((item) => (
+            <a
+              href={item.href}
+              class={`text-nav whitespace-nowrap transition-colors ${
+                isActive(item.href)
+                  ? "font-bold text-primary"
+                  : "font-medium text-ink-muted hover:text-ink"
+              }`}
+            >
+              {item.label}
+            </a>
+          ))
+      }
+    </nav>
+
+    <!-- Switcher hệ sinh thái — gọn trong header thay vì topbar riêng (§2) -->
+    <nav aria-label="Hệ sinh thái Catbox" class="hidden items-center gap-3 border-l border-line pl-5 md:flex">
+      {
+        others.map((o) => (
+          <a
+            href={o.site}
+            class="flex items-center gap-1.5 text-micro font-semibold text-ink-faint transition-colors hover:text-ink"
+          >
+            <Icon name={o.icon} class="size-3.5" aria-hidden="true" />
+            {o.short}
+          </a>
+        ))
+      }
+    </nav>
+
+    <a
+      href={b.headerCta.href}
+      data-analytics="click_header_cta"
+      class="pill ml-auto h-11 flex-none bg-primary px-5 text-sm font-bold text-white transition-colors hover:bg-primary-hover lg:ml-0"
+    >
+      {b.headerCta.label}
+    </a>
+  </div>
+
+  <!-- Nav ngang cuộn được cho mobile — thay cho dropdown, giữ 0 KB JS -->
+  <nav
+    aria-label="Điều hướng chính (mobile)"
+    class="site-container flex gap-5 overflow-x-auto pb-3 lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+  >
+    {
+      items.map((item) => (
+        <a
+          href={item.href}
+          class={`text-[14px] whitespace-nowrap transition-colors ${
+            isActive(item.href) ? "font-bold text-primary" : "font-medium text-ink-muted"
+          }`}
+        >
+          {item.label}
+        </a>
+      ))
+    }
+  </nav>
+</header>

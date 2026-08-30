@@ -51,7 +51,7 @@ catbox-ecosystem/
 │   └── 📁 tetta/                          #   Thiết kế cho Tetta (chờ bổ sung)
 │
 ├── 📁 packages/                           # Shared packages (dùng chung 3 site)
-│   ├── 📁 config/                         #   brands.ts, schema.ts, nav.ts
+│   ├── 📁 config/                         #   brands.ts, schema.ts, nav.ts, keystatic-fields.ts
 │   ├── 📁 tokens/                         #   base.css + 3 theme CSS
 │   └── 📁 ui/                             #   Astro components dùng chung
 │       ├── catalog/                       #     ProductCard, ProductFilter
@@ -65,6 +65,7 @@ catbox-ecosystem/
 ├── 📁 sites/                              # 3 Astro sites (mỗi site = 1 domain)
 │   ├── 📁 catbox/                         #   → catbox.vn (Dark Luxury)
 │   ├── 📁 cfc/                            #   → cfc.vn (Industrial Fast-Commerce)
+│   │   └── 📄 keystatic.config.ts         #     CMS config (thí điểm Keystatic Cloud)
 │   └── 📁 tetta/                          #   → tetta.vn (Elegant Boutique)
 │
 ├── 📁 workers/                            # Cloudflare Workers
@@ -91,9 +92,21 @@ Khi mở một phiên làm việc mới, đọc lần lượt:
 
 ## 🛠 4. TECH STACK
 
-- **Framework:** Astro (Static SSG) + TailwindCSS
-- **Shared UI:** Astro components trong `packages/ui/`
+- **Framework:** Astro (Static SSG) + TailwindCSS — site `cfc` đã nâng lên Astro 7 (yêu cầu bắt buộc của Keystatic), `catbox`/`tetta` vẫn ở Astro 5
+- **Shared UI:** Astro components trong `packages/ui/`, chia 4 tầng theo mức độ dùng chung:
+
+  | Tầng | Biết brand nào? | Dùng cho |
+  |---|---|---|
+  | `primitives/` | Không | Mảnh nhỏ tái dùng khắp nơi: `SmartImage`, `ProductCard`, `SearchBox`, `Breadcrumb` |
+  | `patterns/` | Không — chỉ nhận props | Khối trang: `HeroBanner`, `BestsellerGrid`, `NewsGrid`, `FactoryReels` |
+  | `shared/` | Có, nhưng chỉ đọc dữ liệu | Thật sự chung cả 3 site: `SEOHead`, `JsonLd`, `QuoteForm`, `FloatingCta` |
+  | `brand/` | Có, và đổi cả cấu trúc DOM | Bộ khung riêng: `brand/fnb/` (CFC + Tetta), `brand/catbox/` |
+
+  **Quy tắc đặt file:** component nào *không* import `@config/brands` thì thuộc `primitives/` hoặc `patterns/`. Component cần biết brand để đổi cấu trúc DOM thì phải nằm trong `brand/` — **không nhồi thêm nhánh `if (brand === …)`**.
+
+  Catbox (Dark Luxury Studio) có khung hoàn toàn khác CFC/Tetta nên dùng `brand/catbox/BaseLayout.astro` riêng: không topbar giá sỉ, không CategoryNav e-commerce, header gộp nav + switcher hệ sinh thái. Kiểu `FnbBrandId` trong `packages/config/brands.ts` khiến việc truyền `brand="catbox"` vào component F&B thành **lỗi biên dịch**, không phải lỗi lúc chạy.
 - **Design Tokens:** CSS custom properties trong `packages/tokens/`
+- **CMS:** Keystatic Cloud — cho phép sửa nội dung (sản phẩm, banner, thông tin liên hệ) qua giao diện `/keystatic` mà không cần biết Git/Markdown. Đang thí điểm trên site `cfc`, chạy qua cờ `KEYSTATIC_ADMIN=true` (dev-only, không ảnh hưởng build production tĩnh). Xem `plans/01-keystatic-cms-integration.md` để biết tiến độ và lý do lựa chọn.
 - **Worker:** Cloudflare Worker (form submission → Telegram + Sheet)
 - **Search:** Pagefind (sinh sau khi build)
 - **SEO:** JSON-LD, OpenGraph, WebP/AVIF auto-optimize

@@ -1,23 +1,22 @@
 /* ---------------------------------------------------------------------------
- * DNA chung cho cả 3 site — spacing, radius, shadow, font scale, container.
+ * DNA chung cho cả 3 site — spacing, radius, font scale, container.
  * Màu sắc KHÔNG nằm ở đây; mỗi site import thêm 1 file theme (catbox/tetta/cfc).
  * ------------------------------------------------------------------------- */
 @import "tailwindcss";
 
 @theme {
-  /* Container — mockup Thái Dương/CFC dùng max-width 1200px, padding 24px */
-  --container-site: 1200px;
+  /* Container — mockup Thái Dương/CFC dùng max-width 1280px, padding 24px */
+  --container-site: 1280px;
 
   /* Radius — DNA chung, cả 3 site giống nhau */
   --radius-pill: 999px;
-  --radius-card: 14px;
-  --radius-panel: 16px;
-  --radius-chip: 12px;
-
-  /* Shadow */
-  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.06);
-  --shadow-panel: 0 16px 40px rgba(0, 0, 0, 0.1);
-  --shadow-float: 0 24px 64px rgba(0, 0, 0, 0.14);
+  --radius-card: 0px;
+  --radius-panel: 0px;
+  --radius-chip: 0px;
+  --radius-sm: 0px;
+  /* Ô search là ngoại lệ duy nhất bo góc nhẹ trong hệ 0px (theo mockup) —
+   * khai báo thành token riêng thay vì rounded-[4px] rải trong component. */
+  --radius-input: 4px;
 
   /* Font scale — dùng chung, font-family do từng theme quyết định */
   --text-hero: 3.375rem;      /* 54px */
@@ -25,9 +24,26 @@
   --text-section: 2.375rem;   /* 38px — "BÁN CHẠY", "TIN TỨC" */
   --text-section--line-height: 1.1;
 
+  /* Các cỡ chữ nhỏ lặp lại khắp mockup. Đặt tên theo VAI TRÒ, không theo số px,
+   * để đổi một chỗ là đổi toàn hệ — trước đây rải rác `text-[12.5px]` v.v.
+   * trong component nên không thể chỉnh tập trung. */
+  --text-body:  0.9375rem;    /* 15px — đoạn văn, mô tả */
+  --text-nav:   0.90625rem;   /* 14.5px — menu chính, input search */
+  --text-meta:  0.8125rem;    /* 13px — hotline, dòng phụ */
+  --text-label: 0.84375rem;   /* 13.5px — nhãn tab, nút pill */
+  --text-micro: 0.78125rem;   /* 12.5px — topbar, chip khuyến mãi */
+  --text-tiny:  0.71875rem;   /* 11.5px — eyebrow, ngày tháng */
+
+  /* Khung tròn chứa icon nhỏ (Zalo, hotline...) ở Footer — đặt tên theo vai trò
+   * thay vì rải `size-[22px]` từng chỗ, để đổi một chỗ là đổi toàn hệ. */
+  --size-icon-chip: 22px;
+
+  /* Chiều rộng tối đa ô search ở MainHeader (mockup: 520px) */
+  --width-search: 520px;
+
   /* Chiều cao các thanh cố định (theo mockup) */
   --height-topbar: 40px;
-  --height-header: 92px;
+  --height-header: 100px;
   --height-catnav: 54px;
 }
 
@@ -104,7 +120,7 @@
   }
   & th { font-weight: 700; color: var(--color-ink); }
   & code {
-    border-radius: 4px;
+    border-radius: 0;
     background: var(--color-surface-alt);
     padding: 0.15em 0.4em;
     font-size: 0.9em;

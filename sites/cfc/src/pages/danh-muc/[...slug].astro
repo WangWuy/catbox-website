@@ -5,8 +5,8 @@
 import type { ImageMetadata } from "astro";
 import { getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
-import Breadcrumb from "@ui/seo/Breadcrumb.astro";
-import ProductCard from "@ui/catalog/ProductCard.astro";
+import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
+import ProductCard from "@ui/primitives/ProductCard.astro";
 
 export async function getStaticPaths() {
   const categories = await getCollection("categories");

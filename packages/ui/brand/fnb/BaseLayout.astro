@@ -1,0 +1,83 @@
+---
+/**
+ * Khung F&B dùng chung cho CFC + Tetta: topbar giá sỉ → header có search →
+ * CategoryNav e-commerce. Site chỉ truyền `brand` + import theme CSS của
+ * mình — mọi thứ còn lại giống hệt nhau.
+ *
+ * Catbox KHÔNG dùng file này (khung studio riêng ở @ui/brand/catbox) — kiểu
+ * FnbBrandId chặn việc truyền brand="catbox" vào đây ngay lúc biên dịch.
+ */
+import { BRANDS, type FnbBrandId } from "@config/brands";
+import SEOHead from "@ui/shared/SEOHead.astro";
+import JsonLd from "@ui/shared/JsonLd.astro";
+import TopbarSwitcher from "@ui/brand/fnb/TopbarSwitcher.astro";
+import MainHeader from "@ui/brand/fnb/MainHeader.astro";
+import CategoryNav from "@ui/brand/fnb/CategoryNav.astro";
+import Footer from "@ui/brand/fnb/Footer.astro";
+import FloatingCta from "@ui/shared/FloatingCta.astro";
+
+interface Props {
+  brand: FnbBrandId;
+  title: string;
+  description: string;
+  ogImage?: string;
+  ogType?: "website" | "article" | "product";
+  noindex?: boolean;
+  /** Schema bổ sung cho trang này (Product, Article, FAQPage…) */
+  jsonLd?: Record<string, unknown>[];
+  fonts?: string;
+}
+
+const {
+  brand,
+  title,
+  description,
+  ogImage,
+  ogType,
+  noindex,
+  jsonLd = [],
+  fonts,
+} = Astro.props;
+
+const b = BRANDS[brand];
+const current = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="vi" data-brand={brand}>
+  <head>
+    <SEOHead {brand} {title} {description} {ogImage} {ogType} {noindex} {fonts} />
+    <JsonLd {brand} extra={jsonLd} />
+    <slot name="head" />
+  </head>
+  <body id="top">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-100 focus:rounded-chip focus:bg-primary focus:px-4 focus:py-2 focus:text-white"
+    >
+      Bỏ qua tới nội dung chính
+    </a>
+
+    <TopbarSwitcher {brand} />
+    <MainHeader {brand} />
+    <CategoryNav {brand} {current} />
+
+    <main id="main" data-pagefind-body>
+      <slot />
+    </main>
+
+    <Footer {brand} />
+    <FloatingCta {brand} />
+
+    <script is:inline define:vars={{ hotline: b.hotline }}>
+      // GA4 events (§12.12) — chỉ gắn listener, không kéo thêm thư viện.
+      document.addEventListener("click", (e) => {
+        const el = (e.target instanceof Element ? e.target : null)?.closest("[data-analytics]");
+        if (!el) return;
+        const name = el.getAttribute("data-analytics");
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: name, hotline });
+      });
+    </script>
+  </body>
+</html>

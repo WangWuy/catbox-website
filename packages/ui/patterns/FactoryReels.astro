@@ -1,0 +1,69 @@
+---
+/**
+ * Khối video trước Footer — MỘT cửa sổ video chạy hết bề ngang site-container
+ * (1280px trừ padding = 1232px), không tiêu đề, không mô tả, không CTA.
+ *
+ * Ở bề ngang này `aspect-video` cho ra khung cao 693px nên giữ được tỉ lệ 16:9
+ * thật, không phải chốt chiều cao cứng — khác với phương án full-bleed, nơi
+ * 16:9 trên màn 1920 sẽ thành 1080px.
+ *
+ * Không nền riêng và không đệm phía TRÊN — khối dính liền khối bên trên. Chỉ
+ * chừa đệm phía DƯỚI để khung video (`primary-ink`) không dán vào Footer
+ * (`primary-deep`), vì hai màu nâu đậm này sát nhau sẽ mất ranh giới.
+ *
+ * Video hiện tại là reel quay DỌC 9:16 lấy từ fanpage nên nằm giữa khung với
+ * viền tối hai bên — `object-contain` giữ nguyên khung hình chứ không cắt.
+ * Khi có video ngang thật, thay file là khung tự lấp đầy, không sửa layout.
+ *
+ * `preload="none"` + poster: chưa bấm play thì không tải byte video nào.
+ * Chưa có video thì rơi về ảnh tĩnh — KHÔNG vẽ nút play giả, vì một nút bấm
+ * không ra gì tệ hơn là không có nút.
+ */
+import type { AssetMap } from "../lib/images";
+import SmartImage from "@ui/primitives/SmartImage.astro";
+
+interface Props {
+  assets: AssetMap;
+  /** Tên gọi cho trình đọc màn hình — không hiển thị trên trang */
+  label: string;
+  /** Video trong public/ — khung 16:9, video dọc sẽ có viền tối hai bên */
+  video?: string;
+  /** Ảnh hiển thị trước khi bấm play (public/) */
+  poster?: string;
+  /** Ảnh tĩnh thay thế khi chưa có video (src/assets qua SmartImage) */
+  image?: string;
+}
+
+const { assets, label, video, poster, image } = Astro.props;
+---
+
+<section class="pb-8 md:pb-12" aria-label={label}>
+  <div class="site-container">
+    {
+      video ? (
+        <video
+          controls
+          preload="none"
+          playsinline
+          poster={poster}
+          class="aspect-video w-full bg-primary-ink object-contain"
+          aria-label={label}
+        >
+          <source src={video} type="video/mp4" />
+          Trình duyệt của bạn không phát được video này.
+        </video>
+      ) : (
+        <SmartImage
+          {assets}
+          src={image}
+          alt={label}
+          width={1232}
+          height={693}
+          ratio="16x9"
+          variant={4}
+          class="aspect-video w-full bg-primary-ink object-cover"
+        />
+      )
+    }
+  </div>
+</section>

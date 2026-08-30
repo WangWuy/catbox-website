@@ -1,0 +1,119 @@
+---
+/**
+ * Island #2 — Bộ lọc catalog theo chất liệu / kiểu dáng / khoảng giá.
+ *
+ * Hai quyết định quan trọng:
+ *
+ * 1. **Toàn bộ sản phẩm render sẵn trong HTML**, filter chỉ toggle `hidden`.
+ *    Crawler thấy đủ hàng dù đang lọc gì (§9, rủi ro "Filter làm hỏng SEO").
+ *
+ * 2. **Trạng thái lọc nằm ở URL query** (`?material=kraft&shape=hop`) và đồng
+ *    bộ qua `history.replaceState` → khách share được link đã lọc, back/forward
+ *    hoạt động, và khi tải lại trang bộ lọc vẫn giữ nguyên.
+ */
+export interface FilterGroup {
+  /** Khoá dùng trong query param và data-attribute của card */
+  key: string;
+  label: string;
+  options: { value: string; label: string; count?: number }[];
+}
+
+interface Props {
+  groups: FilterGroup[];
+}
+
+const { groups } = Astro.props;
+---
+
+<form data-filter class="flex flex-col gap-6" aria-label="Lọc sản phẩm">
+  {
+    groups.map((g) => (
+      <fieldset class="flex flex-col gap-2.5 border-0 p-0">
+        <legend class="mb-1 text-meta font-bold tracking-wide uppercase">{g.label}</legend>
+        {g.options.map((o) => (
+          <label class="flex cursor-pointer items-center gap-2.5 text-sm">
+            <input
+              type="checkbox"
+              name={g.key}
+              value={o.value}
+              class="size-4 accent-[var(--color-primary)]"
+            />
+            <span class="flex-1 text-ink-muted">{o.label}</span>
+            {o.count !== undefined && <span class="text-[12px] text-ink-faint">({o.count})</span>}
+          </label>
+        ))}
+      </fieldset>
+    ))
+  }
+
+  <button
+    type="reset"
+    class="pill h-10 justify-center border border-line px-5 text-meta font-semibold text-ink-muted transition-colors hover:bg-surface-alt"
+  >
+    Xoá bộ lọc
+  </button>
+</form>
+
+<script>
+  // Island #2 — FilterEngine (~2 KB, không framework).
+  const form = document.querySelector<HTMLFormElement>("[data-filter]");
+  const grid = document.querySelector<HTMLElement>("[data-product-grid]");
+  if (form && grid) {
+    const cards = grid.querySelectorAll<HTMLElement>("[data-product]");
+    const counter = document.querySelector<HTMLElement>("[data-result-count]");
+    const empty = document.querySelector<HTMLElement>("[data-empty]");
+    const keys = [...new Set([...form.querySelectorAll("input[name]")].map((i) => (i as HTMLInputElement).name))];
+
+    /** Card khớp khi: với MỖI nhóm được chọn, card có ít nhất 1 giá trị trùng. */
+    const matches = (card: HTMLElement, selected: Record<string, string[]>) =>
+      keys.every((k) => {
+        const want = selected[k];
+        if (!want?.length) return true;
+        const have = (card.dataset[k] ?? "").split(",").filter(Boolean);
+        return want.some((v) => have.includes(v));
+      });
+
+    const apply = (push: boolean) => {
+      const selected: Record<string, string[]> = {};
+      keys.forEach((k) => {
+        selected[k] = [...form.querySelectorAll<HTMLInputElement>(`input[name="${k}"]:checked`)].map(
+          (i) => i.value,
+        );
+      });
+
+      let shown = 0;
+      cards.forEach((card) => {
+        const ok = matches(card, selected);
+        card.hidden = !ok;
+        if (ok) shown++;
+      });
+
+      if (counter) counter.textContent = String(shown);
+      if (empty) empty.hidden = shown > 0;
+
+      if (push) {
+        const params = new URLSearchParams();
+        keys.forEach((k) => selected[k]?.length && params.set(k, selected[k].join(",")));
+        const qs = params.toString();
+        history.replaceState(null, "", qs ? `?${qs}` : location.pathname);
+      }
+    };
+
+    /** Đọc bộ lọc từ URL — cho phép share link đã lọc và giữ state khi F5 */
+    const readUrl = () => {
+      const params = new URLSearchParams(location.search);
+      keys.forEach((k) => {
+        const vals = (params.get(k) ?? "").split(",").filter(Boolean);
+        form.querySelectorAll<HTMLInputElement>(`input[name="${k}"]`).forEach((i) => {
+          i.checked = vals.includes(i.value);
+        });
+      });
+      apply(false);
+    };
+
+    form.addEventListener("change", () => apply(true));
+    form.addEventListener("reset", () => setTimeout(() => apply(true), 0));
+    window.addEventListener("popstate", readUrl);
+    readUrl();
+  }
+</script>

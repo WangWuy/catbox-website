@@ -34,7 +34,12 @@ Khách hàng hiện có nhu cầu triển khai hệ thống **3 Website độc l
 Để tạo nên sức mạnh của một Tập đoàn In Ấn & Bao Bì uy tín nhưng vẫn giữ trọn định vị chuyên biệt của từng brand:
 1. **Topbar Switcher 3 Thương Hiệu:** Đặt ở đầu mọi trang web: `[🌟 CATBOX | 🎁 TETTA | 🥖 CFC]` giúp luân chuyển traffic qua lại.
 2. **Dòng chữ Bảo chứng Thương hiệu:** Ngay dưới Logo Tetta & CFC: *"A Member of Catbox Packaging Ecosystem"*.
-3. **Khối Giới thiệu Hệ sinh thái trước Footer:** Khối 3 cột giới thiệu ngắn về 3 thương hiệu kèm link chéo.
+3. ~~**Khối Giới thiệu Hệ sinh thái trước Footer:** Khối 3 cột giới thiệu ngắn về 3 thương hiệu kèm link chéo.~~
+   > ⚠️ **Đã gỡ khỏi cả 3 site — 30/08/2026, theo quyết định của chủ dự án. Chưa xác nhận lại với khách.**
+   >
+   > **Lý do:** trong khối 3 cột, thẻ của chính brand đang xem chiếm 1/3 diện tích nhưng không mang thông tin mới ("Bạn đang ở đây"), và nội dung 3 thẻ trùng với Topbar Switcher ngay đầu trang (điểm đồng bộ #1).
+   >
+   > **Phần được giữ lại:** mục đích thật của điểm đồng bộ này là **link chéo giữa 3 domain**, nay nằm ở dải "Hệ sinh thái Catbox Packaging" trên thanh cuối Footer — link tuyệt đối sang 2 brand còn lại, anchor text vẫn có mô tả (`Tên brand — tagline`). Xem `packages/ui/brand/fnb/Footer.astro` và `packages/ui/brand/catbox/SiteFooter.astro`.
 4. **DNA Thiết kế Chung:** Cùng sử dụng hệ font hiện đại (Urbanist / Montserrat / Inter), form nhận báo giá thông minh kết nối chung một hệ thống CRM/Email Marketing.
 
 ---

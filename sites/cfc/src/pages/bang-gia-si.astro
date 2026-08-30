@@ -9,8 +9,9 @@
  * trước khi lên production (TECH_STACK_v2 §13.7).
  */
 import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
 import Layout from "../layouts/Layout.astro";
-import Breadcrumb from "@ui/seo/Breadcrumb.astro";
+import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 import { BRANDS } from "@config/brands";
 
 const b = BRANDS.cfc;
@@ -131,9 +132,9 @@ const jsonLd = [
       <a
         href={`tel:${b.hotline.replace(/\D/g, "")}`}
         data-analytics="click_hotline"
-        class="pill h-12 border border-line px-7 text-ink transition-colors hover:bg-surface-alt"
+        class="pill flex h-12 items-center gap-2 border border-line px-7 text-ink transition-colors hover:bg-surface-alt"
       >
-        📞 {b.hotline}
+        <Icon name="lucide:phone" class="size-4" aria-hidden="true" /> {b.hotline}
       </a>
     </div>
 

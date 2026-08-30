@@ -7,3 +7,5 @@ dist/
 .env.*
 !.env.example
 sites/*/public/placeholders/
+# Added by code-review-graph
+.code-review-graph/

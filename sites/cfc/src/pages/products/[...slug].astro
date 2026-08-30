@@ -7,8 +7,9 @@
  * trích dẫn dữ liệu dạng bảng có đơn vị rõ ràng.
  */
 import { getCollection, render } from "astro:content";
+import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
-import Breadcrumb from "@ui/seo/Breadcrumb.astro";
+import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 import { BRANDS } from "@config/brands";
 
 export async function getStaticPaths() {
@@ -101,7 +102,7 @@ if (data.faq.length) {
                 data-image={s.image ?? image}
                 data-label={s.label}
                 aria-pressed={i === 0}
-                class="size-7 rounded-[6px] border border-line outline-offset-2 aria-pressed:outline-2 aria-pressed:outline-ink"
+                class="size-7 rounded-sm border border-line outline-offset-2 aria-pressed:outline-2 aria-pressed:outline-ink"
                 style={`background:${s.color}`}
               >
                 <span class="sr-only">{s.label}</span>
@@ -143,9 +144,9 @@ if (data.faq.length) {
         <a
           href={`tel:${b.hotline.replace(/\D/g, "")}`}
           data-analytics="click_hotline"
-          class="pill h-12 border border-line px-7 text-ink transition-colors hover:bg-surface-alt"
+          class="pill flex h-12 items-center gap-2 border border-line px-7 text-ink transition-colors hover:bg-surface-alt"
         >
-          📞 {b.hotline}
+          <Icon name="lucide:phone" class="size-4" aria-hidden="true" /> {b.hotline}
         </a>
       </div>
 

@@ -1,0 +1,128 @@
+---
+/**
+ * Hero — banner full-width bo góc, có lớp phủ chứa headline + CTA.
+ *
+ * Mockup CFC dùng một banner ảnh lớn (cao 520px, padding 8px hai bên) thay cho
+ * hero 2 cột của mẫu Thái Dương. Giữ đúng mockup, nhưng thêm lớp text đè lên
+ * để trang có H1 thật — banner ảnh trơn thì SEO không có gì để đọc.
+ *
+ * Dải stat (nếu truyền `stats`) nằm ở một lớp absolute riêng NGOÀI khối ảnh
+ * overflow-hidden (không chung container với ảnh) rồi chờm xuống dưới mép
+ * banner — nếu đặt chung container overflow-hidden, phần bo góc/rìa dưới sẽ
+ * cắt mất góc thẻ khi thẻ chờm ra ngoài.
+ */
+import { Icon } from "astro-icon/components";
+import type { AssetMap } from "../lib/images";
+import SmartImage from "@ui/primitives/SmartImage.astro";
+
+export interface HeroStat {
+  icon: string;
+  num: string;
+  label: string;
+}
+
+interface Props {
+  assets: AssetMap;
+  image?: string;
+  eyebrow?: string;
+  /** Phần headline in thường */
+  title: string;
+  /** Phần headline tô màu thương hiệu (thường là tên brand) */
+  titleAccent?: string;
+  subtitle?: string;
+  hashtag?: string;
+  /** Thẻ thống kê đè lên đáy banner, ví dụ số liệu năng lực sản xuất */
+  stats?: HeroStat[];
+}
+
+const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } = Astro.props;
+---
+
+<section class:list={["px-2 pt-2", stats && stats.length > 0 && "pb-12 md:pb-14"]}>
+  <div class="relative">
+    <div class="relative overflow-hidden rounded-panel bg-surface-tint">
+      <SmartImage
+        {assets}
+        src={image}
+        alt=""
+        width={1536}
+        height={1024}
+        ratio="16x10"
+        priority
+        sizes="100vw"
+        class="h-[380px] w-full object-cover md:h-[520px]"
+      />
+
+      <!-- Gradient từ trái sang giúp chữ đọc được trên mọi ảnh khách gửi sau -->
+      <div
+        aria-hidden="true"
+        class="absolute inset-0 bg-gradient-to-r from-black/72 via-black/45 to-transparent"
+      >
+      </div>
+
+      {
+        stats && stats.length > 0 && (
+          <div
+            aria-hidden="true"
+            class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent md:h-40"
+          />
+        )
+      }
+
+      <div class:list={["absolute inset-0 flex items-center", stats && stats.length > 0 && "pb-14 md:pb-16"]}>
+        <div class="site-container">
+          <div class="flex max-w-2xl flex-col items-start gap-5">
+            {
+              eyebrow && (
+                <span class="pill bg-white/15 px-4 py-2 text-tiny tracking-[1.2px] text-white uppercase backdrop-blur-sm">
+                  {eyebrow}
+                </span>
+              )
+            }
+
+            <h1 class="text-3xl leading-[1.08] font-extrabold tracking-tight text-white uppercase md:text-hero">
+              {title}
+              {titleAccent && <span class="text-primary"> {titleAccent}</span>}
+            </h1>
+
+            {
+              subtitle && (
+                <p class="max-w-lg text-body leading-relaxed text-white/85 md:text-base">
+                  {subtitle}
+                </p>
+              )
+            }
+
+            {
+              hashtag && (
+                <p class="text-sm font-semibold text-white/80">
+                  #nhận nhiều <span class="text-cta">{hashtag}</span>
+                </p>
+              )
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {
+      stats && stats.length > 0 && (
+        <div class="absolute inset-x-0 -bottom-12 px-2 md:-bottom-14">
+          <div class="site-container">
+            <div class="grid grid-cols-2 gap-3 lg:grid-cols-5 lg:gap-4">
+              {stats.map((s) => (
+                <div class="flex flex-col items-center gap-1.5 rounded-panel bg-white/95 px-3 py-4 text-center backdrop-blur-sm">
+                  <Icon name={s.icon} class="size-7 text-primary md:size-8" aria-hidden="true" />
+                  <span class="font-display text-lg font-extrabold tracking-tight text-ink md:text-2xl">
+                    {s.num}
+                  </span>
+                  <span class="text-[12px] text-ink-muted md:text-meta">{s.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )
+    }
+  </div>
+</section>

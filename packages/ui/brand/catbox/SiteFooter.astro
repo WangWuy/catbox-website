@@ -1,0 +1,212 @@
+---
+/**
+ * Footer CATBOX — Dark Luxury Studio.
+ *
+ * Khác Footer F&B ở chỗ: nền đã tối sẵn nên không cần đảo màu, bỏ dòng
+ * "thanh toán khi nhận hàng" (chuyện của CFC), và newsletter là catalogue
+ * năng lực chứ không phải bảng giá sỉ.
+ */
+import { Icon } from "astro-icon/components";
+import { BRANDS, POLICY_LINKS, otherBrands } from "@config/brands";
+import BrandLogo from "@ui/brand/catbox/BrandLogo.astro";
+
+interface Props {
+  /** Endpoint Worker nhận form; đổi ở .env khi deploy */
+  formEndpoint?: string;
+}
+
+const { formEndpoint = "/api/subscribe" } = Astro.props;
+const b = BRANDS.catbox;
+
+/** Link chéo sang 2 domain còn lại — kênh internal-link duy nhất còn lại giữa
+ * 3 site sau khi bỏ khối Ecosystem trước footer (REQUIREMENTS §2.3). Dùng
+ * `name — tagline` làm anchor text để link còn ngữ cảnh cho SEO. */
+const siblings = otherBrands("catbox");
+---
+
+<footer class="border-t border-line bg-primary-deep text-ink">
+  <div class="site-container grid gap-14 py-18 lg:grid-cols-[1.25fr_1.1fr_0.95fr]">
+    <!-- Cột 1: pháp nhân + chứng nhận + policy + social -->
+    <div class="flex flex-col gap-5">
+      <div class="flex items-center gap-3">
+        <BrandLogo />
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2.5">
+        {
+          b.certifications.map((c) => (
+            <span class="pill flex items-center gap-1.5 border border-line bg-surface-alt px-3.5 py-2 text-tiny text-ink">
+              <Icon name="lucide:check" class="size-3.5 text-primary" aria-hidden="true" /> {c}
+            </span>
+          ))
+        }
+      </div>
+
+      <p class="text-nav leading-relaxed font-medium text-ink-muted">{b.legalName}</p>
+
+      <ul class="flex flex-col gap-2.5">
+        {
+          POLICY_LINKS.map((p) => (
+            <li>
+              <a href={p.href} class="text-sm text-ink-faint transition-colors hover:text-ink">
+                {p.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="mt-1 flex items-center gap-2.5">
+        {
+          b.social.map((s) => (
+            <a
+              href={s.href}
+              aria-label={s.label}
+              class="grid size-[38px] place-items-center rounded-chip bg-surface-alt text-xs font-bold text-ink transition-colors hover:bg-surface-tint"
+            >
+              {s.label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Cột 2: liên hệ -->
+    <div class="flex flex-col gap-4.5">
+      <h2 class="text-meta font-bold tracking-[1.2px] text-ink uppercase">Liên hệ chúng tôi</h2>
+      {
+        b.contacts.map((c) => (
+          <div class="flex items-start gap-3">
+            <span
+              aria-hidden="true"
+              class="grid size-[34px] flex-none place-items-center rounded-chip bg-surface-alt"
+            >
+              <Icon name={c.icon} class="size-[18px] text-primary" />
+            </span>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-tiny font-semibold tracking-wide text-ink-faint uppercase">
+                {c.label}
+              </span>
+              {c.href ? (
+                <a
+                  href={c.href}
+                  data-analytics={c.label === "Hotline" ? "click_hotline" : undefined}
+                  class="text-nav leading-snug font-semibold text-ink transition-colors hover:text-primary"
+                >
+                  {c.value}
+                </a>
+              ) : (
+                <span class="text-nav leading-snug font-semibold text-ink">{c.value}</span>
+              )}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Cột 3: catalogue năng lực -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-meta font-bold tracking-[1.2px] text-ink uppercase">
+        Đăng ký nhận catalogue năng lực
+      </h2>
+      <p class="text-sm leading-relaxed text-ink-muted">
+        Hồ sơ năng lực sản xuất, bảng chất liệu và case study mới nhất.
+      </p>
+      <form
+        method="post"
+        action={formEndpoint}
+        class="flex flex-col gap-2.5"
+        data-newsletter
+        data-brand="catbox"
+      >
+        <input type="hidden" name="brand" value="catbox" />
+        <!-- Bẫy bot: người thật không bao giờ điền -->
+        <input
+          type="text"
+          name="company_website"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+          class="absolute -left-[9999px] size-px"
+        />
+        <label class="sr-only" for="footer-email">Email của bạn</label>
+        <input
+          id="footer-email"
+          type="email"
+          name="email"
+          required
+          placeholder="Email của bạn"
+          class="h-12 rounded-chip border border-line bg-surface-alt px-4.5 text-nav text-ink outline-none placeholder:text-ink-faint focus-visible:border-primary"
+        />
+        <button
+          type="submit"
+          class="h-12 rounded-chip bg-cta text-body font-bold text-white transition-colors hover:bg-cta-hover"
+        >
+          Gửi
+        </button>
+        <p data-newsletter-msg role="status" class="min-h-5 text-micro text-ink-muted"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="border-t border-line">
+    <div class="site-container flex flex-wrap items-center gap-x-7 gap-y-3 py-4">
+      <span class="text-tiny font-semibold tracking-wide text-ink-faint uppercase">
+        Hệ sinh thái Catbox Packaging
+      </span>
+      {
+        siblings.map((o) => (
+          <a
+            href={o.site}
+            class="flex items-center gap-2 text-meta font-semibold text-ink-muted transition-colors hover:text-primary"
+          >
+            <Icon name={o.icon} class="size-4 flex-none" aria-hidden="true" />
+            {o.name} — {o.tagline}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="border-t border-line">
+    <div class="site-container flex items-center justify-between gap-4 py-5">
+      <p class="text-meta text-ink-faint">
+        © {new Date().getFullYear()} {b.short} — {b.legalName}
+      </p>
+      <a
+        href="#top"
+        aria-label="Lên đầu trang"
+        class="grid size-[42px] flex-none place-items-center rounded-full bg-primary text-[17px] font-bold text-white transition-colors hover:bg-primary-hover"
+      >
+        ↑
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Newsletter: chặn reload, gửi qua fetch. Không JS → form vẫn POST bình thường.
+  document.querySelectorAll<HTMLFormElement>("form[data-newsletter]").forEach((form) => {
+    const msg = form.querySelector<HTMLElement>("[data-newsletter-msg]");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector("button")!;
+      btn.disabled = true;
+      if (msg) msg.textContent = "Đang gửi…";
+      try {
+        const res = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        if (msg) msg.textContent = "Đã ghi nhận. Cảm ơn bạn!";
+        form.reset();
+      } catch {
+        if (msg) msg.textContent = "Gửi chưa được — vui lòng gọi hotline giúp mình.";
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+</script>

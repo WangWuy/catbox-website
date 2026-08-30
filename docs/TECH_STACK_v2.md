@@ -155,7 +155,6 @@ catbox-ecosystem/
 │   │   │   ├── TopbarSwitcher.astro      # 3 brand + 5 cờ ngôn ngữ + hotline
 │   │   │   ├── MainHeader.astro          # Logo + Search + CTA pill
 │   │   │   ├── CategoryNav.astro         # Menu icon + pill khuyến mãi
-│   │   │   ├── EcosystemBlock.astro      # Khối 3 thương hiệu trước footer
 │   │   │   └── Footer.astro              # 3 cột + chứng nhận + newsletter + scroll-top
 │   │   ├── home/
 │   │   │   ├── HeroSection.astro         # 2 cột clean white
@@ -316,7 +315,7 @@ git add . && git commit -m "blog: top 10 hộp quà tết 2027" && git push
 | Ngày | Việc |
 | :---: | :--- |
 | 1 | PNPM workspace + 3 Astro project + Tailwind v4 + 3 file token + Content Collections schema (Zod) |
-| 2 | Shared layout: TopbarSwitcher, MainHeader, CategoryNav, Footer, EcosystemBlock + script sinh placeholder theo brand |
+| 2 | Shared layout: TopbarSwitcher, MainHeader, CategoryNav, Footer + script sinh placeholder theo brand |
 | 3 | SEO core: SEOHead, JsonLd, Breadcrumb, sitemap, robots, `llms.txt` + Worker nhận form → Telegram |
 
 ### Pha 1 — Tetta hoàn chỉnh (Ngày 4–8) — *site mẫu, dựng chuẩn nhất*

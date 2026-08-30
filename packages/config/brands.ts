@@ -8,6 +8,16 @@
 
 export type BrandId = "catbox" | "tetta" | "cfc";
 
+/**
+ * Hai brand dùng chung KHUNG F&B (@ui/brand/fnb): cùng topbar giá sỉ, cùng
+ * CategoryNav e-commerce, chỉ khác token màu và nội dung.
+ *
+ * Catbox cố tình KHÔNG nằm trong nhóm này — site thương hiệu/studio có bộ
+ * khung riêng ở @ui/brand/catbox. Kiểu này để TypeScript chặn ngay việc
+ * truyền brand="catbox" vào component F&B, thay vì đẻ thêm nhánh if.
+ */
+export type FnbBrandId = Extract<BrandId, "tetta" | "cfc">;
+
 export interface BrandContact {
   icon: string;
   label: string;
@@ -15,17 +25,20 @@ export interface BrandContact {
   href?: string;
 }
 
+/** Nhân viên tư vấn bán hàng — hiển thị ở cột 2 Footer, bấm mở Zalo */
+export interface SalesRep {
+  name: string;
+  phone: string;
+}
+
 export interface Brand {
   id: BrandId;
   /** Tên hiển thị ngắn trên Topbar Switcher */
   short: string;
-  emoji: string;
+  /** Tên icon Lucide (astro-icon), ví dụ "lucide:sparkles" */
+  icon: string;
   name: string;
   tagline: string;
-  /** Mô tả 1 dòng dùng ở khối Ecosystem trước footer */
-  ecoDesc: string;
-  /** Nhãn phân loại ở khối Ecosystem */
-  ecoTag: string;
   /** Domain production — mỗi brand một domain riêng */
   domain: string;
   site: string;
@@ -43,7 +56,17 @@ export interface Brand {
   topbarCta: { label: string; href: string };
   certifications: string[];
   contacts: BrandContact[];
+  /** Danh sách sale trực page — Footer cột "Tư vấn bán hàng" */
+  salesReps: SalesRep[];
+  /** Hotline phản ánh dịch vụ — tách khỏi hotline bán hàng */
+  serviceHotlines: string[];
   legalName: string;
+  /** Màu thanh trình duyệt (<meta name="theme-color">). Phải khớp
+   * `--color-theme` trong packages/tokens/<brand>.css — meta tag không đọc
+   * được biến CSS nên buộc phải lặp giá trị ở đây, giữ 2 chỗ này đồng bộ. */
+  themeColor: string;
+  /** Favicon của brand — CFC dùng logo PNG, 2 brand còn lại dùng SVG */
+  favicon: string;
   /** Ngôn ngữ thật sự được dịch (§9: làm thật VI + EN, không để cờ chết) */
   locales: string[];
   defaultLocale: string;
@@ -53,19 +76,30 @@ export interface Brand {
 const LEGAL_NAME = "Công ty TNHH Đầu tư và Thương mại 2T";
 
 const SHARED_CONTACTS: BrandContact[] = [
-  { icon: "🏭", label: "Nhà máy", value: "KCN Đồng Văn, Duy Tiên, Hà Nam" },
-  { icon: "🏢", label: "Văn phòng", value: "Số 12 Nguyễn Trãi, Hà Đông, Hà Nội" },
+  { icon: "lucide:factory", label: "Nhà máy", value: "KCN Đồng Văn, Duy Tiên, Hà Nam" },
+  { icon: "lucide:building-2", label: "Văn phòng", value: "Số 12 Nguyễn Trãi, Hà Đông, Hà Nội" },
 ];
+
+/** ⚠️ TODO: thay bằng danh sách sale thật + số Zalo thật khi khách gửi */
+const SHARED_SALES_REPS: SalesRep[] = [
+  { name: "Tấn Thành", phone: "0986.83.9983" },
+  { name: "Hải Yến", phone: "0915.02.9983" },
+  { name: "Nguyễn Mai", phone: "0902.03.9983" },
+  { name: "Hà Đại", phone: "0565.28.9983" },
+  { name: "Anh Tuấn", phone: "0948.82.9983" },
+  { name: "Mai Thanh", phone: "0915.82.9983" },
+];
+
+/** ⚠️ TODO: khách xác nhận hotline phản ánh dịch vụ */
+const SHARED_SERVICE_HOTLINES = ["0901 52 52 62", "08 9983 9983", "0911 86 2879"];
 
 export const BRANDS: Record<BrandId, Brand> = {
   catbox: {
     id: "catbox",
     short: "CATBOX",
-    emoji: "🌟",
+    icon: "lucide:sparkles",
     name: "CATBOX Packaging",
     tagline: "Bao bì cao cấp",
-    ecoDesc: "Hộp cứng, hộp nắp gài và bao bì thương hiệu cho nhà bán lẻ.",
-    ecoTag: "Anh cả",
     domain: "catbox.vn", // TODO: khách xác nhận domain thật
     site: "https://catbox.vn",
     hotline: "0988.xxx.xxx", // TODO
@@ -77,10 +111,14 @@ export const BRANDS: Record<BrandId, Brand> = {
     topbarCta: { label: "Nhận báo giá", href: "/contact" },
     certifications: ["ISO 9001", "FSC"],
     contacts: [
-      { icon: "✉️", label: "Email", value: "hello@catbox.vn", href: "mailto:hello@catbox.vn" },
-      { icon: "☎️", label: "Hotline", value: "0988.xxx.xxx", href: "tel:+84988000000" },
+      { icon: "lucide:mail", label: "Email", value: "hello@catbox.vn", href: "mailto:hello@catbox.vn" },
+      { icon: "lucide:phone", label: "Hotline", value: "0988.xxx.xxx", href: "tel:+84988000000" },
       ...SHARED_CONTACTS,
     ],
+    salesReps: SHARED_SALES_REPS,
+    serviceHotlines: SHARED_SERVICE_HOTLINES,
+    themeColor: "#0B0B0B", // = --color-theme trong tokens/catbox.css
+    favicon: "/favicon.svg",
     legalName: LEGAL_NAME,
     locales: ["vi", "en"],
     defaultLocale: "vi",
@@ -95,11 +133,9 @@ export const BRANDS: Record<BrandId, Brand> = {
   tetta: {
     id: "tetta",
     short: "TETTA",
-    emoji: "🎁",
+    icon: "lucide:gift",
     name: "TETTA Luxury Packaging",
     tagline: "Hộp quà Tết",
-    ecoDesc: "Set quà tặng doanh nghiệp, hộp quà Tết theo mùa.",
-    ecoTag: "Theo mùa",
     domain: "tetta.vn", // TODO
     site: "https://tetta.vn",
     hotline: "0988.xxx.xxx", // TODO
@@ -112,10 +148,14 @@ export const BRANDS: Record<BrandId, Brand> = {
     topbarCta: { label: "Liên hệ", href: "/contact" },
     certifications: ["FSC", "ISO 9001"],
     contacts: [
-      { icon: "✉️", label: "Email", value: "tetta@2tprint.vn", href: "mailto:tetta@2tprint.vn" },
-      { icon: "☎️", label: "Hotline", value: "0988.xxx.xxx", href: "tel:+84988000000" },
+      { icon: "lucide:mail", label: "Email", value: "tetta@2tprint.vn", href: "mailto:tetta@2tprint.vn" },
+      { icon: "lucide:phone", label: "Hotline", value: "0988.xxx.xxx", href: "tel:+84988000000" },
       ...SHARED_CONTACTS,
     ],
+    salesReps: SHARED_SALES_REPS,
+    serviceHotlines: SHARED_SERVICE_HOTLINES,
+    themeColor: "#8B1E2D", // = --color-theme trong tokens/tetta.css
+    favicon: "/favicon.svg",
     legalName: LEGAL_NAME,
     locales: ["vi", "en"],
     defaultLocale: "vi",
@@ -130,13 +170,9 @@ export const BRANDS: Record<BrandId, Brand> = {
   cfc: {
     id: "cfc",
     short: "CFC",
-    emoji: "🥖",
+    icon: "lucide:croissant",
     name: "CFC Factory",
     tagline: "Bao bì F&B",
-    ecoDesc: "Túi giấy, giấy gói, hộp và cốc cho chuỗi bánh mì và bếp F&B.",
-    // Nhãn khi CFC được nhắc tới TỪ site khác. Khi đang ở chính CFC,
-    // EcosystemBlock tự thay bằng "Đang xem".
-    ecoTag: "Giá sỉ",
     domain: "cfc.vn", // TODO
     site: "https://cfc.vn",
     hotline: "0909.xxx.xxx", // TODO
@@ -144,15 +180,19 @@ export const BRANDS: Record<BrandId, Brand> = {
     email: "cfc@2tprint.vn",
     memberOf: "A Member of Catbox Packaging Ecosystem",
     searchPlaceholder: "Tìm bao bánh mì que, túi Doner, cốc giấy...",
-    promoPill: "🚚 Miễn phí giao hàng từ 2.000 túi",
+    promoPill: "Miễn phí giao hàng từ 2.000 túi",
     headerCta: { label: "Bảng giá sỉ", href: "/bang-gia-si" },
     topbarCta: { label: "Nhận báo giá", href: "/contact" },
     certifications: ["ATVSTP", "HACCP"],
     contacts: [
-      { icon: "✉️", label: "Email", value: "cfc@2tprint.vn", href: "mailto:cfc@2tprint.vn" },
-      { icon: "☎️", label: "Hotline", value: "0909.xxx.xxx", href: "tel:+84909000000" },
+      { icon: "lucide:mail", label: "Email", value: "cfc@2tprint.vn", href: "mailto:cfc@2tprint.vn" },
+      { icon: "lucide:phone", label: "Hotline", value: "0909.xxx.xxx", href: "tel:+84909000000" },
       ...SHARED_CONTACTS,
     ],
+    salesReps: SHARED_SALES_REPS,
+    serviceHotlines: SHARED_SERVICE_HOTLINES,
+    themeColor: "#E67E22", // = --color-theme trong tokens/cfc.css
+    favicon: "/logo.png",
     legalName: LEGAL_NAME,
     locales: ["vi", "en"],
     defaultLocale: "vi",

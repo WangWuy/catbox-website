@@ -1,0 +1,134 @@
+---
+/**
+ * Topbar Switcher — điểm đồng bộ bắt buộc #1 (REQUIREMENTS §2).
+ * [🌟 CATBOX | 🎁 TETTA | 🥖 CFC] + link phụ + hotline + CTA pill.
+ *
+ * Vì 3 site nằm trên 3 domain riêng, link chéo dùng URL tuyệt đối lấy từ
+ * brands.ts — brand đang xem thì render <span>, không phải <a>.
+ *
+ * Bản này chỉ dùng cho khung F&B; Catbox gộp switcher vào
+ * @ui/brand/catbox/SiteHeader.astro nên không có topbar riêng.
+ */
+import { Icon } from "astro-icon/components";
+import { BRAND_ORDER, BRANDS, type FnbBrandId } from "@config/brands";
+import { TOPBAR_LINKS } from "@config/nav";
+
+interface Props {
+  brand: FnbBrandId;
+}
+
+const { brand } = Astro.props;
+const b = BRANDS[brand];
+const links = TOPBAR_LINKS[brand];
+const isCfc = brand === "cfc";
+---
+
+{
+  isCfc ? (
+    <div class="border-b border-line-soft bg-surface-topbar text-ink-muted">
+      <div class="site-container flex h-(--height-topbar) items-center justify-between gap-4">
+        <nav aria-label="Ngôn ngữ & liên kết phụ" class="flex items-center gap-4">
+          <span class="flex items-center gap-1.5 text-micro font-medium">
+            Ngôn Ngữ
+            <span class="flex items-center gap-1" aria-hidden="true">
+              🇻🇳 🇬🇧 🇹🇭 🇰🇷 🇨🇳
+            </span>
+          </span>
+          <span aria-hidden="true" class="hidden h-3.5 w-px bg-line md:inline-block" />
+          {links.map((l) => (
+            <a
+              href={l.href}
+              class="hidden text-micro font-medium transition-colors hover:text-primary md:inline"
+            >
+              {l.label}
+            </a>
+          ))}
+        </nav>
+
+        <div class="flex items-center gap-4">
+          <a
+            href={`tel:${b.hotline.replace(/\D/g, "")}`}
+            data-analytics="click_hotline"
+            class="hidden items-center gap-1.5 text-meta font-normal text-ink sm:flex"
+          >
+            <Icon name="lucide:phone" class="size-3.5" aria-hidden="true" />
+            {b.hotline}
+          </a>
+          <span aria-hidden="true" class="hidden h-3.5 w-px bg-line sm:inline-block" />
+          <a
+            href={b.topbarCta.href}
+            class="flex items-center gap-1.5 text-micro font-semibold transition-colors hover:text-primary"
+          >
+            <span class="flex -space-x-1.5" aria-hidden="true">
+              <span class="size-5 rounded-full border border-surface-alt bg-line-soft" />
+              <span class="size-5 rounded-full border border-surface-alt bg-line-soft" />
+              <span class="size-5 rounded-full border border-surface-alt bg-line-soft" />
+            </span>
+            Liên Hệ
+          </a>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div class="bg-primary-deep text-white/70">
+      <div class="site-container flex h-(--height-topbar) items-center justify-between gap-4">
+        <nav aria-label="Hệ sinh thái Catbox" class="flex items-center gap-4">
+          {
+            BRAND_ORDER.map((id, i) => {
+              const other = BRANDS[id];
+              const active = id === brand;
+              return (
+                <>
+                  {i > 0 && <span aria-hidden="true" class="h-3.5 w-px bg-white/20" />}
+                  {active ? (
+                    <span
+                      aria-current="page"
+                      class="flex items-center gap-1 border-b-2 border-primary pb-[3px] text-micro font-bold text-white"
+                    >
+                      <Icon name={other.icon} class="size-3.5" aria-hidden="true" /> {other.short}
+                    </span>
+                  ) : (
+                    <a
+                      href={other.site}
+                      class="flex items-center gap-1 text-micro font-semibold text-white/50 transition-colors hover:text-white"
+                    >
+                      <Icon name={other.icon} class="size-3.5" aria-hidden="true" />
+                      <span class="hidden sm:inline">{other.short}</span>
+                    </a>
+                  )}
+                </>
+              );
+            })
+          }
+        </nav>
+
+        <div class="flex items-center gap-5">
+          {
+            links.map((l) => (
+              <a
+                href={l.href}
+                class="hidden text-micro font-medium text-white/70 transition-colors hover:text-white md:inline"
+              >
+                {l.label}
+              </a>
+            ))
+          }
+          <span aria-hidden="true" class="hidden h-3.5 w-px bg-white/20 md:inline-block"></span>
+          <a
+            href={`tel:${b.hotline.replace(/\D/g, "")}`}
+            data-analytics="click_hotline"
+            class="hidden text-meta font-bold text-white sm:inline"
+          >
+            ☎ {b.hotline}
+          </a>
+          <a
+            href={b.topbarCta.href}
+            class="pill h-6.5 bg-primary px-4 text-xs text-white transition-colors hover:bg-primary-hover"
+          >
+            {b.topbarCta.label}
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}

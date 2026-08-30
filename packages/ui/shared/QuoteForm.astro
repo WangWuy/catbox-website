@@ -1,0 +1,159 @@
+---
+/**
+ * Island #7 — Form báo giá thông minh, phân loại 3 tệp khách.
+ *
+ * Phân loại ngay ở bước đầu giúp xưởng báo giá đúng ngay lần đầu thay vì hỏi
+ * qua lại: khách chuỗi cần giá bậc số lượng, khách lẻ cần mẫu có sẵn, khách
+ * đại lý cần chiết khấu. Trường hiện ra thay đổi theo lựa chọn.
+ *
+ * Không JS thì form vẫn POST bình thường tới Worker.
+ */
+import type { BrandId } from "@config/brands";
+
+interface Props {
+  brand: BrandId;
+  /** URL Worker nhận form; đổi khi deploy */
+  endpoint?: string;
+  segments: { value: string; label: string; hint: string }[];
+}
+
+const { brand, endpoint = "/api/quote", segments } = Astro.props;
+---
+
+<form
+  method="post"
+  action={endpoint}
+  data-quote-form
+  class="flex flex-col gap-6 rounded-panel border border-line bg-surface p-6 md:p-8"
+>
+  <input type="hidden" name="brand" value={brand} />
+  <input type="hidden" name="kind" value="quote" />
+  <!-- Bẫy bot: người thật không bao giờ điền -->
+  <input
+    type="text"
+    name="company_website"
+    tabindex="-1"
+    autocomplete="off"
+    aria-hidden="true"
+    class="absolute -left-[9999px] size-px"
+  />
+
+  <fieldset class="flex flex-col gap-3 border-0 p-0">
+    <legend class="mb-1 text-meta font-bold tracking-wide uppercase">
+      Bạn thuộc nhóm nào?
+    </legend>
+    <div class="grid gap-3 sm:grid-cols-3">
+      {
+        segments.map((s, i) => (
+          <label class="flex cursor-pointer flex-col gap-1.5 rounded-chip border border-line p-4 transition-colors has-checked:border-primary has-checked:bg-surface-tint">
+            <span class="flex items-center gap-2">
+              <input
+                type="radio"
+                name="segment"
+                value={s.value}
+                required
+                checked={i === 0}
+                class="size-4 accent-[var(--color-primary)]"
+              />
+              <span class="text-sm font-bold">{s.label}</span>
+            </span>
+            <span class="text-micro leading-relaxed text-ink-muted">{s.hint}</span>
+          </label>
+        ))
+      }
+    </div>
+  </fieldset>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <label class="flex flex-col gap-1.5">
+      <span class="text-meta font-semibold">Họ tên <span class="text-cta">*</span></span>
+      <input
+        type="text"
+        name="name"
+        required
+        autocomplete="name"
+        class="h-12 rounded-chip border border-line bg-surface-alt px-4 text-nav outline-none focus-visible:border-primary"
+      />
+    </label>
+
+    <label class="flex flex-col gap-1.5">
+      <span class="text-meta font-semibold">Điện thoại / Zalo <span class="text-cta">*</span></span>
+      <input
+        type="tel"
+        name="phone"
+        required
+        inputmode="tel"
+        autocomplete="tel"
+        pattern="[0-9+\s().-]{9,}"
+        class="h-12 rounded-chip border border-line bg-surface-alt px-4 text-nav outline-none focus-visible:border-primary"
+      />
+    </label>
+
+    <label class="flex flex-col gap-1.5">
+      <span class="text-meta font-semibold">Tên quán / công ty</span>
+      <input
+        type="text"
+        name="company"
+        autocomplete="organization"
+        class="h-12 rounded-chip border border-line bg-surface-alt px-4 text-nav outline-none focus-visible:border-primary"
+      />
+    </label>
+
+    <label class="flex flex-col gap-1.5">
+      <span class="text-meta font-semibold">Số lượng dự kiến</span>
+      <input
+        type="text"
+        name="quantity"
+        placeholder="VD: 5.000 túi/tháng"
+        class="h-12 rounded-chip border border-line bg-surface-alt px-4 text-nav outline-none focus-visible:border-primary"
+      />
+    </label>
+  </div>
+
+  <label class="flex flex-col gap-1.5">
+    <span class="text-meta font-semibold">Mô tả nhu cầu</span>
+    <textarea
+      name="message"
+      rows="4"
+      placeholder="Loại bao bì, kích thước, chất liệu, đã có file thiết kế chưa…"
+      class="rounded-chip border border-line bg-surface-alt p-4 text-nav outline-none focus-visible:border-primary"
+    ></textarea>
+  </label>
+
+  <div class="flex flex-wrap items-center gap-4">
+    <button
+      type="submit"
+      data-analytics="submit_quote"
+      class="pill h-12 justify-center bg-cta px-8 text-body text-white transition-colors hover:bg-cta-hover disabled:opacity-60"
+    >
+      Gửi yêu cầu báo giá
+    </button>
+    <p data-form-msg role="status" class="text-sm text-ink-muted"></p>
+  </div>
+</form>
+
+<script>
+  // Island #7 — validate nhẹ + gửi qua fetch để không reload trang.
+  document.querySelectorAll<HTMLFormElement>("[data-quote-form]").forEach((form) => {
+    const msg = form.querySelector<HTMLElement>("[data-form-msg]");
+    form.addEventListener("submit", async (e) => {
+      if (!form.checkValidity()) return; // để trình duyệt hiện lỗi gốc
+      e.preventDefault();
+      const btn = form.querySelector("button[type=submit]") as HTMLButtonElement;
+      btn.disabled = true;
+      if (msg) msg.textContent = "Đang gửi…";
+      try {
+        const body = new FormData(form);
+        body.set("page", location.pathname);
+        const res = await fetch(form.action, { method: "POST", body, headers: { Accept: "application/json" } });
+        if (!res.ok) throw new Error(String(res.status));
+        if (msg) msg.textContent = "Đã nhận yêu cầu. Xưởng sẽ liên hệ trong 30 phút.";
+        form.reset();
+      } catch {
+        if (msg) msg.textContent = "Gửi chưa được — bạn gọi hotline giúp mình nhé.";
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+</script>

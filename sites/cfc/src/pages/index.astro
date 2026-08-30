@@ -1,27 +1,18 @@
 ---
 /**
- * Trang chủ CFC — dựng theo mockup `cfc/UI mockups cho CFC/CFC Homepage.dc.html`
- * và TETTA_CFC_DESIGN_SPEC §2.
+ * Trang chủ CFC — theo sitemap chính thức.
  *
- * Thứ tự khối: Hero → Danh mục → Bán chạy (tabs) → Đặt hàng thế nào →
- * Promo banner → Lựa chọn của tuần (hotspot) → Vì sao chọn (dome video) →
- * Số liệu → Tin tức → Video xưởng.
+ * Thứ tự khối: Header → Hero (banner + stats nhỏ) → Bán chạy/Sản phẩm các
+ * loại (tabs) → Tin tức/Blog → Video mẫu túi in → Footer.
  */
 import type { ImageMetadata } from "astro";
 import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
-import { BRANDS } from "@config/brands";
 
-import HeroBanner from "@ui/home/HeroBanner.astro";
-import CategoryCards from "@ui/home/CategoryCards.astro";
-import BestsellerGrid from "@ui/home/BestsellerGrid.astro";
-import ProcessSteps from "@ui/home/ProcessSteps.astro";
-import PromoBanner from "@ui/home/PromoBanner.astro";
-import WeeklyChoice from "@ui/home/WeeklyChoice.astro";
-import WhyChooseUs from "@ui/home/WhyChooseUs.astro";
-import StatsBar from "@ui/home/StatsBar.astro";
-import NewsGrid from "@ui/home/NewsGrid.astro";
-import FactoryReels from "@ui/home/FactoryReels.astro";
+import HeroBanner from "@ui/patterns/HeroBanner.astro";
+import BestsellerGrid from "@ui/patterns/BestsellerGrid.astro";
+import NewsGrid from "@ui/patterns/NewsGrid.astro";
+import FactoryReels from "@ui/patterns/FactoryReels.astro";
 
 // Bản đồ ảnh cho SmartImage — glob phải nằm ở site vì đường dẫn tương đối
 // với chính project này (xem packages/ui/lib/images.ts).
@@ -30,13 +21,7 @@ const assets = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true },
 );
 
-const b = BRANDS.cfc;
-
 const products = (await getCollection("products", ({ data }) => !data.draft)).sort(
-  (a, z) => a.data.order - z.data.order,
-);
-
-const categories = (await getCollection("categories")).sort(
   (a, z) => a.data.order - z.data.order,
 );
 
@@ -59,64 +44,11 @@ const toCard = (p: (typeof products)[number]) => ({
 const bestsellers = products.filter((p) => p.data.bestseller).map(toCard);
 const tabs = [...new Set(products.map((p) => p.data.category))];
 
-const steps = [
-  {
-    num: "01",
-    title: "Mua mẫu có sẵn",
-    desc: "Đặt ngay trên Shopee / TikTok Shop, giao trong 48h. Không cần đặt tối thiểu.",
-    cta: { label: "Xem mẫu có sẵn", href: "/products" },
-  },
-  {
-    num: "02",
-    title: "Chưa có thiết kế",
-    desc: "Chọn mẫu có sẵn rồi sửa tên thương hiệu miễn phí, hoặc đặt thiết kế riêng 200.000đ/design.",
-    cta: { label: "Nhận tư vấn thiết kế", href: "/contact" },
-  },
-  {
-    num: "03",
-    title: "Đã có thiết kế",
-    desc: "Gửi file, xưởng in thẳng, không thu phí thiết kế. Hỗ trợ dàn file và canh khuôn bế.",
-    cta: { label: "Gửi file báo giá", href: "/contact" },
-  },
-];
-
-const stats = [
-  { num: "10+", label: "Năm kinh nghiệm" },
-  { num: "5.000+", label: "Khách hàng đối tác" },
-  { num: "20.000+", label: "Đơn hàng thành phẩm" },
-  { num: "100%", label: "Đảm bảo chất lượng", highlight: true },
-];
-
-const promises = [
-  {
-    icon: "🏅",
-    title: "Chất lượng",
-    desc: "Giấy Kraft / MG đạt chuẩn an toàn vệ sinh thực phẩm, tiếp xúc trực tiếp với bánh nóng.",
-  },
-  {
-    icon: "✏️",
-    title: "Thiết kế",
-    desc: "Hỗ trợ dàn file miễn phí, canh khuôn bế và tràn lề trước khi lên máy.",
-  },
-  {
-    icon: "🚚",
-    title: "Dịch vụ",
-    desc: "Giao toàn quốc, hỗ trợ đơn tháng / quý với giá ưu đãi cho chuỗi.",
-  },
-];
-
-// Hotspot trên ảnh showcase — toạ độ % nên thay ảnh thật chỉ cần chỉnh số.
-const hotspots = [
-  { x: 30, y: 38, title: "Túi bánh mì que", desc: "Kraft 40gsm, từ 180đ/túi", href: "/products/tui-banh-mi-que-kraft" },
-  { x: 62, y: 30, title: "Hộp có cửa sổ", desc: "Phủ PE chống thấm dầu", href: "/products/hop-giay-dung-thuc-an" },
-  { x: 48, y: 70, title: "Giấy gói chống dầu", desc: "In mực gốc nước, từ 95đ/tờ", href: "/products/giay-goi-chong-dau" },
-];
-
 const description =
   "Xưởng sản xuất túi giấy, giấy gói và hộp đựng thực phẩm cho chuỗi bánh mì và quán F&B. In theo yêu cầu từ 2.000 túi, giao toàn quốc, đạt chuẩn ATVSTP và HACCP.";
 ---
 
-<Layout title="Xưởng bao bì giấy F&B — In túi giấy, giấy gói, hộp thực phẩm" {description}>
+<Layout title="Trang chủ" {description}>
   <div class="flex flex-col gap-20 pb-20 md:gap-24">
     <HeroBanner
       {assets}
@@ -125,66 +57,27 @@ const description =
       title="Bao bì giấy F&B tận xưởng cùng"
       titleAccent="CFC"
       subtitle="Túi giấy, giấy gói và hộp đựng thực phẩm in theo yêu cầu. Không qua trung gian, báo giá trong 30 phút."
-      primaryCta={{ label: "Nhận báo giá", href: "/contact" }}
-      secondaryCta={{ label: "Xem bảng giá sỉ", href: "/bang-gia-si" }}
       hashtag="ưu đãi cho chuỗi"
-    />
-
-    <CategoryCards
-      {assets}
-      action={{ label: "Xem tất cả →", href: "/products" }}
-      items={categories.map((c) => ({
-        name: c.data.title,
-        sub: c.data.sub,
-        href: `/danh-muc/${c.id}`,
-        image: c.data.image,
-      }))}
+      stats={[
+        { icon: "lucide:package", num: "4.400.000", label: "Chiếc/năm" },
+        { icon: "lucide:folder-open", num: "88.000.000", label: "Chiếc/năm" },
+        { icon: "lucide:shopping-bag", num: "990.000", label: "Chiếc/năm" },
+        { icon: "lucide:gift", num: "6.600.000", label: "Chiếc/năm" },
+        { icon: "lucide:droplet", num: "33.000", label: "Cuộn/năm" },
+      ]}
     />
 
     <BestsellerGrid
       {assets}
       {tabs}
+      title="Bán chạy/ Sản phẩm các loại ..."
       items={bestsellers}
       action={{ label: "Xem tất cả →", href: "/products" }}
     />
 
-    <ProcessSteps
-      title="Đặt hàng thế nào?"
-      subtitle="Ba lối vào tuỳ bạn đã có thiết kế hay chưa"
-      {steps}
-    />
-
-    <PromoBanner
-      {assets}
-      image="products/hop-dung-thuc-an.png"
-      title="Báo Giá In Túi Giấy Theo Yêu Cầu"
-      description="Gửi file thiết kế hoặc chọn mẫu có sẵn — báo giá trong 30 phút."
-      primaryCta={{ label: `📞 ${b.hotline}`, href: `tel:${b.hotline.replace(/\D/g, "")}` }}
-      secondaryCta={{ label: "👁 Xem tất cả", href: "/products" }}
-    />
-
-    <WeeklyChoice
-      {assets}
-      items={bestsellers.slice(0, 3)}
-      showcaseImage="brand/hero-banner.png"
-      showcaseAlt="Bộ bao bì F&B hoàn chỉnh của CFC"
-      {hotspots}
-    />
-
-    <WhyChooseUs
-      {assets}
-      intro="CFC là xưởng sản xuất trực tiếp, không qua trung gian. Toàn bộ khâu in flexo, bế và gấp dán đều thực hiện tại nhà máy ở KCN Đồng Văn, Hà Nam — nên bạn nhận đúng giá xưởng và kiểm soát được tiến độ."
-      {promises}
-      image="products/hop-giay-kraft.png"
-      imageAlt="Hộp giấy Kraft thực phẩm do CFC sản xuất"
-      imageFit="contain"
-      videoLabel="Xem dây chuyền in cuộn và gấp dán túi"
-    />
-
-    <StatsBar {stats} />
-
     <NewsGrid
       {assets}
+      title="Tin Tức/ Blog"
       action={{ label: "Xem thêm tin →", href: "/blog" }}
       items={posts.map((p) => ({
         title: p.data.title,
@@ -194,10 +87,14 @@ const description =
       }))}
     />
 
-    <FactoryReels
-      {assets}
-      headline="Tận mắt xem xưởng CFC vận hành"
-      image="brand/hero-banner.png"
-    />
   </div>
+
+  <!-- Nằm NGOÀI wrapper `gap-20 pb-20`: khối video không lấy khoảng cách
+       chung của trang, dán thẳng vào Footer. -->
+  <FactoryReels
+    {assets}
+    label="Mẫu túi bánh mì que in 4 màu theo yêu cầu"
+    video="/video/tui-banh-mi-in-mau.mp4"
+    poster="/video/tui-banh-mi-in-mau-poster.jpg"
+  />
 </Layout>

@@ -2,10 +2,11 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import icon from 'astro-icon';
 import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 
-const pkg = (name) => fileURLToPath(new URL(`../../packages/${name}`, import.meta.url));
+const pkg = (/** @type {string} */ name) => fileURLToPath(new URL(`../../packages/${name}`, import.meta.url));
 
 // Site tetta — deploy thành project Cloudflare Pages riêng, domain riêng.
 // Đổi `site` khi khách chốt domain thật (TECH_STACK_v2 §13.5).
@@ -14,6 +15,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({ filter: (page) => !page.includes('/404') }),
+    icon(),
   ],
   i18n: {
     locales: ['vi', 'en'],

@@ -4,15 +4,17 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./layout/*": "./layout/*",
-    "./home/*": "./home/*",
-    "./catalog/*": "./catalog/*",
-    "./seo/*": "./seo/*",
-    "./islands/*": "./islands/*"
+    "./primitives/*": "./primitives/*",
+    "./patterns/*": "./patterns/*",
+    "./shared/*": "./shared/*",
+    "./brand/*": "./brand/*",
+    "./lib/*": "./lib/*"
   },
   "dependencies": {
     "@catbox/config": "workspace:*",
     "@catbox/tokens": "workspace:*",
-    "astro": "^5.14.1"
+    "@iconify-json/lucide": "^1.2.0",
+    "astro": "^7.2.9",
+    "astro-icon": "^1.1.5"
   }
 }
