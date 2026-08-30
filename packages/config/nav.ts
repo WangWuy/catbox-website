@@ -53,22 +53,14 @@ export const NAV: Record<BrandId, NavItem[]> = {
     { label: "Liên hệ", href: "/contact", icon: "lucide:phone" },
   ],
 
-  cfc: [
-    { label: "Trang chủ", href: "/", icon: "lucide:croissant" },
-    {
-      label: "Túi Giấy",
-      href: "/danh-muc/tui-giay-thuc-pham",
-      icon: "lucide:shopping-bag",
-      children: [
-        { label: "Túi bánh mì que", href: "/products/tui-banh-mi-que-kraft" },
-        { label: "Túi Doner Kebab", href: "/products/tui-doner-kebab" },
-        { label: "Túi giấy có quai", href: "/products/tui-giay-co-quai" },
-      ],
-    },
-    { label: "Giấy Gói", href: "/danh-muc/giay-goi-thuc-pham", icon: "lucide:file-text" },
-    { label: "Hộp Giấy", href: "/danh-muc/hop-dung-thuc-an", icon: "lucide:package" },
-    { label: "Cốc Giấy & Ống Hút", href: "/danh-muc/coc-giay-ong-hut", icon: "lucide:cup-soda" },
-  ],
+  /**
+   * CFC KHÔNG còn dùng danh sách này: menu dựng từ collection `categories`
+   * (xem `packages/config/categories.ts` + `Layout.astro` của site cfc), để
+   * khách tự thêm đầu mục trong Keystatic là menu tự có — yêu cầu ghi trong
+   * sitemap CFC. Giữ lại một mục "Trang chủ" làm fallback phòng khi chưa có
+   * danh mục nào trong content (site mới clone, content rỗng).
+   */
+  cfc: [{ label: "Trang chủ", href: "/", icon: "lucide:croissant" }],
 };
 
 /** Link phụ trên Topbar (bên cạnh hotline) */
@@ -83,6 +75,6 @@ export const TOPBAR_LINKS: Record<BrandId, { label: string; href: string }[]> = 
   ],
   cfc: [
     { label: "Về Chúng Tôi", href: "/about-us" },
-    { label: "Khuyến Mãi", href: "/bang-gia-si" },
+    { label: "Quy Trình", href: "/quy-trinh" },
   ],
 };

@@ -25,6 +25,14 @@ export interface BrandContact {
   href?: string;
 }
 
+/** Một ô số liệu năng lực ("10+" / "Năm kinh nghiệm") */
+export interface BrandStat {
+  num: string;
+  label: string;
+  /** Tô màu CTA cho con số muốn nhấn */
+  highlight?: boolean;
+}
+
 /** Nhân viên tư vấn bán hàng — hiển thị ở cột 2 Footer, bấm mở Zalo */
 export interface SalesRep {
   name: string;
@@ -55,6 +63,12 @@ export interface Brand {
   /** CTA nhỏ trên Topbar — phải khác headerCta để không lặp chữ hai lần */
   topbarCta: { label: string; href: string };
   certifications: string[];
+  /**
+   * Số liệu năng lực — dùng ở StatsBar (/about-us) và khối cam kết trước form
+   * (/contact). Để ở đây thay vì khai trong từng trang vì hai nơi phải khớp
+   * nhau: số lệch giữa hai trang là mồi GEO sai (xem StatsBar.astro).
+   */
+  stats: BrandStat[];
   contacts: BrandContact[];
   /** Danh sách sale trực page — Footer cột "Tư vấn bán hàng" */
   salesReps: SalesRep[];
@@ -110,6 +124,9 @@ export const BRANDS: Record<BrandId, Brand> = {
     headerCta: { label: "Nhận tư vấn thiết kế", href: "/contact" },
     topbarCta: { label: "Nhận báo giá", href: "/contact" },
     certifications: ["ISO 9001", "FSC"],
+    // TODO(nội dung): khách chưa cung cấp số liệu năng lực cho Catbox — để rỗng
+    // thì khối stats tự ẩn, không bịa số (số sai là mồi GEO sai).
+    stats: [],
     contacts: [
       { icon: "lucide:mail", label: "Email", value: "hello@catbox.vn", href: "mailto:hello@catbox.vn" },
       { icon: "lucide:phone", label: "Hotline", value: "0988.xxx.xxx", href: "tel:+84988000000" },
@@ -147,6 +164,8 @@ export const BRANDS: Record<BrandId, Brand> = {
     headerCta: { label: "Nhận báo giá", href: "/contact" },
     topbarCta: { label: "Liên hệ", href: "/contact" },
     certifications: ["FSC", "ISO 9001"],
+    // TODO(nội dung): khách chưa cung cấp số liệu năng lực cho Tetta.
+    stats: [],
     contacts: [
       { icon: "lucide:mail", label: "Email", value: "tetta@2tprint.vn", href: "mailto:tetta@2tprint.vn" },
       { icon: "lucide:phone", label: "Hotline", value: "0988.xxx.xxx", href: "tel:+84988000000" },
@@ -181,9 +200,15 @@ export const BRANDS: Record<BrandId, Brand> = {
     memberOf: "A Member of Catbox Packaging Ecosystem",
     searchPlaceholder: "Tìm bao bánh mì que, túi Doner, cốc giấy...",
     promoPill: "Miễn phí giao hàng từ 2.000 túi",
-    headerCta: { label: "Bảng giá sỉ", href: "/bang-gia-si" },
+    headerCta: { label: "Liên hệ tư vấn", href: "/contact" },
     topbarCta: { label: "Nhận báo giá", href: "/contact" },
     certifications: ["ATVSTP", "HACCP"],
+    stats: [
+      { num: "10+", label: "Năm kinh nghiệm" },
+      { num: "5.000+", label: "Khách hàng đối tác" },
+      { num: "20.000+", label: "Đơn hàng thành phẩm" },
+      { num: "100%", label: "Đảm bảo chất lượng", highlight: true },
+    ],
     contacts: [
       { icon: "lucide:mail", label: "Email", value: "cfc@2tprint.vn", href: "mailto:cfc@2tprint.vn" },
       { icon: "lucide:phone", label: "Hotline", value: "0909.xxx.xxx", href: "tel:+84909000000" },
