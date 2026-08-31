@@ -64,10 +64,6 @@ export const productSchema = z.object({
   /** Dùng cho filter island — lọc bằng URL query param */
   material: z.array(z.string()).default([]),
   shape: z.array(z.string()).default([]),
-  /** Khoảng giá dạng số để filter; `priceLabel` là thứ hiển thị */
-  priceFrom: z.number().optional(),
-  priceLabel: z.string().optional(),
-  unit: z.string().default("chiếc"),
   moq: z.string().optional(),
   badge: z.string().optional(),
   excerpt: z.string().optional(),
@@ -85,6 +81,13 @@ export const productSchema = z.object({
 
 export const categorySchema = z.object({
   title: z.string(),
+  /**
+   * Tên ngắn để nhét vào câu điều hướng, ví dụ tiêu đề khối trong sidebar
+   * ("LOẠI TÚI GIẤY"). `title` là tên đầy đủ trên hero/menu nên thường quá dài
+   * hoặc có ký tự ghép ("CỐC GIẤY & ỐNG HÚT", "Túi bánh mì / Bao bánh mì") —
+   * ghép thẳng vào câu sẽ lủng củng. Bỏ trống thì fallback về `title`.
+   */
+  navLabel: z.string().optional(),
   /** Phụ đề nhỏ dưới tên danh mục trên CategoryCards */
   sub: z.string().optional(),
   description: z.string().optional(),

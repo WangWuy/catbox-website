@@ -1,6 +1,6 @@
 ---
 /**
- * Island #2 — Bộ lọc catalog theo chất liệu / kiểu dáng / khoảng giá.
+ * Island #2 — Bộ lọc catalog theo chất liệu / kiểu dáng.
  *
  * Hai quyết định quan trọng:
  *
@@ -36,10 +36,12 @@ const { groups } = Astro.props;
               type="checkbox"
               name={g.key}
               value={o.value}
-              class="size-4 accent-[var(--color-primary)]"
+              class="size-(--size-filter-checkbox) accent-(--color-primary)"
             />
             <span class="flex-1 text-ink-muted">{o.label}</span>
-            {o.count !== undefined && <span class="text-[12px] text-ink-faint">({o.count})</span>}
+            {o.count !== undefined && (
+              <span class="text-(length:--text-micro) text-ink-faint">({o.count})</span>
+            )}
           </label>
         ))}
       </fieldset>
@@ -56,12 +58,25 @@ const { groups } = Astro.props;
 
 <script>
   // Island #2 — FilterEngine (~2 KB, không framework).
-  const form = document.querySelector<HTMLFormElement>("[data-filter]");
-  const grid = document.querySelector<HTMLElement>("[data-product-grid]");
-  if (form && grid) {
+  //
+  // BẮT BUỘC bọc trong IIFE: Astro gộp mọi `<script>` inline của một trang vào
+  // CHUNG một scope module, nên `form`/`grid` ở đây va với biến top-level của
+  // island khác trên cùng trang (`Pagination`). Sau minify cả hai cùng thành
+  // `e`, `t`... và cái chạy sau ghi đè cái chạy trước — đã gặp: `form` biến
+  // thành `<nav data-pagination>`, không đọc được checkbox nào nên MỌI sản phẩm
+  // đều khớp bộ lọc.
+  (() => {
+    const form = document.querySelector<HTMLFormElement>("[data-filter]");
+    const grid = document.querySelector<HTMLElement>("[data-product-grid]");
+    if (!form || !grid) return;
+
     const cards = grid.querySelectorAll<HTMLElement>("[data-product]");
-    const counter = document.querySelector<HTMLElement>("[data-result-count]");
     const empty = document.querySelector<HTMLElement>("[data-empty]");
+    // Có phân trang thì việc ẩn/hiện card do Pagination quyết định (nó cắt tập
+    // đã lọc ra từng trang). Filter chỉ đánh dấu card nào KHỚP qua
+    // `data-match`, rồi báo ra sự kiện — nếu tự set `hidden` thì hai bên tranh
+    // nhau cùng một thuộc tính và trang 2 sẽ hiện lẫn card đã bị lọc.
+    const paged = !!document.querySelector("[data-pagination]");
     const keys = [...new Set([...form.querySelectorAll("input[name]")].map((i) => (i as HTMLInputElement).name))];
 
     /** Card khớp khi: với MỖI nhóm được chọn, card có ít nhất 1 giá trị trùng. */
@@ -81,15 +96,25 @@ const { groups } = Astro.props;
         );
       });
 
-      let shown = 0;
+      const shownCards: HTMLElement[] = [];
       cards.forEach((card) => {
         const ok = matches(card, selected);
-        card.hidden = !ok;
-        if (ok) shown++;
+        card.dataset.match = ok ? "1" : "0";
+        // Không phân trang thì filter tự lo việc ẩn/hiện như trước.
+        if (!paged) card.hidden = !ok;
+        if (ok) shownCards.push(card);
       });
 
-      if (counter) counter.textContent = String(shown);
-      if (empty) empty.hidden = shown > 0;
+      if (paged) {
+        // Pagination lắng nghe, tự cắt trang và cập nhật bộ đếm + khối rỗng.
+        grid.dispatchEvent(
+          new CustomEvent("catalog:filtered", { detail: { cards: shownCards }, bubbles: true }),
+        );
+      } else {
+        const counter = document.querySelector<HTMLElement>("[data-result-count]");
+        if (counter) counter.textContent = String(shownCards.length);
+        if (empty) empty.hidden = shownCards.length > 0;
+      }
 
       if (push) {
         const params = new URLSearchParams();
@@ -115,5 +140,5 @@ const { groups } = Astro.props;
     form.addEventListener("reset", () => setTimeout(() => apply(true), 0));
     window.addEventListener("popstate", readUrl);
     readUrl();
-  }
+  })();
 </script>

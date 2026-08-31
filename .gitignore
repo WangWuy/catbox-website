@@ -9,3 +9,5 @@ dist/
 sites/*/public/placeholders/
 # Added by code-review-graph
 .code-review-graph/
+.claude/*.local.json
+

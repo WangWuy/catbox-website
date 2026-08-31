@@ -1,0 +1,159 @@
+---
+/**
+ * CARD TIN TỨC / BLOG — dùng chung cho mọi lưới bài viết của CFC: trang chủ
+ * (`NewsGrid`), /blog, /blog/tag/<slug> và khối "Bài viết liên quan" ở cuối
+ * bài. Trước đây 4 chỗ này chép tay cùng một khối markup nên mỗi lần chỉnh
+ * lại lệch nhau một ít.
+ *
+ * Theo concept CFC: ảnh 16:10 dán thẳng lên nền trang (KHÔNG khung, không
+ * viền), badge ngày đè góc trên trái, tiêu đề đậm căn giữa, mô tả ngắn xám
+ * căn giữa cắt 2 dòng. Badge tự đổi biến thể theo ngày đăng (xem `DateBadge`).
+ *
+ * Tiêu đề và mô tả dùng `text-pretty` (KHÔNG phải `text-balance`): concept muốn
+ * dòng trên dài, dòng dưới ngắn hơn — hình tháp. `text-balance` chia đều độ dài
+ * các dòng nên phá đúng dáng đó, còn `text-pretty` giữ dòng đầu đầy và chỉ kéo
+ * chữ xuống để dòng cuối không trơ trọi một từ. Cả hai có max-width riêng, hẹp
+ * hơn ảnh một chút để chữ không tràn sát mép — nhưng ĐỪNG bóp hẹp thêm: hết chỗ
+ * xoay thì các dòng dài bằng nhau và mất luôn dáng tháp. Hai max-width này có
+ * bản hẹp hơn cho lưới dày, bật bằng prop `dense` — xem chú thích của prop.
+ *
+ * Mô tả còn được cắt bớt bằng JS (`clip`) trước khi render, KHÔNG chỉ dựa vào
+ * `line-clamp`: mô tả trong MDX dài 88–119 ký tự nên luôn lấp đầy cả 2 dòng rồi
+ * mới bị cắt giữa chừng → ra khối chữ vuông, không phải tháp. Cắt sẵn về
+ * `--chars-post-card-excerpt` ký tự thì dòng cuối ngắn hẳn lại. Lưới dày dùng
+ * ngưỡng `-dense` thấp hơn vì card hẹp hơn — xem prop `dense`.
+ *
+ * Tiêu đề dùng thẻ nào là do trang quyết định qua prop `as` — /blog và /tag
+ * đặt card dưới <h1> nên cần <h2>, còn bài liên quan nằm dưới <h2> nên cần
+ * <h3>. Link phủ toàn card bằng `::after` của thẻ <a> trong tiêu đề, nhờ vậy
+ * cả ảnh lẫn mô tả đều bấm được mà DOM chỉ có một link (tốt cho screen reader).
+ */
+import type { AssetMap } from "../lib/images";
+import { numericToken } from "../lib/tokens";
+import SmartImage from "@ui/primitives/SmartImage.astro";
+import DateBadge from "@ui/primitives/DateBadge.astro";
+
+interface Props {
+  assets: AssetMap;
+  title: string;
+  href: string;
+  date: Date;
+  cover?: string;
+  /** Mô tả ngắn — bỏ trống thì card chỉ có tiêu đề (khối bài liên quan) */
+  description?: string;
+  /** Cấp heading của tiêu đề, chọn theo ngữ cảnh trang */
+  as?: "h2" | "h3";
+  /** Đổi biến thể placeholder để các ô trong lưới không giống hệt nhau */
+  variant?: number;
+  /** Ảnh nhỏ hơn ở lưới 3–4 cột dày; mặc định vừa cho lưới 3 cột */
+  width?: number;
+  /**
+   * Bật ở lưới DÀY — 4 cột trang chủ, hoặc 3 cột trong khối hẹp (bài liên quan).
+   * Card ở đó chỉ ~283–293px nên max-width mặc định (38ch/50ch ≈ 323px/425px)
+   * rộng hơn cả card, không bó được gì và chữ tràn sát mép ảnh. `dense` đổi sang
+   * cặp token `*-dense` hẹp hơn để dáng tháp xuất hiện ở mọi lưới.
+   */
+  dense?: boolean;
+  class?: string;
+}
+
+const {
+  assets,
+  title,
+  href,
+  date,
+  cover,
+  description,
+  as: Heading = "h3",
+  variant = 1,
+  width = 600,
+  dense = false,
+  class: className = "",
+} = Astro.props;
+
+const titleWidth = dense
+  ? "max-w-(--width-post-card-title-dense)"
+  : "max-w-(--width-post-card-title)";
+const excerptWidth = dense
+  ? "max-w-(--width-post-card-excerpt-dense)"
+  : "max-w-(--width-post-card-excerpt)";
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+
+/**
+ * Cắt mô tả về tối đa `limit` ký tự tại ranh giới TỪ (không cắt giữa chữ) rồi
+ * thêm "…". Bỏ dấu câu thừa ở đuôi để không ra ", …".
+ *
+ * Ngưỡng lấy từ token `--chars-post-card-excerpt[-dense]` chứ không viết thẳng
+ * ở đây — xem comment của hai token đó trong `base.css` về cách chọn con số và
+ * vì sao lưới dày cần ngưỡng riêng.
+ *
+ * `line-clamp` vẫn giữ nguyên làm lưới an toàn cho mô tả nhiều từ dài.
+ */
+function clip(text: string, limit: number): string {
+  if (text.length <= limit) return text;
+  const cut = text.slice(0, limit).trimEnd();
+  const lastSpace = cut.lastIndexOf(" ");
+  // Chỉ lùi về khoảng trắng nếu không phải lùi quá xa (từ dài bất thường)
+  const atWord = lastSpace > limit * 0.6 ? cut.slice(0, lastSpace) : cut;
+  return `${atWord.replace(/[\s,.;:—-]+$/, "")}…`;
+}
+
+const excerptChars = numericToken(
+  dense ? "chars-post-card-excerpt-dense" : "chars-post-card-excerpt",
+);
+
+const excerpt = description ? clip(description, excerptChars) : undefined;
+---
+
+<article class:list={["group relative flex flex-col", className]}>
+  <div class="relative overflow-hidden bg-surface-tint">
+    <SmartImage
+      {assets}
+      src={cover}
+      alt={title}
+      {width}
+      height={Math.round((width * 10) / 16)}
+      ratio="16x10"
+      {variant}
+      class="aspect-16/10 w-full object-cover transition-transform duration-500 group-hover:scale-(--scale-card-hover)"
+    />
+  </div>
+  {/* Badge nằm NGOÀI div trên, neo vào <article>: nó thò ra ngoài mép trái ảnh
+      (`--offset-date-badge-left` âm) nên đặt bên trong sẽ bị `overflow-hidden`
+      cắt cụt — mà class đó phải giữ để chặn ảnh phóng to lúc hover tràn khung. */}
+  <DateBadge {date} />
+
+  <div
+    class="flex flex-1 flex-col items-center gap-(--space-post-card-gap) pt-(--space-post-card-text) text-center"
+  >
+    {/* Ngày đã hiện ở badge trên ảnh; thẻ <time> ẩn giữ giá trị máy đọc được */}
+    <time datetime={date.toISOString()} class="sr-only">{fmt(date)}</time>
+
+    <Heading
+      class:list={[titleWidth, "text-card-title leading-snug font-bold text-pretty"]}
+    >
+      {/* `after:` phủ link ra toàn card — cả ảnh cũng bấm được */}
+      <a
+        {href}
+        class="transition-colors after:absolute after:inset-0 hover:text-primary"
+      >
+        {title}
+      </a>
+    </Heading>
+
+    {
+      excerpt && (
+        <p
+          class:list={[
+            "clamp-excerpt text-body leading-relaxed text-pretty text-ink-muted",
+            excerptWidth,
+          ]}
+        >
+          {excerpt}
+        </p>
+      )
+    }
+  </div>
+</article>

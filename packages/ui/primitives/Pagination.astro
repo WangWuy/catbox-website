@@ -1,0 +1,186 @@
+---
+/**
+ * Island #3 — Phân trang lưới sản phẩm (~1.5 KB, không framework).
+ *
+ * Ba quyết định quan trọng:
+ *
+ * 1. **Phân trang chạy ở CLIENT, không tách route `/trang/2`.** Toàn bộ sản
+ *    phẩm của danh mục vẫn render sẵn trong HTML — giữ đúng nguyên tắc của
+ *    `ProductFilter` (§9, "Filter làm hỏng SEO"): crawler thấy đủ hàng trong
+ *    một trang duy nhất, không phải đi theo link phân trang mới gom đủ. Tách
+ *    route sẽ chia nhỏ tín hiệu SEO của danh mục và làm bộ lọc client mất
+ *    nghĩa (lọc chỉ thấy 12 sản phẩm của trang hiện tại).
+ *
+ * 2. **Phân trang là lớp NGOÀI bộ lọc.** `ProductFilter` chỉ đánh dấu
+ *    `data-match` rồi phát `catalog:filtered`; chỉ file này set `hidden`. Nếu
+ *    cả hai cùng ghi `hidden` thì sang trang 2 sẽ lòi ra card đã bị lọc bỏ.
+ *    Lọc lại luôn kéo về trang 1 — người dùng vừa đổi điều kiện mà vẫn đứng ở
+ *    trang 5 (nay không còn tồn tại) thì lưới trông như rỗng.
+ *
+ * 3. **Không có JS thì hiện hết sản phẩm.** Khối nút phân trang mặc định
+ *    `hidden`, script bật lên khi chạy được. Trang tĩnh không JS vẫn đọc được
+ *    đủ hàng thay vì bị cắt còn 12 mà không có cách sang trang.
+ */
+import { PRODUCTS_PER_PAGE } from "@config/categories";
+
+interface Props {
+  /** Tổng số sản phẩm — chỉ để quyết định có cần render khối này không */
+  total: number;
+  perPage?: number;
+}
+
+const { total, perPage = PRODUCTS_PER_PAGE } = Astro.props;
+---
+
+{
+  total > perPage && (
+    <nav
+      data-pagination
+      data-per-page={perPage}
+      hidden
+      class="mt-2 flex flex-wrap items-center justify-center gap-2"
+      aria-label="Phân trang danh sách sản phẩm"
+    >
+      <button
+        type="button"
+        data-page-prev
+        aria-label="Trang trước"
+        class="pill size-(--size-page-btn) justify-center border border-line text-(length:--text-page-btn) text-ink-muted transition-colors hover:bg-surface-alt disabled:pointer-events-none disabled:opacity-40"
+      >
+        &#8249;
+      </button>
+
+      {/* Các nút số do script sinh ra: số trang phụ thuộc bộ lọc đang bật nên
+          không thể render sẵn ở build time. */}
+      <div data-page-numbers class="flex flex-wrap items-center gap-2" />
+
+      <button
+        type="button"
+        data-page-next
+        aria-label="Trang sau"
+        class="pill size-(--size-page-btn) justify-center border border-line text-(length:--text-page-btn) text-ink-muted transition-colors hover:bg-surface-alt disabled:pointer-events-none disabled:opacity-40"
+      >
+        &#8250;
+      </button>
+    </nav>
+  )
+}
+
+<script>
+  // Island #3 — Pagination. Xem chú thích đầu file về quan hệ với ProductFilter.
+  //
+  // BẮT BUỘC bọc trong IIFE: Astro gộp mọi `<script>` inline của một trang vào
+  // CHUNG một scope module, nên biến top-level ở đây và ở `ProductFilter` va
+  // nhau — sau minify cả hai đều rút gọn thành `e`, `t`... và cái chạy sau ghi
+  // đè cái chạy trước. Triệu chứng đã gặp: `ProductFilter` đọc checkbox từ
+  // `<nav data-pagination>` thay vì từ `<form>`, không thấy ô nào được tick, và
+  // mọi sản phẩm đều "khớp" bộ lọc.
+  (() => {
+    const nav = document.querySelector<HTMLElement>("[data-pagination]");
+    const grid = document.querySelector<HTMLElement>("[data-product-grid]");
+
+    if (!nav || !grid) return;
+    const numbers = nav.querySelector<HTMLElement>("[data-page-numbers]")!;
+    const prev = nav.querySelector<HTMLButtonElement>("[data-page-prev]")!;
+    const next = nav.querySelector<HTMLButtonElement>("[data-page-next]")!;
+    const counter = document.querySelector<HTMLElement>("[data-result-count]");
+    const rangeEl = document.querySelector<HTMLElement>("[data-result-range]");
+    const empty = document.querySelector<HTMLElement>("[data-empty]");
+    // Luôn có vì `data-per-page` render từ props; `|| 1` chỉ để không bao giờ
+    // chia cho 0 nếu attribute bị mất.
+    const perPage = Number(nav.dataset.perPage) || 1;
+
+    const allCards = [...grid.querySelectorAll<HTMLElement>("[data-product]")];
+
+    /**
+     * Tập card khớp bộ lọc hiện tại.
+     *
+     * Đọc từ `data-match` chứ KHÔNG mặc định lấy toàn bộ: script của
+     * `ProductFilter` nằm trước script này trong HTML nên nó đã chạy xong và
+     * phát `catalog:filtered` từ lúc chưa ai lắng nghe. Nếu khởi động bằng
+     * `allCards` thì mở một link đã lọc sẵn (`?shape=hop`) sẽ hiện đủ 12 card
+     * đầu tiên bất kể bộ lọc — đúng lỗi đã gặp.
+     *
+     * Chưa có filter trên trang thì không card nào có `data-match`, khi đó lấy
+     * toàn bộ.
+     */
+    const readPool = () => {
+      const matched = allCards.filter((c) => c.dataset.match === "1");
+      return allCards.some((c) => c.dataset.match !== undefined) ? matched : allCards;
+    };
+
+    let pool = readPool();
+    let page = 1;
+
+    /** Nút số trang: trạng thái "đang xem" tô đặc, các trang khác chỉ có viền. */
+    const numberBtn = (n: number) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = String(n);
+      b.dataset.page = String(n);
+      const active = n === page;
+      b.className = `pill size-(--size-page-btn) justify-center border text-(length:--text-page-btn) transition-colors ${
+        active
+          ? "border-primary bg-primary text-white"
+          : "border-line text-ink-muted hover:bg-surface-alt"
+      }`;
+      if (active) b.setAttribute("aria-current", "page");
+      return b;
+    };
+
+    const render = () => {
+      const pages = Math.max(1, Math.ceil(pool.length / perPage));
+      page = Math.min(page, pages);
+
+      const start = (page - 1) * perPage;
+      const end = start + perPage;
+
+      // Card ngoài tập đã lọc luôn ẩn; card trong tập chỉ hiện ở lát của trang.
+      const inPool = new Set(pool.slice(start, end));
+      allCards.forEach((c) => {
+        c.hidden = !inPool.has(c);
+      });
+
+      if (counter) counter.textContent = String(pool.length);
+      if (rangeEl) {
+        rangeEl.textContent = pool.length
+          ? `${start + 1}–${Math.min(end, pool.length)}`
+          : "0";
+      }
+      if (empty) empty.hidden = pool.length > 0;
+
+      numbers.replaceChildren(...Array.from({ length: pages }, (_, i) => numberBtn(i + 1)));
+      prev.disabled = page === 1;
+      next.disabled = page === pages;
+      // Chỉ một trang (do lọc còn ít kết quả) thì khối phân trang là nhiễu.
+      nav.hidden = pages <= 1;
+    };
+
+    /** Đổi trang rồi kéo lên đầu lưới — không thì người dùng đang ở cuối trang
+     *  bấm "2" sẽ thấy màn hình đứng yên và tưởng nút hỏng. */
+    const goTo = (n: number) => {
+      page = n;
+      render();
+      grid.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+
+    numbers.addEventListener("click", (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>("[data-page]");
+      if (btn) goTo(Number(btn.dataset.page));
+    });
+    prev.addEventListener("click", () => goTo(Math.max(1, page - 1)));
+    next.addEventListener("click", () =>
+      goTo(Math.min(Math.ceil(pool.length / perPage), page + 1)),
+    );
+
+    // ProductFilter phát sự kiện này sau mỗi lần lọc (kể cả lần đọc URL lúc tải
+    // trang). Đổi bộ lọc = tập kết quả mới → luôn về trang 1.
+    grid.addEventListener("catalog:filtered", (e) => {
+      pool = (e as CustomEvent<{ cards: HTMLElement[] }>).detail.cards;
+      page = 1;
+      render();
+    });
+
+    render();
+  })();
+</script>

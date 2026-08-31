@@ -1,0 +1,90 @@
+---
+/**
+ * Banner đầu trang cho các trang trong (/blog, /products, /danh-muc...).
+ *
+ * Thay cho kiểu "Breadcrumb + h1 phẳng" dùng trước đây: một dải nền màu chạy
+ * hết bề ngang, bên trái là tiêu đề lớn + breadcrumb (breadcrumb nằm DƯỚI tiêu
+ * đề, khác thứ tự cũ), bên phải là ảnh sản phẩm nghiêng nhẹ.
+ *
+ * CỐ Ý không có đoạn mô tả: banner chỉ mang tiêu đề + breadcrumb. Mô tả trang
+ * vẫn đi vào <meta name="description"> qua Layout nên SEO không mất gì.
+ *
+ * Nền dùng `--color-surface-page-hero` (nâu giấy kraft) nên chữ phải là bộ
+ * SÁNG: `--color-ink-on-hero` cho tiêu đề, Breadcrumb nhận `tone="dark"`.
+ * Đừng đổi nền sang màu sáng mà quên đổi lại hai chỗ này.
+ *
+ * Ảnh bên phải cố ý tràn cao hơn dải nền (--overflow-page-hero-image) nên khối
+ * bọc ngoài KHÔNG được `overflow-hidden` — nếu chặn overflow thì ảnh bị cắt
+ * phẳng theo mép dải và mất hẳn hiệu ứng "vật thể đặt trước phông".
+ *
+ * Ảnh nằm trong một khung trắng nghiêng (như tấm ảnh đặt chéo) chứ không thả
+ * trôi trực tiếp trên nền: ảnh sản phẩm của kho hiện đều KHÔNG tách nền
+ * (hasAlpha: no), thả thẳng lên nền tint thì mảng trắng hình chữ nhật của ảnh
+ * lộ ra thành một khối lỗi. Khi nào có ảnh PNG tách nền thì bỏ khung trắng và
+ * `object-contain` là ra đúng kiểu "vật thể trôi" của mockup.
+ *
+ * Ảnh chỉ hiện từ md trở lên: ở mobile bề ngang không đủ cho hai cột, ảnh sẽ
+ * đè lên chữ.
+ */
+import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
+import SmartImage from "@ui/primitives/SmartImage.astro";
+import type { AssetMap } from "../lib/images";
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  title: string;
+  /** Đường dẫn breadcrumb, KHÔNG gồm "Trang chủ" (Breadcrumb tự thêm) */
+  crumbs: Crumb[];
+  /** Ảnh sản phẩm bên phải; cần `assets` đi kèm mới hiện */
+  assets?: AssetMap;
+  image?: string;
+  imageAlt?: string;
+}
+
+const { title, crumbs, assets, image, imageAlt = "" } = Astro.props;
+
+const showImage = !!assets && !!image;
+---
+
+<section class="relative bg-(--color-surface-page-hero)">
+  <div
+    class="site-container relative flex min-h-(--height-page-hero) flex-col justify-center py-10"
+  >
+    <div class:list={["flex flex-col gap-3", showImage && "md:pr-(--width-page-hero-image)"]}>
+      <h1
+        class="text-3xl font-extrabold tracking-tight text-balance text-(--color-ink-on-hero) md:text-(length:--text-page-hero-title)"
+      >
+        {title}
+      </h1>
+
+      <Breadcrumb items={crumbs} bare tone="dark" />
+    </div>
+
+    {
+      showImage && (
+        <div
+          aria-hidden={imageAlt === "" ? "true" : undefined}
+          class="pointer-events-none absolute end-(--offset-page-hero-image-right) -top-(--overflow-page-hero-image) -bottom-(--overflow-page-hero-image) hidden w-(--width-page-hero-image) items-center justify-end md:flex"
+        >
+          <div class="w-full rotate-(--rotate-page-hero-image) overflow-hidden rounded-panel bg-white shadow-(--shadow-page-hero-image)">
+            <SmartImage
+              assets={assets!}
+              src={image}
+              alt={imageAlt}
+              width={520}
+              height={390}
+              ratio="4x3"
+              priority
+              sizes="(min-width: 768px) 260px, 0px"
+              class="aspect-(--aspect-page-hero-image) w-full object-cover"
+            />
+          </div>
+        </div>
+      )
+    }
+  </div>
+</section>

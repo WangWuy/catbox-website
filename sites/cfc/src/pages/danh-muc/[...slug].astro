@@ -1,13 +1,29 @@
 ---
 /**
  * Trang danh mục — lọc sẵn sản phẩm theo category, kèm nội dung MDX mô tả nhóm.
+ *
+ * Bố cục theo mockup trang danh mục (sidebar bộ lọc trái + lưới 3 cột + phân
+ * trang): dùng chung `CatalogLayout` với `/products` để hai trang cùng là danh
+ * sách sản phẩm thì trông như một, chỉ khác tập dữ liệu và widget sidebar.
+ *
+ * Bộ lọc ở đây chỉ dựng từ sản phẩm CỦA NHÁNH này, không phải toàn kho: đưa
+ * lựa chọn "Túi có quai" vào trang mà cả nhánh không có cái nào thì bấm vào ra
+ * lưới rỗng.
  */
 import type { ImageMetadata } from "astro";
 import { getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
-import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
+import PageHero from "@ui/patterns/PageHero.astro";
+import CatalogLayout from "@ui/patterns/CatalogLayout.astro";
 import ProductCard from "@ui/primitives/ProductCard.astro";
-import { categoryTitle, categoryTrail, descendantSlugs } from "@config/categories";
+import type { FilterGroup } from "@ui/primitives/ProductFilter.astro";
+import {
+  categoryHref,
+  categoryTitle,
+  categoryTrail,
+  descendantSlugs,
+  normalizeSlug,
+} from "@config/categories";
 
 export async function getStaticPaths() {
   const categories = await getCollection("categories");
@@ -25,6 +41,19 @@ export async function getStaticPaths() {
         category: c,
         // Đường gốc → danh mục hiện tại, cho breadcrumb nhiều tầng.
         trail: categoryTrail(categories, c.id),
+        // Danh mục con TRỰC TIẾP — widget điều hướng trong sidebar, giống cột
+        // trái của mockup. Chỉ một tầng: cả nhánh sâu 3 tầng đổ ra một danh
+        // sách phẳng thì không còn đọc được là con của ai.
+        children: live
+          .filter((k) => k.data.parent && normalizeSlug(k.data.parent) === normalizeSlug(c.id))
+          .sort((a, z) => a.data.order - z.data.order)
+          .map((k) => ({
+            label: k.data.title,
+            href: categoryHref(k.id),
+            count: products.filter((p) =>
+              new Set(descendantSlugs(categories, k.id)).has(p.data.category),
+            ).length,
+          })),
         items: products
           .filter((p) => branch.has(p.data.category))
           .sort((a, z) => a.data.order - z.data.order)
@@ -39,11 +68,55 @@ const assets = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true },
 );
 
-const { category, items, trail } = Astro.props;
+const { category, items, trail, children } = Astro.props;
 const { data } = category;
 const { Content } = await render(category);
 
 const description = data.seoDescription ?? data.description ?? data.title;
+
+/**
+ * Tiêu đề khối điều hướng trong sidebar. Nói theo mặt hàng khách đang xem
+ * ("LOẠI TÚI GIẤY") thay vì thuật ngữ cấu trúc dữ liệu ("Danh mục con") — khách
+ * mua bao bì không nghĩ theo cây danh mục của CMS.
+ */
+const childrenHeading = `Loại ${data.navLabel ?? data.title}`;
+
+const MATERIAL_LABEL: Record<string, string> = {
+  kraft: "Giấy Kraft",
+  "mg-trang": "Giấy MG trắng",
+};
+const SHAPE_LABEL: Record<string, string> = {
+  "tui-det": "Túi dẹt",
+  "tui-quai": "Túi có quai",
+  hop: "Hộp giấy",
+  "giay-goi": "Giấy gói",
+};
+
+/** Chỉ giữ lựa chọn có hàng trong nhánh này — xem chú thích đầu file. */
+const optionsFor = (
+  labels: Record<string, string>,
+  valuesOf: (p: (typeof items)[number]) => string[],
+) =>
+  Object.entries(labels)
+    .map(([value, label]) => ({
+      value,
+      label,
+      count: items.filter((p) => valuesOf(p).includes(value)).length,
+    }))
+    .filter((o) => o.count > 0);
+
+const groups: FilterGroup[] = [
+  { key: "material", label: "Chất liệu", options: optionsFor(MATERIAL_LABEL, (p) => p.data.material) },
+  { key: "shape", label: "Kiểu dáng", options: optionsFor(SHAPE_LABEL, (p) => p.data.shape) },
+].filter(
+  (g) =>
+    // Nhóm chỉ còn 1 lựa chọn thì không lọc được gì (bấm vào vẫn ra nguyên lưới).
+    g.options.length > 1 &&
+    // Và lựa chọn phải thực sự CHIA được tập sản phẩm: một danh mục 1 sản phẩm
+    // vừa Kraft vừa MG trắng cho ra 2 lựa chọn, nhưng tick cái nào cũng hiện lại
+    // đúng sản phẩm đó — sidebar khi ấy chỉ là nhiễu.
+    g.options.some((o) => o.count < items.length),
+);
 
 const jsonLd = [
   {
@@ -65,8 +138,9 @@ const jsonLd = [
 ---
 
 <Layout title={data.title} {description} {jsonLd}>
-  <Breadcrumb
-    items={[
+  <PageHero
+    title={data.title}
+    crumbs={[
       { label: "Sản phẩm", href: "/products" },
       // Tổ tiên có link, chính nó thì không (đang đứng ở đây).
       ...trail.map((c, i) => ({
@@ -74,38 +148,52 @@ const jsonLd = [
         href: i < trail.length - 1 ? c.href : undefined,
       })),
     ]}
+    {assets}
+    image={data.image ?? "products/hop-giay-kraft.png"}
   />
 
-  <div class="site-container pb-16">
-    <h1 class="mb-2 text-3xl font-extrabold tracking-tight uppercase md:text-section">
-      {data.title}
-    </h1>
-    {data.sub && <p class="mb-6 text-ink-muted">{data.sub}</p>}
+  {
+    items.length > 0 ? (
+      <CatalogLayout {groups} total={items.length} columns={3}>
+        {children.length > 0 && (
+          <nav slot="sidebar-extra" class="mt-8" aria-label={childrenHeading}>
+            <h2 class="mb-4 text-meta font-bold tracking-wide uppercase">{childrenHeading}</h2>
+            <ul class="flex flex-col">
+              {children.map((k) => (
+                <li>
+                  <a
+                    href={k.href}
+                    class="flex items-center justify-between gap-2 border-b border-line py-2.5 text-sm text-ink-muted transition-colors hover:text-primary"
+                  >
+                    <span>{k.label}</span>
+                    <span class="text-(length:--text-micro) text-ink-faint">({k.count})</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
 
-    <div class="prose-catbox mb-10">
-      <Content />
-    </div>
-
-    {
-      items.length > 0 ? (
-        <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {items.map((p, i) => (
-            <ProductCard
-              {assets}
-              title={p.data.title}
-              category={p.categoryLabel}
-              href={`/products/${p.id}`}
-              image={p.data.image}
-              badge={p.data.badge}
-              priceLabel={p.data.priceLabel}
-              unit={p.data.unit}
-              swatches={p.data.swatches}
-              swatchNote="Kraft / MG"
-              variant={i + 1}
-            />
-          ))}
-        </div>
-      ) : (
+        {items.map((p, i) => (
+          <ProductCard
+            {assets}
+            title={p.data.title}
+            category={p.categoryLabel}
+            href={`/products/${p.id}`}
+            image={p.data.image}
+            badge={p.data.badge}
+            swatches={p.data.swatches}
+            swatchNote="Kraft / MG"
+            variant={i + 1}
+            filterData={{
+              material: p.data.material.join(","),
+              shape: p.data.shape.join(","),
+            }}
+          />
+        ))}
+      </CatalogLayout>
+    ) : (
+      <div class="site-container pt-10 pb-16">
         <p class="rounded-panel bg-surface-alt p-8 text-center text-ink-muted">
           Nhóm sản phẩm này đang được cập nhật.{" "}
           <a href="/contact" class="font-semibold text-primary">
@@ -113,7 +201,16 @@ const jsonLd = [
           </a>
           .
         </p>
-      )
-    }
+      </div>
+    )
+  }
+
+  {/* Mô tả nhóm đặt DƯỚI lưới (như trang danh mục tham chiếu): khách vào đây để
+      xem hàng trước, đoạn văn SEO đọc sau. Trước đây khối này nằm trên lưới và
+      đẩy sản phẩm xuống quá sâu. */}
+  <div class="site-container pb-16">
+    <div class="prose-catbox max-w-none border-t border-line pt-10">
+      <Content />
+    </div>
   </div>
 </Layout>

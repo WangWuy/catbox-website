@@ -1,0 +1,95 @@
+---
+/**
+ * Bố cục trang catalog — sidebar bộ lọc bên TRÁI + lưới sản phẩm bên phải,
+ * theo mockup trang danh mục (lygiaythaiduong.com/product-category/...).
+ *
+ * Dùng chung cho `/products` và `/danh-muc/<slug>`: trước đây `/products` tự
+ * viết bố cục hai cột còn `/danh-muc` chỉ có lưới trơ, nên hai trang cùng là
+ * "danh sách sản phẩm" mà nhìn khác hẳn nhau.
+ *
+ * Component chỉ dựng KHUNG; sản phẩm truyền vào qua slot mặc định để trang gọi
+ * tự quyết định card hiển thị gì. Sidebar nhận thêm slot `sidebar-extra` cho
+ * các widget riêng của từng trang (danh mục con, banner tư vấn...).
+ *
+ * Ở mobile sidebar thành khối <details> gập lại: bộ lọc 3–4 nhóm mở sẵn sẽ đẩy
+ * sản phẩm xuống dưới màn hình đầu tiên, khách phải cuộn qua bộ lọc mới thấy
+ * hàng.
+ */
+import ProductFilter, { type FilterGroup } from "@ui/primitives/ProductFilter.astro";
+import Pagination from "@ui/primitives/Pagination.astro";
+import { PRODUCTS_PER_PAGE } from "@config/categories";
+
+interface Props {
+  groups: FilterGroup[];
+  /** Tổng số sản phẩm render trong lưới — cho bộ đếm và phân trang */
+  total: number;
+  perPage?: number;
+  /** Số cột lưới ở breakpoint lớn nhất; mockup danh mục dùng 3 */
+  columns?: 3 | 4;
+}
+
+const { groups, total, perPage = PRODUCTS_PER_PAGE, columns = 3 } = Astro.props;
+
+const gridCols =
+  columns === 4
+    ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+    : "grid-cols-2 md:grid-cols-3";
+
+const hasFilters = groups.length > 0;
+---
+
+<div
+  class:list={[
+    "site-container gap-(--space-catalog-gutter) pt-10 pb-16",
+    hasFilters
+      ? "grid lg:grid-cols-[var(--width-catalog-sidebar)_1fr]"
+      : "flex flex-col",
+  ]}
+>
+  {
+    hasFilters && (
+      <aside class="lg:sticky lg:top-(--offset-catalog-sidebar-sticky) lg:self-start">
+        {/* Tên trang đã nằm ở PageHero — ở đây chỉ là nhãn của khối lọc, dùng
+            h2 để không có hai h1 trên cùng một trang. */}
+        <details
+          open
+          class="group border-b border-line pb-4 lg:border-0 lg:pb-0 [&[open]>summary_.chev]:rotate-180"
+        >
+          <summary class="flex cursor-pointer list-none items-center justify-between py-2 lg:pointer-events-none lg:py-0">
+            <h2 class="text-2xl font-extrabold tracking-tight uppercase">Bộ lọc</h2>
+            <span aria-hidden="true" class="chev text-(length:--text-caret) transition-transform lg:hidden">
+              &#9660;
+            </span>
+          </summary>
+
+          <div class="pt-5 lg:pt-6">
+            <ProductFilter {groups} />
+          </div>
+        </details>
+
+        <slot name="sidebar-extra" />
+      </aside>
+    )
+  }
+
+  <div class="flex flex-col gap-5">
+    {/* Thanh trạng thái trên lưới — "Hiển thị 1–12 của 26 sản phẩm" như mockup.
+        Cả hai con số do island cập nhật; giá trị render sẵn là trạng thái chưa
+        lọc, để trang không JS vẫn đọc được câu đúng. */}
+    <p class="text-sm text-ink-muted">
+      Hiển thị <strong data-result-range class="text-ink">{Math.min(perPage, total) === 0 ? "0" : `1–${Math.min(perPage, total)}`}</strong>
+      của <strong data-result-count class="text-ink">{total}</strong> sản phẩm
+    </p>
+
+    <div class={`grid gap-4 ${gridCols}`} data-product-grid>
+      <slot />
+    </div>
+
+    <p data-empty hidden class="py-12 text-center text-ink-muted">
+      Không có sản phẩm nào khớp bộ lọc. Thử bỏ bớt điều kiện, hoặc
+      <a href="/contact" class="font-semibold text-primary">gửi yêu cầu riêng</a>.
+    </p>
+
+    <Pagination {total} {perPage} />
+  </div>
+</div>

@@ -33,6 +33,7 @@
   --text-label: 0.84375rem;   /* 13.5px — nhãn tab, nút pill */
   --text-micro: 0.78125rem;   /* 12.5px — topbar, chip khuyến mãi */
   --text-tiny:  0.71875rem;   /* 11.5px — eyebrow, ngày tháng */
+  --text-promo-pill: 0.6875rem; /* 11px — pill khuyến mãi "Miễn phí giao hàng..." trong CategoryNav */
   --text-caret: 0.625rem;     /* 10px — mũi tên ▼ mở dropdown CategoryNav */
 
   /* Cỡ chữ tiêu đề phụ trong panel (tên card "Dây chuyền Offset", tên bước
@@ -49,12 +50,65 @@
   --height-rule-accent: 3px;
 
   /* Badge ngày đè lên góc trên trái thumbnail tin tức (concept CFC): số ngày
-   * lớn trên, tháng nhỏ dưới, trong khung vuông nền primary. */
-  --text-date-badge-day: 0.9375rem;   /* 15px — số ngày */
+   * lớn trên, tháng nhỏ dưới, trong khung vuông.
+   * Hai biến thể: bài đăng HÔM NAY tô đặc nền primary, bài cũ viền primary nền
+   * trắng — xem `DateBadge.astro`. */
+  --text-date-badge-day: 0.9375rem; /* 15px — số ngày */
+  /* Tháng phải nhỏ hơn hẳn số ngày để mắt bắt vào con số trước, tháng chỉ là
+   * phần phụ chú bên dưới. Dải dùng được rất hẹp: dưới 8px thì "Th8" nhoè khi
+   * render trên màn hình thường, trên 9px thì hết tương phản với số ngày. */
   --text-date-badge-month: 0.5625rem; /* 9px — "Th6" */
   --size-date-badge: 38px;
-  /* Khoảng cách từ mép ảnh tới badge */
+  /* Khoảng cách từ mép TRÊN của ảnh xuống badge */
   --offset-date-badge: 10px;
+  /* Badge thò RA NGOÀI mép trái ảnh (giá trị âm) để phá thế "dán phẳng" trong
+   * khung — mắt bắt được badge ngay cả khi ảnh nền cùng tông. 4px là mức tối đa
+   * nên dùng: thò xa hơn thì badge trông rời khỏi card, và ở lưới nhiều cột
+   * phần thò ra bắt đầu ăn vào `gap` giữa các card.
+   * Vì thò ra ngoài nên badge KHÔNG được nằm trong khung `overflow-hidden` bọc
+   * ảnh (khung đó cần overflow để chặn ảnh phóng to lúc hover) — trong
+   * `PostCard` badge neo vào <article> ở ngoài, xem chú thích ở đó. */
+  --offset-date-badge-left: -4px;
+  /* Bề dày viền badge biến thể "bài cũ" (biến thể solid không có viền).
+   * Ở khung 38px thì 2px là mức dày nhất còn giữ được nét thanh — dày hơn nữa
+   * viền bắt đầu lấn vào khoảng trống quanh chữ và badge trông nặng. */
+  --width-date-badge-border: 2px;
+
+  /* Card tin tức/blog (concept CFC): ảnh dán thẳng lên nền trang, không khung,
+   * chữ căn giữa bên dưới. */
+  --space-post-card-gap: 0.625rem;    /* 10px — ảnh → tiêu đề → mô tả */
+  --space-post-card-text: 1rem;       /* 16px — lề trên khối chữ dưới ảnh */
+  /* Bề ngang tối đa của tiêu đề card — hẹp hơn ảnh một chút để tiêu đề dài ngắt
+   * thành tháp thay vì tràn sát mép rồi bỏ lại dòng cuối cụt ngủn. */
+  --width-post-card-title: 38ch;
+  /* Số dòng tối đa của mô tả ngắn trước khi cắt "…" */
+  --lines-post-card-excerpt: 2;
+  /* Bề ngang tối đa của mô tả ngắn. Để gần bằng bề ngang ảnh chứ ĐỪNG bóp hẹp:
+   * hẹp quá thì trình duyệt hết chỗ xoay, hai dòng buộc phải dài bằng nhau và
+   * mất dáng tháp (dòng trên dài, dòng dưới ngắn) của concept — ngược hẳn ý đồ.
+   * Dáng tháp do `text-pretty` lo, không phải do max-width. */
+  --width-post-card-excerpt: 50ch;
+  /* Cùng vai trò với hai token trên nhưng cho card ở lưới DÀY (4 cột trang chủ,
+   * 3 cột trong khối bài liên quan hẹp). Ở đó card chỉ ~283–293px, còn 38ch/50ch
+   * quy ra ~323px/~425px — rộng hơn cả card nên không bó được gì, chữ tràn sát
+   * mép ảnh và mất dáng tháp; chỉ lưới 3 cột full-width (~395px) mới chạm tới.
+   * Đặt riêng thay vì hạ token gốc: hạ chung sẽ bóp luôn lưới 3 cột và làm hai
+   * dòng dài bằng nhau — đúng cái mà comment trên cảnh báo.
+   * Chọn theo bề rộng card thật: 30ch ≈ 255px, 34ch ≈ 289px. */
+  --width-post-card-title-dense: 30ch;
+  --width-post-card-excerpt-dense: 34ch;
+  /* Số ký tự giữ lại của mô tả ngắn trước khi cắt "…" (xem `clip()` trong
+   * `PostCard.astro`). Phải có bản `-dense` riêng vì dáng tháp phụ thuộc TỈ LỆ
+   * giữa số ký tự và bề rộng card, mà bề rộng card hai lưới lệch nhau nhiều:
+   * ~395px ở /blog so với ~293px ở lưới dày. Cùng 85 ký tự thì ở card rộng dòng
+   * cuối ngắn hẳn (đúng dáng tháp), còn ở card hẹp hai dòng gần đầy bằng nhau
+   * nên ra khối chữ vuông. Ngưỡng dense chọn theo số ký tự lọt một dòng ở mỗi
+   * bề rộng (~63 so với ~47) để dòng cuối chiếm cùng một tỉ lệ ở cả hai nơi.
+   * Mô tả thật của các bài hiện dài 88–119 ký tự nên luôn chạm cả hai ngưỡng. */
+  --chars-post-card-excerpt: 85;
+  --chars-post-card-excerpt-dense: 68;
+  /* Phóng ảnh khi rê chuột vào card */
+  --scale-card-hover: 1.03;
 
   /* Khung tròn chứa icon nhỏ (Zalo, hotline...) ở Footer — đặt tên theo vai trò
    * thay vì rải `size-[22px]` từng chỗ, để đổi một chỗ là đổi toàn hệ. */
@@ -72,6 +126,36 @@
   /* Bề dày đường nối dọc giữa các tầng của cây quy trình */
   --width-flow-connector: 2px;
 
+  /* Banner đầu trang trong (PageHero) — dải nền màu chạy hết bề ngang, chứa
+   * tiêu đề lớn + breadcrumb bên trái, ảnh sản phẩm nghiêng bên phải.
+   * Thay cho kiểu "Breadcrumb + h1 phẳng" trước đây ở /blog, /products,
+   * /danh-muc — xem `packages/ui/patterns/PageHero.astro`. */
+  --height-page-hero: 220px;
+  /* Bề ngang khối ảnh bên phải. Ảnh tràn CAO hơn dải nền (xem
+   * --overflow-page-hero-image) nên khối này không dùng height, chỉ neo mép. */
+  --width-page-hero-image: 260px;
+  /* Tỉ lệ khung ảnh. Nằm ngang (không vuông) vì khung còn bị XOAY: một khung
+   * vuông 260px sau khi nghiêng có hộp bao cao hơn hẳn dải nền 220px nên thò
+   * xuống che mất phần đầu lưới nội dung bên dưới. */
+  --aspect-page-hero-image: 4 / 3;
+  /* Ảnh nhô lên trên và thò xuống dưới mép dải nền, tạo cảm giác vật thể đặt
+   * trước phông thay vì dán phẳng vào nền. Giữ ở mức nhỏ: ảnh sản phẩm thường
+   * có nền trắng (không tách nền), thò ra nhiều thì mảng trắng của ảnh lộ hẳn
+   * ra ngoài dải nền tint và trông như một khối lỗi. */
+  --overflow-page-hero-image: 12px;
+  /* Độ nghiêng của ảnh sản phẩm (mockup: ly giấy nghiêng nhẹ sang phải) */
+  --rotate-page-hero-image: 12deg;
+  /* Đổ bóng cho khung ảnh nghiêng — tách khung khỏi nền tint cùng tông sáng.
+   * Nghiêng nên bóng phải toả đều, không lệch theo một hướng. */
+  --shadow-page-hero-image: 0 10px 30px rgb(0 0 0 / 0.16);
+  /* Khoảng cách từ mép phải khối nội dung tới ảnh — giữ ảnh không đè lên chữ
+   * ở màn hình hẹp vừa (lg), nơi hai bên gần chạm nhau nhất. */
+  --offset-page-hero-image-right: 2rem;
+  /* Tiêu đề banner: lớn hơn --text-section (nhãn của một khối) vì đứng một
+   * mình đầu trang, nhưng nhỏ hơn --text-hero của banner ảnh trang chủ. */
+  --text-page-hero-title: 3rem; /* 48px */
+  --text-page-hero-title--line-height: 1.1;
+
   /* Chiều cao các thanh cố định (theo mockup) */
   --height-topbar: 40px;
   --height-header: 100px;
@@ -87,6 +171,23 @@
   --space-dropdown-item-x: 0.75rem;
   /* Thụt lề thêm cho mỗi tầng con (tầng 3 của cây danh mục) trong dropdown */
   --indent-dropdown-child: 0.75rem;
+
+  /* --- Trang catalog (/products, /danh-muc/<slug>) ----------------------- *
+   * Bố cục hai cột: sidebar bộ lọc bên TRÁI + lưới sản phẩm bên phải. Dùng
+   * chung một bộ token cho cả hai trang để hai nơi không lệch nhau — trước đây
+   * /products tự viết `lg:grid-cols-[240px_1fr]` nên /danh-muc muốn giống phải
+   * chép lại con số. */
+  --width-catalog-sidebar: 240px;
+  /* Khoảng cách giữa sidebar và cột nội dung */
+  --space-catalog-gutter: 2.5rem;
+  /* Khoảng cách từ mép trên viewport khi sidebar dính (sticky) lúc cuộn */
+  --offset-catalog-sidebar-sticky: 1.5rem;
+  /* Ô chọn (checkbox) trong bộ lọc */
+  --size-filter-checkbox: 16px;
+
+  /* Phân trang lưới sản phẩm — nút số trang hình vuông theo mockup Thái Dương */
+  --size-page-btn: 38px;
+  --text-page-btn: 0.875rem; /* 14px — số trang, đủ rõ trong ô 38px */
 }
 
 /* Chiều rộng nội dung chuẩn — dùng như <div class="site-container"> */
@@ -105,6 +206,17 @@
   border-radius: var(--radius-pill);
   font-weight: 700;
   white-space: nowrap;
+}
+
+/* Cắt mô tả ngắn của card tin tức sau `--lines-post-card-excerpt` dòng.
+ * Viết thành utility thay vì `line-clamp-2` rải trong component để số dòng nằm
+ * ở một token duy nhất. */
+@utility clamp-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--lines-post-card-excerpt);
+  line-clamp: var(--lines-post-card-excerpt);
+  overflow: hidden;
 }
 
 /* Kiểu chữ cho nội dung MDX (mô tả sản phẩm, bài blog, chính sách).

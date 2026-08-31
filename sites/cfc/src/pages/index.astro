@@ -41,8 +41,6 @@ const toCard = (p: (typeof products)[number]) => ({
   href: `/products/${p.id}`,
   image: p.data.image,
   badge: p.data.badge,
-  priceLabel: p.data.priceLabel,
-  unit: p.data.unit,
   swatches: p.data.swatches,
   swatchNote: "Kraft / MG",
 });
@@ -90,6 +88,7 @@ const description =
         href: `/blog/${p.id}`,
         date: p.data.date,
         cover: p.data.cover,
+        description: p.data.description,
       }))}
     />
 

@@ -32,9 +32,6 @@ export function productFields(imageDir: string) {
       label: "Hình dáng",
       itemLabel: (props) => props.value || "(chưa đặt tên)",
     }),
-    priceFrom: fields.number({ label: "Giá từ", validation: { isRequired: false } }),
-    priceLabel: fields.text({ label: "Nhãn giá hiển thị", validation: { isRequired: false } }),
-    unit: fields.text({ label: "Đơn vị", defaultValue: "chiếc" }),
     moq: fields.text({ label: "Số lượng tối thiểu (MOQ)", validation: { isRequired: false } }),
     badge: fields.text({ label: "Badge", validation: { isRequired: false } }),
     excerpt: fields.text({
@@ -119,6 +116,12 @@ const ICON_OPTIONS = [
 export function categoryFields(imageDir: string) {
   return {
     title: fields.slug({ name: { label: "Tên danh mục" } }),
+    navLabel: fields.text({
+      label: "Tên ngắn (điều hướng)",
+      description:
+        "Dùng trong câu dẫn ở sidebar, ví dụ “Túi giấy” cho ra tiêu đề “LOẠI TÚI GIẤY”. Bỏ trống thì lấy tên danh mục đầy đủ.",
+      validation: { isRequired: false },
+    }),
     sub: fields.text({
       label: "Phụ đề",
       description: "Dòng nhỏ dưới tên danh mục, ví dụ “Túi kraft, túi zip, túi quai xoắn”.",

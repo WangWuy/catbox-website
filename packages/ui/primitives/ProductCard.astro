@@ -3,11 +3,14 @@
  * Thẻ sản phẩm — dùng ở BÁN CHẠY, LỰA CHỌN CỦA TUẦN và trang catalog.
  *
  * Hai kiểu hiển thị:
- * - `full` (mặc định, trang catalog): khung viền + badge, tên, danh mục, giá,
+ * - `full` (mặc định, trang catalog): khung viền + badge, tên, danh mục,
  *   swatches.
  * - `minimal` (lưới BÁN CHẠY ở trang chủ): chỉ ảnh vuông không viền + tên căn
- *   giữa bên dưới. Mọi thông tin phụ (badge/danh mục/giá/swatch) bị lược bỏ để
+ *   giữa bên dưới. Mọi thông tin phụ (badge/danh mục/swatch) bị lược bỏ để
  *   lưới đọc nhanh như mockup.
+ *
+ * Không hiển thị giá: site chạy mô hình báo giá theo yêu cầu, giá nằm ở trang
+ * liên hệ / form báo giá chứ không lên thẻ sản phẩm.
  */
 import type { AssetMap } from "../lib/images";
 import SmartImage from "@ui/primitives/SmartImage.astro";
@@ -18,8 +21,6 @@ export interface ProductCardData {
   href: string;
   image?: string;
   badge?: string;
-  priceLabel?: string;
-  unit?: string;
   swatches?: { label: string; color: string }[];
   /** Nhãn gộp cạnh dãy swatch, ví dụ "Kraft / MG" */
   swatchNote?: string;
@@ -41,8 +42,6 @@ const {
   href,
   image,
   badge,
-  priceLabel,
-  unit = "chiếc",
   swatches = [],
   swatchNote,
   variant = 1,
@@ -95,15 +94,6 @@ const minimal = layout === "minimal";
           </a>
         </h3>
         <p class="text-micro text-ink-faint">{category}</p>
-
-        {priceLabel && (
-          <p class="flex items-baseline gap-1">
-            <span class="font-display text-[22px] leading-none font-extrabold text-cta">
-              {priceLabel}
-            </span>
-            <span class="text-micro font-medium text-ink-faint">/{unit}</span>
-          </p>
-        )}
 
         {swatches.length > 0 && (
           <div class="mt-auto flex items-center gap-1.5 pt-1">

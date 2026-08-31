@@ -1,36 +1,68 @@
 ---
 /**
- * BADGE NGÀY — khung vuông nền primary đè lên góc trên trái thumbnail tin tức
- * (theo concept CFC): số ngày cỡ lớn ở trên, tháng viết tắt "Th6" nhỏ ở dưới.
+ * BADGE NGÀY — khung vuông đè lên góc trên trái thumbnail tin tức (concept
+ * CFC): số ngày cỡ lớn ở trên, tháng viết tắt "Th6" nhỏ ở dưới.
+ *
+ * Hai biến thể, tự chọn theo ngày đăng:
+ *   - bài đăng HÔM NAY → tô đặc nền primary, chữ trắng (bắt mắt, báo "mới")
+ *   - bài cũ           → nền trắng, viền + chữ primary
+ * Có thể ép biến thể bằng prop `variant` khi cần (ví dụ dựng mockup).
  *
  * Đặt trong một khung `relative` (thường là thẻ <a> bọc ảnh). Mọi kích thước
  * lấy từ token `--size-date-badge` / `--text-date-badge-*` / `--offset-date-badge`
- * để 2 chỗ dùng (NewsGrid trang chủ, lưới /blog) không lệch nhau.
+ * để mọi chỗ dùng (trang chủ, /blog, /blog/tag, bài liên quan) không lệch nhau.
  */
 interface Props {
   date: Date;
+  /** Bỏ trống để tự suy ra từ `date`; "solid" = tô đặc, "outline" = viền */
+  variant?: "solid" | "outline";
   /** Thêm class ở ngoài khi cần chỉnh vị trí riêng */
   class?: string;
 }
 
-const { date, class: className = "" } = Astro.props;
+const { date, variant, class: className = "" } = Astro.props;
 
 const day = date.getDate().toString().padStart(2, "0");
-/** Tháng viết tắt kiểu Việt: "Th6" — ngắn hơn "Tháng 6" để lọt khung badge */
+/**
+ * Tháng viết tắt kiểu Việt: "Th6" — ngắn hơn "Tháng 6" để lọt khung badge.
+ * Giữ nguyên dạng chữ hoa-thường này khi render: ĐỪNG thêm `uppercase` vào span
+ * bên dưới, "TH6" đọc như viết tắt lạ chứ không ra chữ "Tháng".
+ */
 const month = `Th${date.getMonth() + 1}`;
+
+/**
+ * So sánh theo ngày địa phương chứ không theo mốc 24h: bài đăng 23h hôm nay
+ * vẫn phải là "hôm nay". Trang build tĩnh nên mốc này chốt tại lúc build —
+ * badge solid sẽ thành outline ở lần deploy sau, đúng ý đồ.
+ */
+const now = new Date();
+const isToday =
+  date.getFullYear() === now.getFullYear() &&
+  date.getMonth() === now.getMonth() &&
+  date.getDate() === now.getDate();
+
+const solid = (variant ?? (isToday ? "solid" : "outline")) === "solid";
 ---
 
 <div
   class:list={[
-    "pointer-events-none absolute top-(--offset-date-badge) left-(--offset-date-badge)",
+    "pointer-events-none absolute top-(--offset-date-badge) left-(--offset-date-badge-left)",
     "flex size-(--size-date-badge) flex-col items-center justify-center",
-    "rounded-sm bg-primary leading-none text-white",
+    "rounded-sm leading-none",
+    solid
+      ? "bg-primary text-white"
+      : "border-(length:--width-date-badge-border) border-primary bg-white text-primary",
     className,
   ]}
   aria-hidden="true"
 >
-  <span class="text-(--text-date-badge-day) font-extrabold">{day}</span>
-  <span class="mt-0.5 text-(--text-date-badge-month) font-semibold uppercase opacity-90">
+  {/* `length:` là BẮT BUỘC — `text-(--x)` không có nó thì Tailwind v4 hiểu là
+      màu chữ (`color: var(--x)`) chứ không phải cỡ chữ, nên token bị bỏ qua
+      lặng lẽ và badge giữ nguyên cỡ kế thừa. */}
+  <span class="text-(length:--text-date-badge-day) font-extrabold">{day}</span>
+  <span
+    class="mt-0.5 text-(length:--text-date-badge-month) font-semibold opacity-90"
+  >
     {month}
   </span>
 </div>

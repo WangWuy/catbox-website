@@ -10,9 +10,30 @@ interface Crumb {
 
 interface Props {
   items: Crumb[];
+  /**
+   * Bỏ khung `site-container py-4` để component cha tự lo bố cục — dùng khi
+   * breadcrumb nằm LỒNG trong một khối đã có container riêng (PageHero), nếu
+   * không sẽ thành container trong container và lệch lề trái.
+   */
+  bare?: boolean;
+  /**
+   * `dark` = đặt trên nền TỐI (dải banner PageHero) → đổi sang bộ màu chữ sáng.
+   * Màu mặc định (`ink-faint`/`ink-muted`) là chữ tối, trên nền nâu kraft của
+   * banner gần như không đọc được.
+   */
+  tone?: "default" | "dark";
 }
 
-const { items } = Astro.props;
+const { items, bare = false, tone = "default" } = Astro.props;
+
+const dark = tone === "dark";
+
+/* Hover trên nền tối đổi sang TRẮNG, không dùng `primary`: cam #E67E22 trên nền
+ * kraft #795548 chỉ đạt 2.30x, dưới xa ngưỡng AA 4.5:1 — link hover thành khó
+ * đọc hơn lúc chưa hover. Trên nền sáng thì cam vẫn đủ tương phản nên giữ. */
+const linkClass = dark
+  ? "transition-colors hover:text-(--color-ink-on-hero)"
+  : "transition-colors hover:text-primary";
 const base = Astro.site?.href ?? "/";
 
 const jsonLd = {
@@ -27,20 +48,31 @@ const jsonLd = {
 };
 ---
 
-<nav aria-label="Breadcrumb" class="site-container py-4">
-  <ol class="flex flex-wrap items-center gap-2 text-meta text-ink-faint">
-    <li><a href="/" class="transition-colors hover:text-primary">Trang chủ</a></li>
+<nav aria-label="Breadcrumb" class:list={[!bare && "site-container py-4"]}>
+  <ol
+    class:list={[
+      "flex flex-wrap items-center gap-2 text-meta",
+      dark ? "text-(--color-ink-on-hero-muted)" : "text-ink-faint",
+    ]}
+  >
+    <li><a href="/" class={linkClass}>Trang chủ</a></li>
     {
       items.map((c, i) => (
         <>
           <li aria-hidden="true">/</li>
           <li>
             {c.href && i < items.length - 1 ? (
-              <a href={c.href} class="transition-colors hover:text-primary">
+              <a href={c.href} class={linkClass}>
                 {c.label}
               </a>
             ) : (
-              <span class="font-semibold text-ink-muted" aria-current="page">
+              <span
+                class:list={[
+                  "font-semibold",
+                  dark ? "text-(--color-ink-on-hero)" : "text-ink-muted",
+                ]}
+                aria-current="page"
+              >
                 {c.label}
               </span>
             )}

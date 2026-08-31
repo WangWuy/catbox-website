@@ -9,9 +9,8 @@
 import type { ImageMetadata } from "astro";
 import { getCollection } from "astro:content";
 import Layout from "../../../layouts/Layout.astro";
-import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
-import SmartImage from "@ui/primitives/SmartImage.astro";
-import DateBadge from "@ui/primitives/DateBadge.astro";
+import PageHero from "@ui/patterns/PageHero.astro";
+import PostCard from "@ui/primitives/PostCard.astro";
 import { collectTags, postsByTag } from "@config/blog";
 
 export async function getStaticPaths() {
@@ -29,54 +28,31 @@ const assets = import.meta.glob<{ default: ImageMetadata }>(
 
 const { tag, posts } = Astro.props;
 
-const fmt = (d: Date) =>
-  d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
-
 const description = `${posts.length} bài viết về “${tag.label}” — cẩm nang bao bì giấy cho chuỗi F&B.`;
 ---
 
 <Layout title={`Tin tức về ${tag.label}`} {description}>
-  <Breadcrumb
-    items={[{ label: "Tin tức", href: "/blog" }, { label: tag.label }]}
+  <PageHero
+    title={tag.label}
+    crumbs={[{ label: "Tin tức", href: "/blog" }, { label: tag.label }]}
+    {assets}
+    image="products/hop-giay-kraft.png"
   />
 
-  <div class="site-container pb-16">
-    <h1 class="mb-2 text-3xl font-extrabold tracking-tight uppercase md:text-section">
-      {tag.label}
-    </h1>
-    <p class="mb-8 max-w-2xl text-ink-muted">{description}</p>
-
-    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+  <div class="site-container pt-10 pb-16">
+    <div class="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
       {
         posts.map((p, i) => (
-          <article class="group flex flex-col overflow-hidden rounded-card border border-line bg-surface">
-            <a href={`/blog/${p.id}`} class="relative block bg-surface-tint">
-              <SmartImage
-                {assets}
-                src={p.data.cover}
-                alt={p.data.title}
-                width={600}
-                height={375}
-                ratio="16x10"
-                variant={i + 1}
-                class="aspect-16/10 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-              />
-              <DateBadge date={p.data.date} />
-            </a>
-            <div class="flex flex-1 flex-col gap-2.5 p-5">
-              {/* Ngày đã hiện ở badge trên ảnh; thẻ <time> ẩn giữ giá trị máy đọc được */}
-              <time datetime={p.data.date.toISOString()} class="sr-only">
-                {fmt(p.data.date)}
-              </time>
-              <h2 class="text-card-title leading-snug font-bold">
-                <a href={`/blog/${p.id}`} class="transition-colors hover:text-primary">
-                  {p.data.title}
-                </a>
-              </h2>
-              <p class="flex-1 text-body leading-relaxed text-ink-muted">{p.data.description}</p>
-              <span class="text-meta font-bold text-primary-hover">Đọc tiếp →</span>
-            </div>
-          </article>
+          <PostCard
+            {assets}
+            as="h2"
+            title={p.data.title}
+            href={`/blog/${p.id}`}
+            date={p.data.date}
+            cover={p.data.cover}
+            description={p.data.description}
+            variant={i + 1}
+          />
         ))
       }
     </div>

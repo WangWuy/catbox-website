@@ -72,11 +72,20 @@ export interface MegaMenuParent {
   subcategories: MegaMenuSubcategory[];
 }
 
-export const normalizeSlug = (id: string) =>
+export const normalizeSlug = (id: string): string =>
   id
     .replace(/\.(md|mdx)$/, "")
     .replace(/^\/+|\/+$/g, "")
     .trim();
+
+/**
+ * Số sản phẩm mỗi trang ở lưới catalog (/products, /danh-muc/<slug>).
+ *
+ * Là hằng số TS chứ không phải token CSS: cả template lẫn script phân trang đều
+ * cần đọc con số này, mà JS không lấy được giá trị `@theme` một cách tự nhiên.
+ * 12 chia hết cho cả lưới 2, 3 và 4 cột nên hàng cuối không bao giờ bị hụt.
+ */
+export const PRODUCTS_PER_PAGE = 12;
 
 export const categoryHref = (slug: string) => `/danh-muc/${normalizeSlug(slug)}`;
 export const productHref = (slug: string) => `/products/${normalizeSlug(slug)}`;
@@ -138,7 +147,11 @@ function hasAncestor(
   while (cur && !seen.has(cur)) {
     if (cur === normTarget) return true;
     seen.add(cur);
-    const parentRaw = bySlug.get(cur)?.data.parent;
+    // Chú kiểu tường minh: không có nó, TS suy `parentRaw` từ `bySlug.get(cur)`
+    // trong khi `cur` lại được gán từ chính `parentRaw` ở dòng dưới → vòng suy
+    // luận, và TS bỏ cuộc với TS7022 ("implicitly has type 'any' because it is
+    // referenced directly or indirectly in its own initializer").
+    const parentRaw: string | undefined = bySlug.get(cur)?.data.parent;
     cur = parentRaw ? normalizeSlug(parentRaw) : undefined;
   }
   return false;
@@ -178,7 +191,10 @@ export function categoryTrail(
     if (!entry) break;
     trail.unshift(entry);
     seen.add(cur);
-    const parentRaw = entry.data.parent;
+    // Chú kiểu tường minh vì cùng lý do như trong `hasAncestor` — xem chú thích
+    // ở đó. Chỗ này TS hiện suy được (nhờ `if (!entry) break` ở trên), nhưng
+    // vòng lặp cùng hình dạng nên rất dễ tái phát TS7022 khi sửa lại.
+    const parentRaw: string | undefined = entry.data.parent;
     cur = parentRaw ? normalizeSlug(parentRaw) : undefined;
   }
   return trail.map((c) => {

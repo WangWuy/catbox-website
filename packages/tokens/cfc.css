@@ -36,6 +36,22 @@
   --color-surface-pill:   #E4E1DC;  /* Pill CTA ở MainHeader */
   --color-surface-pill-hover: #D9D5CE;
 
+  /* Nền dải banner đầu trang (PageHero) — nâu giấy kraft, cùng màu
+   * `--color-kraft` của badge/swatch nên banner ăn tông với ảnh sản phẩm.
+   * KHÔNG dùng `surface-tint` như bản đầu: #F6EFE4 so với nền trang #F2EFEA chỉ
+   * đạt tương phản 1.00x (trùng độ sáng) nên dải gần như tàng hình; màu này đạt
+   * 5.71x. Cũng KHÔNG dùng `primary-deep` #3E2723 (12.05x) — tách thì rõ nhưng
+   * thành mảng tối nặng ở đầu mọi trang.
+   * Nền vẫn thuộc nhóm TỐI nên chữ phải là biến thể sáng — xem
+   * `--color-ink-on-hero` và prop `tone` của Breadcrumb. */
+  --color-surface-page-hero: #795548;
+  /* Chữ trên nền banner: tiêu đề trắng (6.55x). Dòng phụ/breadcrumb mờ hơn một
+   * bậc nhưng vẫn phải vượt AA 4.5:1 — nền kraft sáng hơn chocolate nhiều nên
+   * dải màu dùng được rất hẹp, KHÔNG hạ dưới giá trị này (xuống #D6C9C2 là rớt
+   * còn 4.05x, dưới chuẩn). */
+  --color-ink-on-hero:       #FFFFFF;
+  --color-ink-on-hero-muted: #E8DED8;  /* 4.95x trên nền banner */
+
   --color-surface-input:  #FFFFFF;  /* Ô search CFC nền trắng (theo mockup) */
   --color-surface-hover:  #F4F4F4;  /* Trạng thái hover/active nền xám trung tính — CategoryNav mega menu */
 

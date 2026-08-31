@@ -7,7 +7,7 @@
  * fallback không-JS: submit thật, Worker trả về redirect.
  */
 import { Icon } from "astro-icon/components";
-import { BRANDS, POLICY_LINKS, otherBrands, type FnbBrandId } from "@config/brands";
+import { BRANDS, POLICY_LINKS, type FnbBrandId } from "@config/brands";
 import BrandLogo from "@ui/brand/fnb/BrandLogo.astro";
 
 interface Props {
@@ -34,11 +34,6 @@ const newsletterCopy: Record<FnbBrandId, { title: string; desc: string }> = {
   },
 };
 const copy = newsletterCopy[brand];
-
-/** Link chéo sang 2 domain còn lại — kênh internal-link duy nhất còn lại giữa
- * 3 site sau khi bỏ khối Ecosystem trước footer (REQUIREMENTS §2.3). Dùng
- * `name — tagline` làm anchor text để link còn ngữ cảnh cho SEO. */
-const siblings = otherBrands(brand);
 ---
 
 <footer class="bg-primary-deep text-white">
@@ -211,25 +206,6 @@ const siblings = otherBrands(brand);
         </button>
         <p data-newsletter-msg role="status" class="min-h-5 text-micro text-white/70"></p>
       </form>
-    </div>
-  </div>
-
-  <div class="border-t border-white/12">
-    <div class="site-container flex flex-wrap items-center gap-x-7 gap-y-3 py-4">
-      <span class="text-tiny font-semibold tracking-wide text-white/45 uppercase">
-        Hệ sinh thái Catbox Packaging
-      </span>
-      {
-        siblings.map((o) => (
-          <a
-            href={o.site}
-            class="flex items-center gap-2 text-meta font-semibold text-white/75 transition-colors hover:text-primary"
-          >
-            <Icon name={o.icon} class="size-4 flex-none" aria-hidden="true" />
-            {o.name} — {o.tagline}
-          </a>
-        ))
-      }
     </div>
   </div>
 
