@@ -1,0 +1,200 @@
+---
+import { Icon } from "astro-icon/components";
+import Layout from "../layouts/Layout.astro";
+import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
+
+/**
+ * Quy trình làm việc — 2 luồng khách (mua mẫu có sẵn / đặt theo yêu cầu).
+ *
+ * Sơ đồ gốc sâu 3 tầng ở nhánh "đặt theo yêu cầu"; ở đây tầng 3 được gấp thành
+ * dòng có badge giá thay vì vẽ cây thật, để không vỡ trên mobile.
+ *
+ * TODO(nội dung): link Shopee / TikTok Shop chưa có — đang để `null`, mục nào
+ * null thì render dạng chữ tĩnh, không ra thẻ <a> rỗng.
+ */
+const channels: { label: string; icon: string; href: string | null }[] = [
+  { label: "Shopee", icon: "lucide:shopping-bag", href: null },
+  { label: "TikTok Shop", icon: "lucide:shopping-bag", href: null },
+];
+
+/** Quy trình sản xuất chung sau khi chốt file — dùng lại ở cuối trang */
+const process = [
+  { num: "01", title: "Tiếp nhận yêu cầu", desc: "Ghi nhận loại bao bì, kích thước, chất liệu và số lượng." },
+  { num: "02", title: "Báo giá & duyệt mẫu", desc: "Báo giá trong 30 phút; in mẫu thật nếu khách cần xem trước." },
+  { num: "03", title: "Dàn file & canh khuôn", desc: "Xưởng dàn file, canh khuôn bế và tràn lề — miễn phí." },
+  { num: "04", title: "In flexo cuộn", desc: "In 1–4 màu bằng mực gốc nước đạt chuẩn tiếp xúc thực phẩm." },
+  { num: "05", title: "Bế, gấp dán, kiểm tra", desc: "Gấp dán tự động, kiểm tra ngẫu nhiên theo lô trước khi đóng gói." },
+  { num: "06", title: "Đóng gói & giao hàng", desc: "Giao toàn quốc; khu vực Hà Nội / Hà Nam giao trong 24–48h." },
+];
+
+const description =
+  "Quy trình làm việc tại xưởng bao bì giấy CFC — mua mẫu có sẵn qua sàn thương mại điện tử hoặc đặt in theo yêu cầu, kèm chính sách thiết kế.";
+---
+
+<Layout title="Quy trình làm việc" {description}>
+  <Breadcrumb items={[{ label: "Về chúng tôi", href: "/about-us" }, { label: "Quy trình làm việc" }]} />
+
+  <div class="site-container flex flex-col gap-12 pb-16">
+    <header class="flex max-w-3xl flex-col gap-4">
+      <h1 class="text-3xl font-extrabold tracking-tight uppercase md:text-section">
+        Quy trình làm việc
+      </h1>
+      <p class="leading-relaxed text-ink-muted">
+        Tuỳ việc khách lấy mẫu có sẵn hay đặt in riêng thương hiệu, xưởng có hai luồng xử lý khác
+        nhau. Chọn đúng luồng ngay từ đầu giúp rút ngắn thời gian từ lúc hỏi tới lúc nhận hàng.
+      </p>
+    </header>
+
+    <section class="grid gap-6 lg:grid-cols-2" aria-label="Hai luồng khách hàng">
+      {/* Luồng 1 — mua mẫu có sẵn */}
+      <article class="flex flex-col gap-5 rounded-panel border border-line bg-surface p-6 md:p-8">
+        <div class="flex items-center gap-4">
+          <span class="flex size-(--size-icon-panel-box) shrink-0 items-center justify-center rounded-panel bg-surface-tint text-primary">
+            <Icon name="lucide:shopping-cart" class="size-(--size-icon-panel)" aria-hidden="true" />
+          </span>
+          <div class="flex flex-col gap-1">
+            <h2 class="font-display text-card-title font-bold">Khách mua mẫu có sẵn</h2>
+            <p class="text-meta leading-snug text-ink-muted">
+              Mẫu trơn, không in thương hiệu — đặt là giao ngay
+            </p>
+          </div>
+        </div>
+
+        <p class="text-label leading-relaxed text-ink-muted">
+          Các mẫu bao bì tiêu chuẩn của xưởng được bán sẵn trên sàn thương mại điện tử. Khách đặt
+          trực tiếp, không cần chờ duyệt file hay đợi lịch chạy máy.
+        </p>
+
+        <div class="flex flex-col gap-2">
+          <h3 class="text-meta font-bold tracking-wide uppercase text-ink-faint">Đặt nhanh qua</h3>
+          <div class="flex flex-wrap gap-2.5">
+            {
+              channels.map((c) =>
+                c.href ? (
+                  <a
+                    href={c.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="pill flex items-center gap-1.5 border border-line bg-surface-alt px-4 py-2 text-micro text-ink-muted transition-colors hover:border-primary hover:text-primary"
+                  >
+                    <Icon name={c.icon} class="size-(--size-icon-inline)" aria-hidden="true" />
+                    {c.label}
+                  </a>
+                ) : (
+                  <span class="pill flex items-center gap-1.5 border border-line bg-surface-alt px-4 py-2 text-micro text-ink-muted">
+                    <Icon name={c.icon} class="size-(--size-icon-inline)" aria-hidden="true" />
+                    {c.label}
+                  </span>
+                ),
+              )
+            }
+          </div>
+        </div>
+      </article>
+
+      {/* Luồng 2 — đặt theo yêu cầu, có nhánh con */}
+      <article class="flex flex-col gap-5 rounded-panel border border-line bg-surface p-6 md:p-8">
+        <div class="flex items-center gap-4">
+          <span class="flex size-(--size-icon-panel-box) shrink-0 items-center justify-center rounded-panel bg-surface-tint text-primary">
+            <Icon name="lucide:pen-tool" class="size-(--size-icon-panel)" aria-hidden="true" />
+          </span>
+          <div class="flex flex-col gap-1">
+            <h2 class="font-display text-card-title font-bold">Khách đặt hàng theo yêu cầu</h2>
+            <p class="text-meta leading-snug text-ink-muted">
+              In thương hiệu riêng, kích thước và chất liệu theo đơn
+            </p>
+          </div>
+        </div>
+
+        {/* Nhánh A — chưa có design */}
+        <div class="flex flex-col gap-3 rounded-panel bg-surface-alt p-5">
+          <h3 class="flex items-center gap-2 font-display text-label font-bold">
+            <Icon
+              name="lucide:file-question"
+              class="size-(--size-icon-inline) text-primary"
+              aria-hidden="true"
+            />
+            Khách chưa có design
+          </h3>
+          <ul
+            class="flex flex-col gap-3 border-s-(length:--width-flow-connector) border-line ps-(--indent-flow-child)"
+          >
+            <li class="flex flex-col gap-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-label font-semibold">Chọn mẫu có sẵn của xưởng</span>
+                <span class="pill bg-primary/10 px-3 py-1 text-tiny text-primary">Edit miễn phí</span>
+              </div>
+              <p class="text-meta leading-relaxed text-ink-muted">
+                Lấy mẫu trong thư viện, xưởng chỉnh tên thương hiệu và thông tin liên hệ theo yêu cầu.
+              </p>
+            </li>
+            <li class="flex flex-col gap-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-label font-semibold">Design riêng theo nhu cầu</span>
+                <span class="pill bg-cta/10 px-3 py-1 text-tiny text-cta">200.000đ / design</span>
+              </div>
+              <p class="text-meta leading-relaxed text-ink-muted">
+                Đội thiết kế dựng mới hoàn toàn theo nhận diện thương hiệu của khách.
+              </p>
+            </li>
+          </ul>
+        </div>
+
+        {/* Nhánh B — đã có design */}
+        <div class="flex flex-col gap-3 rounded-panel bg-surface-alt p-5">
+          <h3 class="flex items-center gap-2 font-display text-label font-bold">
+            <Icon
+              name="lucide:file-check"
+              class="size-(--size-icon-inline) text-primary"
+              aria-hidden="true"
+            />
+            Khách đã có design
+          </h3>
+          <p
+            class="border-s-(length:--width-flow-connector) border-line ps-(--indent-flow-child) text-meta leading-relaxed text-ink-muted"
+          >
+            Gửi file thiết kế cho xưởng. Xưởng dàn file, canh khuôn bế và tràn lề miễn phí, gửi lại
+            bản duyệt trước khi lên máy.
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <section class="flex flex-col gap-7">
+      <div class="flex max-w-3xl flex-col gap-3">
+        <h2 class="text-2xl font-extrabold tracking-tight uppercase md:text-section">
+          Quy trình sản xuất 6 bước
+        </h2>
+        <p class="leading-relaxed text-ink-muted">
+          Sau khi chốt file thiết kế, mọi đơn hàng đều đi qua cùng một quy trình tại xưởng.
+        </p>
+      </div>
+      <ol class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {
+          process.map((s) => (
+            <li class="flex flex-col gap-2.5 rounded-panel border border-line bg-surface p-6">
+              <span class="font-display text-3xl leading-none font-extrabold text-primary/25">
+                {s.num}
+              </span>
+              <h3 class="font-display text-card-title font-bold">{s.title}</h3>
+              <p class="text-sm leading-relaxed text-ink-muted">{s.desc}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="flex flex-col gap-4 rounded-panel bg-surface-alt p-8 md:p-10">
+      <h2 class="font-display text-2xl font-bold">Bắt đầu đơn hàng</h2>
+      <p class="max-w-2xl leading-relaxed text-ink-muted">
+        Gửi loại bao bì, kích thước và số lượng dự kiến — xưởng báo giá trong 30 phút.
+      </p>
+      <a
+        href="/contact"
+        class="pill mt-2 h-12 w-fit bg-cta px-7 text-white transition-colors hover:bg-cta-hover"
+      >
+        Liên hệ nhận báo giá
+      </a>
+    </section>
+  </div>
+</Layout>

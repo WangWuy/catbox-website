@@ -3,17 +3,25 @@
  * Layout của site CFC — chỉ làm 2 việc: nạp theme CSS và chốt brand="cfc".
  * Toàn bộ cấu trúc trang nằm ở @ui/brand/fnb/BaseLayout.astro dùng chung với site Tetta (cùng khung F&B).
  */
+import { getCollection } from "astro:content";
 import BaseLayout from "@ui/brand/fnb/BaseLayout.astro";
 import "../styles/theme.css";
 
 const FONTS =
   "https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap";
 
-type BaseProps = Omit<Parameters<typeof BaseLayout>[0], "brand" | "fonts">;
+type BaseProps = Omit<Parameters<typeof BaseLayout>[0], "brand" | "fonts" | "categories" | "products">;
 const props = Astro.props as BaseProps;
+
+// Lấy ở đây (không phải trong BaseLayout) vì BaseLayout dùng chung với Tetta —
+// site nào CMS-hoá danh mục xong thì tự truyền vào. Nhờ vậy mọi trang CFC có
+// menu dựng từ content mà không phải sửa từng file page.
+const categories = await getCollection("categories");
+const products = await getCollection("products", ({ data }) => !data.draft);
 ---
 
-<BaseLayout brand="cfc" fonts={FONTS} {...props}>
+<BaseLayout brand="cfc" fonts={FONTS} {categories} {products} {...props}>
   <slot name="head" slot="head" />
   <slot />
 </BaseLayout>
+

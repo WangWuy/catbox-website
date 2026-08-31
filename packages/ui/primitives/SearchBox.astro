@@ -18,7 +18,7 @@ const { placeholder, class: className } = Astro.props;
   role="search"
   action="/search"
   method="get"
-  class={`flex h-12 items-center gap-2.5 rounded-input border border-line bg-surface-input px-5 ${className ?? ""}`}
+  class={`flex h-(--height-search) items-center gap-2.5 rounded-input border border-line bg-surface-input px-5 ${className ?? ""}`}
   data-pagefind-box
 >
   <svg width="17" height="17" viewBox="0 0 17 17" aria-hidden="true" class="flex-none">

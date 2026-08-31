@@ -33,18 +33,60 @@
   --text-label: 0.84375rem;   /* 13.5px — nhãn tab, nút pill */
   --text-micro: 0.78125rem;   /* 12.5px — topbar, chip khuyến mãi */
   --text-tiny:  0.71875rem;   /* 11.5px — eyebrow, ngày tháng */
+  --text-caret: 0.625rem;     /* 10px — mũi tên ▼ mở dropdown CategoryNav */
+
+  /* Cỡ chữ tiêu đề phụ trong panel (tên card "Dây chuyền Offset", tên bước
+   * quy trình) — nhỏ hơn h2 section nhưng lớn hơn body. */
+  --text-card-title: 1.0625rem; /* 17px */
+
+  /* Tiêu đề bài viết ở trang chi tiết blog — lớn hơn --text-section vì đứng
+   * một mình đầu trang, không phải nhãn của một khối. */
+  --text-article-title: 2.625rem; /* 42px */
+
+  /* Gạch chân ngắn dưới tiêu đề khối (concept CFC: dưới "2T Print — Giải pháp
+   * Thiết kế & In ấn"), thay cho border-b chạy hết chiều rộng. */
+  --width-rule-accent: 56px;
+  --height-rule-accent: 3px;
+
+  /* Badge ngày đè lên góc trên trái thumbnail tin tức (concept CFC): số ngày
+   * lớn trên, tháng nhỏ dưới, trong khung vuông nền primary. */
+  --text-date-badge-day: 0.9375rem;   /* 15px — số ngày */
+  --text-date-badge-month: 0.5625rem; /* 9px — "Th6" */
+  --size-date-badge: 38px;
+  /* Khoảng cách từ mép ảnh tới badge */
+  --offset-date-badge: 10px;
 
   /* Khung tròn chứa icon nhỏ (Zalo, hotline...) ở Footer — đặt tên theo vai trò
    * thay vì rải `size-[22px]` từng chỗ, để đổi một chỗ là đổi toàn hệ. */
   --size-icon-chip: 22px;
+  /* Icon nhỏ đi kèm chữ trong pill/list (dấu check, mũi tên nhánh) */
+  --size-icon-inline: 14px;
+  /* Icon dẫn đầu một panel lớn (Tầm nhìn, Sứ mệnh, luồng khách hàng) */
+  --size-icon-panel: 28px;
+  /* Khung tròn nền nhạt bọc ngoài --size-icon-panel */
+  --size-icon-panel-box: 52px;
 
-  /* Chiều rộng tối đa ô search ở MainHeader (mockup: 520px) */
-  --width-search: 520px;
+  /* Thụt lề mỗi tầng con trong cây "Quy trình làm việc" (/quy-trinh) — cùng vai
+   * trò với --indent-dropdown-child nhưng cho nội dung trang, không phải menu. */
+  --indent-flow-child: 1.25rem;
+  /* Bề dày đường nối dọc giữa các tầng của cây quy trình */
+  --width-flow-connector: 2px;
 
   /* Chiều cao các thanh cố định (theo mockup) */
   --height-topbar: 40px;
   --height-header: 100px;
   --height-catnav: 54px;
+  /* Chiều cao ô search ở MainHeader */
+  --height-search: 42px;
+
+  /* Dropdown danh mục trên CategoryNav */
+  --width-dropdown-min: 240px;
+  /* Khoảng cách từ mép trên thanh nav xuống panel dropdown */
+  --offset-dropdown-top: calc(var(--height-catnav) / 2 + 14px);
+  /* Padding ngang của một dòng link trong dropdown (khớp px-3) */
+  --space-dropdown-item-x: 0.75rem;
+  /* Thụt lề thêm cho mỗi tầng con (tầng 3 của cây danh mục) trong dropdown */
+  --indent-dropdown-child: 0.75rem;
 }
 
 /* Chiều rộng nội dung chuẩn — dùng như <div class="site-container"> */

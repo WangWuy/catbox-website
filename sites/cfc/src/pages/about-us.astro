@@ -14,20 +14,46 @@ const assets = import.meta.glob<{ default: ImageMetadata }>(
 
 const b = BRANDS.cfc;
 
-const stats = [
-  { num: "10+", label: "Năm kinh nghiệm" },
-  { num: "5.000+", label: "Khách hàng đối tác" },
-  { num: "20.000+", label: "Đơn hàng thành phẩm" },
-  { num: "100%", label: "Đảm bảo chất lượng", highlight: true },
+/** Nguồn duy nhất trong `brands.ts` — /contact cũng đọc đúng bộ số này. */
+const stats = b.stats;
+
+/**
+ * TODO(nội dung): hai đoạn dưới là KHUNG CHỜ do khách chưa cung cấp câu tầm
+ * nhìn / sứ mệnh chính thức. Thay bằng văn bản thật trước khi lên production.
+ */
+const purpose = [
+  {
+    icon: "lucide:eye",
+    title: "Tầm nhìn",
+    body: "— cần khách cung cấp nội dung chính thức —",
+  },
+  {
+    icon: "lucide:target",
+    title: "Sứ mệnh",
+    body: "— cần khách cung cấp nội dung chính thức —",
+  },
 ];
 
-const process = [
-  { num: "01", title: "Tiếp nhận yêu cầu", desc: "Ghi nhận loại bao bì, kích thước, chất liệu và số lượng." },
-  { num: "02", title: "Báo giá & duyệt mẫu", desc: "Báo giá trong 30 phút; in mẫu thật nếu khách cần xem trước." },
-  { num: "03", title: "Dàn file & canh khuôn", desc: "Xưởng dàn file, canh khuôn bế và tràn lề — miễn phí." },
-  { num: "04", title: "In flexo cuộn", desc: "In 1–4 màu bằng mực gốc nước đạt chuẩn tiếp xúc thực phẩm." },
-  { num: "05", title: "Bế, gấp dán, kiểm tra", desc: "Gấp dán tự động, kiểm tra ngẫu nhiên theo lô trước khi đóng gói." },
-  { num: "06", title: "Đóng gói & giao hàng", desc: "Giao toàn quốc; khu vực Hà Nội / Hà Nam giao trong 24–48h." },
+/** Ba trang con của mục "Về chúng tôi" */
+const sections = [
+  {
+    icon: "lucide:factory",
+    title: "Năng lực sản xuất",
+    desc: "Hai dây chuyền Offset và Flexo đặt tại KCN Đồng Văn, Hà Nam.",
+    href: "/nang-luc-san-xuat",
+  },
+  {
+    icon: "lucide:workflow",
+    title: "Quy trình làm việc",
+    desc: "Mua mẫu có sẵn hay đặt in riêng — kèm chính sách thiết kế.",
+    href: "/quy-trinh",
+  },
+  {
+    icon: "lucide:file-text",
+    title: "Chính sách công ty",
+    desc: "Thanh toán, đổi trả & bảo hành, điều khoản sử dụng.",
+    href: "/chinh-sach",
+  },
 ];
 
 const description =
@@ -55,8 +81,8 @@ const description =
         <div class="flex flex-wrap gap-2.5">
           {
             b.certifications.map((c) => (
-              <span class="pill flex items-center gap-1.5 border border-line bg-surface-alt px-4 py-2 text-[12.5px] text-ink-muted">
-                <Icon name="lucide:check" class="size-3.5" aria-hidden="true" /> {c}
+              <span class="pill flex items-center gap-1.5 border border-line bg-surface-alt px-4 py-2 text-micro text-ink-muted">
+                <Icon name="lucide:check" class="size-(--size-icon-inline)" aria-hidden="true" /> {c}
               </span>
             ))
           }
@@ -79,23 +105,46 @@ const description =
 
     <StatsBar {stats} />
 
-    <section class="site-container" id="nang-luc">
-      <h2 class="mb-7 text-2xl font-extrabold tracking-tight uppercase md:text-section">
-        Quy trình 6 bước
-      </h2>
-      <ol class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <section class="site-container grid gap-6 md:grid-cols-2" aria-label="Tầm nhìn và sứ mệnh">
+      {
+        purpose.map((p) => (
+          <article class="flex flex-col gap-4 rounded-panel bg-surface-alt p-8 md:p-10">
+            <span class="flex size-(--size-icon-panel-box) items-center justify-center rounded-panel bg-surface text-primary">
+              <Icon name={p.icon} class="size-(--size-icon-panel)" aria-hidden="true" />
+            </span>
+            <h2 class="font-display text-2xl font-bold">{p.title}</h2>
+            <p class="leading-relaxed text-ink-muted">{p.body}</p>
+          </article>
+        ))
+      }
+    </section>
+
+    <section class="site-container flex flex-col gap-7">
+      <h2 class="text-2xl font-extrabold tracking-tight uppercase md:text-section">Tìm hiểu thêm</h2>
+      <div class="grid gap-4 md:grid-cols-3">
         {
-          process.map((s) => (
-            <li class="flex flex-col gap-2.5 rounded-panel border border-line bg-surface p-6">
-              <span class="font-display text-3xl leading-none font-extrabold text-primary/25">
-                {s.num}
+          sections.map((s) => (
+            <a
+              href={s.href}
+              class="group flex flex-col gap-3 rounded-panel border border-line bg-surface p-6 transition-colors hover:border-primary"
+            >
+              <span class="flex size-(--size-icon-panel-box) items-center justify-center rounded-panel bg-surface-tint text-primary">
+                <Icon name={s.icon} class="size-(--size-icon-panel)" aria-hidden="true" />
               </span>
-              <h3 class="font-display text-[17px] font-bold">{s.title}</h3>
-              <p class="text-sm leading-relaxed text-ink-muted">{s.desc}</p>
-            </li>
+              <h3 class="font-display text-card-title font-bold">{s.title}</h3>
+              <p class="text-meta leading-relaxed text-ink-muted">{s.desc}</p>
+              <span class="mt-auto flex items-center gap-1.5 pt-2 text-label font-semibold text-primary">
+                Xem chi tiết
+                <Icon
+                  name="lucide:arrow-right"
+                  class="size-(--size-icon-inline) transition-transform group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                />
+              </span>
+            </a>
           ))
         }
-      </ol>
+      </div>
     </section>
 
     <section class="site-container">

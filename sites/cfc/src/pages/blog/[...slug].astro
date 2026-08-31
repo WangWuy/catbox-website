@@ -5,11 +5,16 @@ import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 import SmartImage from "@ui/primitives/SmartImage.astro";
+import DateBadge from "@ui/primitives/DateBadge.astro";
 import { BRANDS } from "@config/brands";
+import { relatedPosts, tagHref, tagSlug } from "@config/blog";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
-  return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }));
+  return posts.map((p) => ({
+    params: { slug: p.id },
+    props: { post: p, related: relatedPosts(posts, p) },
+  }));
 }
 
 const assets = import.meta.glob<{ default: ImageMetadata }>(
@@ -17,13 +22,16 @@ const assets = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true },
 );
 
-const { post } = Astro.props;
+const { post, related } = Astro.props;
 const { data } = post;
 const { Content } = await render(post);
 const b = BRANDS.cfc;
 
 const fmt = (d: Date) =>
   d.toLocaleDateString("vi-VN", { day: "2-digit", month: "long", year: "numeric" });
+
+const fmtShort = (d: Date) =>
+  d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
 
 const jsonLd: Record<string, unknown>[] = [
   {
@@ -61,15 +69,32 @@ if (data.faq.length) {
 
   <article class="site-container pb-16">
     <header class="mx-auto mb-8 flex max-w-3xl flex-col gap-4">
-      <h1 class="text-3xl leading-tight font-extrabold tracking-tight md:text-[42px]">
+      <h1 class="text-3xl leading-tight font-extrabold tracking-tight md:text-(--text-article-title)">
         {data.title}
       </h1>
       <p class="text-lg leading-relaxed text-ink-muted">{data.description}</p>
-      <div class="flex flex-wrap items-center gap-3 text-[13px] text-ink-faint">
+      <div class="flex flex-wrap items-center gap-3 text-meta text-ink-faint">
         <time datetime={data.date.toISOString()}>{fmt(data.date)}</time>
         <span aria-hidden="true">·</span>
         <span>{data.author}</span>
       </div>
+
+      {
+        data.tags.length > 0 && (
+          <ul class="flex flex-wrap gap-2" aria-label="Thẻ bài viết">
+            {data.tags.map((t) => (
+              <li>
+                <a
+                  href={tagHref(tagSlug(t))}
+                  class="pill inline-flex h-8 items-center border border-line bg-surface-chip px-4 text-meta font-semibold text-ink-muted transition-colors hover:bg-surface-alt hover:text-primary"
+                >
+                  {t}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </header>
 
     {
@@ -92,6 +117,46 @@ if (data.faq.length) {
     <div class="prose-catbox mx-auto">
       <Content />
     </div>
+
+    {
+      related.length > 0 && (
+        <section class="mx-auto mt-14 max-w-4xl" aria-labelledby="related-heading">
+          <h2 id="related-heading" class="mb-5 text-xl font-bold">
+            Bài viết liên quan
+          </h2>
+          <div class="grid gap-5 sm:grid-cols-3">
+            {related.map((p, i) => (
+              <article class="group flex flex-col overflow-hidden rounded-card border border-line bg-surface">
+                <a href={`/blog/${p.id}`} class="relative block bg-surface-tint">
+                  <SmartImage
+                    {assets}
+                    src={p.data.cover}
+                    alt={p.data.title}
+                    width={400}
+                    height={250}
+                    ratio="16x10"
+                    variant={i + 1}
+                    class="aspect-16/10 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+                  <DateBadge date={p.data.date} />
+                </a>
+                <div class="flex flex-1 flex-col gap-2 p-4">
+                  {/* Ngày đã hiện ở badge trên ảnh; thẻ <time> ẩn giữ giá trị máy đọc được */}
+                  <time datetime={p.data.date.toISOString()} class="sr-only">
+                    {fmtShort(p.data.date)}
+                  </time>
+                  <h3 class="text-body leading-snug font-bold">
+                    <a href={`/blog/${p.id}`} class="transition-colors hover:text-primary">
+                      {p.data.title}
+                    </a>
+                  </h3>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )
+    }
 
     <aside class="mx-auto mt-12 max-w-3xl rounded-panel bg-surface-alt p-8">
       <h2 class="font-display text-xl font-bold">Cần báo giá cho chuỗi của bạn?</h2>

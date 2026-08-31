@@ -3,17 +3,19 @@
  * Tiêu đề section theo mockup: chữ in hoa đậm bên trái, chỗ trống bên phải cho
  * tabs hoặc nút "Xem thêm →". Dùng lại ở BÁN CHẠY, TIN TỨC, LỰA CHỌN CỦA TUẦN.
  */
+import PillButton from "./PillButton.astro";
+
 interface Props {
   title: string;
   subtitle?: string;
   /** Nút pill bên phải */
   action?: { label: string; href: string };
-  /** Nền nút action — `white` cho các section trên nền có hoạ tiết */
+  /** Nền nút action — mặc định `white`; `default` (surface-alt) cho nền phụ */
   actionTone?: "default" | "white";
   class?: string;
 }
 
-const { title, subtitle, action, actionTone = "default", class: className = "" } = Astro.props;
+const { title, subtitle, action, actionTone = "white", class: className = "" } = Astro.props;
 ---
 
 <div class={`mb-7 flex flex-wrap items-center justify-between gap-4 ${className}`}>
@@ -24,17 +26,6 @@ const { title, subtitle, action, actionTone = "default", class: className = "" }
 
   <div class="flex items-center gap-2.5">
     <slot />
-    {
-      action && (
-        <a
-          href={action.href}
-          class={`pill h-10 border border-line px-5 text-label font-semibold text-ink-muted transition-colors ${
-            actionTone === "white" ? "bg-white hover:bg-surface-alt" : "bg-surface-alt hover:bg-surface-tint"
-          }`}
-        >
-          {action.label}
-        </a>
-      )
-    }
+    {action && <PillButton text={action.label} href={action.href} tone={actionTone} />}
   </div>
 </div>

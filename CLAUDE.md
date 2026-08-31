@@ -39,6 +39,21 @@ Xem README.md mục 4 (TECH STACK) — 4 tầng `primitives/` → `patterns/` �
 `shared/` → `brand/`, quy tắc đặt file theo việc component có import
 `@config/brands` hay không.
 
+## Ưu tiên tái dùng component có sẵn — không tự viết mới nếu chưa xin phép
+
+Trước khi viết bất kỳ component/element UI mới nào (nút, card, badge, form
+field, layout block...), PHẢI kiểm tra `packages/ui/primitives/`,
+`packages/ui/patterns/`, `packages/ui/shared/`, `packages/ui/brand/` xem đã
+có component tương đương hay chưa (tên khác nhưng chức năng/hình dạng tương
+tự cũng tính).
+
+- Nếu đã có → dùng lại hoặc mở rộng props của component đó, không viết bản
+  mới song song.
+- Nếu chưa có và cần tạo mới → phải hỏi và được người dùng xác nhận trước,
+  không tự ý tạo component mới rồi mới báo lại.
+- Việc sửa nhỏ một component có sẵn (thêm prop, thêm biến thể qua `class`)
+  không tính là "viết mới" và không cần xin phép riêng.
+
 <!-- code-review-graph MCP tools -->
 ## MCP Tools: code-review-graph
 

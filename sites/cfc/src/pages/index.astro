@@ -7,6 +7,7 @@
  */
 import type { ImageMetadata } from "astro";
 import { getCollection } from "astro:content";
+import { categoryTitle } from "@config/categories";
 import Layout from "../layouts/Layout.astro";
 
 import HeroBanner from "@ui/patterns/HeroBanner.astro";
@@ -25,13 +26,18 @@ const products = (await getCollection("products", ({ data }) => !data.draft)).so
   (a, z) => a.data.order - z.data.order,
 );
 
+// `product.category` lưu slug (relationship) — đổi sang tên hiển thị để nhãn
+// tab và nhãn trên thẻ sản phẩm luôn khớp tên khách đặt trong CMS.
+const categories = await getCollection("categories");
+const label = (slug: string) => categoryTitle(categories, slug);
+
 const posts = (await getCollection("blog", ({ data }) => !data.draft))
   .sort((a, z) => z.data.date.getTime() - a.data.date.getTime())
   .slice(0, 4);
 
 const toCard = (p: (typeof products)[number]) => ({
   title: p.data.title,
-  category: p.data.category,
+  category: label(p.data.category),
   href: `/products/${p.id}`,
   image: p.data.image,
   badge: p.data.badge,
@@ -42,7 +48,7 @@ const toCard = (p: (typeof products)[number]) => ({
 });
 
 const bestsellers = products.filter((p) => p.data.bestseller).map(toCard);
-const tabs = [...new Set(products.map((p) => p.data.category))];
+const tabs = [...new Set(products.map((p) => label(p.data.category)))];
 
 const description =
   "Xưởng sản xuất túi giấy, giấy gói và hộp đựng thực phẩm cho chuỗi bánh mì và quán F&B. In theo yêu cầu từ 2.000 túi, giao toàn quốc, đạt chuẩn ATVSTP và HACCP.";

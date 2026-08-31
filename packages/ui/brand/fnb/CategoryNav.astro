@@ -109,34 +109,25 @@ const isActive = (href: string) =>
                 </summary>
 
                 {/* Dropdown Mega Menu */}
-                <div class="mega-menu-wrapper absolute top-full left-0 z-40 w-full border-y border-line bg-surface shadow-2xl backdrop-blur-md">
+                <div class="mega-menu-wrapper absolute top-full left-0 z-40 w-full">
                   <div class="site-container py-4">
                     {/* Bố cục Desktop (>= 768px): 2 Cột chuẩn như Ảnh 1 */}
-                    <div class="hidden md:flex rounded-2xl border border-line bg-surface shadow-lg overflow-hidden min-h-[420px]">
-                      
+                    <div class="mega-menu-card hidden md:flex rounded-2xl border border-line bg-surface-input shadow-lg overflow-hidden min-h-[420px]">
+
                       {/* CỘT TRÁI: Danh mục cha (Parent Categories Sidebar) */}
-                      <div class="w-[260px] lg:w-[280px] shrink-0 border-r border-line bg-surface-alt/40 p-3 flex flex-col gap-1.5">
-                        <div class="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-ink-muted">
-                          Danh mục chính
-                        </div>
+                      <div class="w-[260px] lg:w-[280px] shrink-0 border-r border-line bg-surface-input py-3 flex flex-col gap-1.5">
                         {item.megaParents.map((parent, idx) => (
                           <a
                             href={parent.href}
                             data-parent-target={parent.slug}
                             data-active={idx === 0 ? "true" : "false"}
-                            class={`mega-parent-btn group/parent flex items-center justify-between gap-3 px-3.5 py-3 rounded-xl transition-all duration-150 text-sm cursor-pointer select-none ${
-                              idx === 0
-                                ? "bg-primary/10 text-primary font-bold shadow-xs"
-                                : "text-ink font-medium hover:bg-surface-tint hover:text-primary"
-                            }`}
+                            class="mega-parent-btn group/parent flex items-center justify-between gap-3 px-6 py-3 font-medium transition-all duration-150 text-sm cursor-pointer select-none text-ink data-[active=true]:bg-surface-hover data-[active=true]:text-ink data-[active=true]:shadow-xs data-[active=false]:hover:bg-surface-hover"
                           >
                             <div class="flex items-center gap-3 min-w-0">
                               {parent.icon && (
                                 <Icon
                                   name={parent.icon}
-                                  class={`size-4.5 shrink-0 transition-colors ${
-                                    idx === 0 ? "text-primary" : "text-ink-muted group-hover/parent:text-primary"
-                                  }`}
+                                  class="size-4.5 shrink-0 transition-colors text-ink-muted"
                                   aria-hidden="true"
                                 />
                               )}
@@ -144,11 +135,7 @@ const isActive = (href: string) =>
                             </div>
                             <Icon
                               name="lucide:chevron-right"
-                              class={`size-4 shrink-0 transition-all ${
-                                idx === 0
-                                  ? "text-primary translate-x-0.5"
-                                  : "text-ink-faint group-hover/parent:text-primary group-hover/parent:translate-x-0.5"
-                              }`}
+                              class="size-4 shrink-0 transition-all text-ink-faint group-data-[active=true]/parent:translate-x-0.5 group-hover/parent:translate-x-0.5"
                               aria-hidden="true"
                             />
                           </a>
@@ -156,7 +143,7 @@ const isActive = (href: string) =>
                       </div>
 
                       {/* KHUNG PHẢI: Danh mục con & Sản phẩm (Child Groups & Products) */}
-                      <div class="flex-1 min-w-0 p-6 bg-surface flex flex-col justify-between">
+                      <div class="flex-1 min-w-0 p-6 bg-surface-input flex flex-col justify-between">
                         {item.megaParents.map((parent, idx) => (
                           <div
                             data-parent-panel={parent.slug}
@@ -170,13 +157,13 @@ const isActive = (href: string) =>
                                   {/* Tiêu đề Danh mục con (Bold Header) */}
                                   <a
                                     href={sub.href}
-                                    class="group/sub font-bold text-sm text-ink hover:text-primary transition-colors flex items-center justify-between gap-1 pb-1.5 border-b border-line-soft"
+                                    class="group/sub font-bold text-sm text-ink hover:text-primary transition-colors flex items-start justify-between gap-1 pb-1.5 border-b border-line-soft"
                                   >
-                                    <div class="flex items-center gap-1.5 truncate">
-                                      {sub.icon && <Icon name={sub.icon} class="size-4 text-primary shrink-0" aria-hidden="true" />}
-                                      <span class="truncate">{sub.label}</span>
+                                    <div class="flex items-start gap-1.5">
+                                      {sub.icon && <Icon name={sub.icon} class="size-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />}
+                                      <span>{sub.label}</span>
                                     </div>
-                                    <Icon name="lucide:arrow-right" class="size-3 text-primary opacity-0 group-hover/sub:opacity-100 transition-opacity shrink-0" aria-hidden="true" />
+                                    <Icon name="lucide:arrow-right" class="size-3 text-primary opacity-0 group-hover/sub:opacity-100 transition-opacity shrink-0 mt-0.5" aria-hidden="true" />
                                   </a>
 
                                   {/* Danh sách Sản phẩm / Phân loại chi tiết */}
@@ -186,8 +173,7 @@ const isActive = (href: string) =>
                                         <li class="min-w-0">
                                           <a
                                             href={p.href}
-                                            class="text-[13px] leading-snug text-ink-muted hover:text-primary hover:translate-x-0.5 transition-all block py-0.5 truncate"
-                                            title={p.label}
+                                            class="text-[13px] leading-snug text-ink-muted hover:text-primary hover:translate-x-0.5 transition-all block py-0.5"
                                           >
                                             {p.label}
                                           </a>
@@ -204,22 +190,6 @@ const isActive = (href: string) =>
                                 </div>
                               ))}
                             </div>
-
-                            {/* Footer của panel */}
-                            <div class="mt-6 pt-3.5 border-t border-line flex items-center justify-between text-xs">
-                              <a
-                                href={parent.href}
-                                class="font-bold text-primary hover:underline flex items-center gap-1"
-                              >
-                                Xem tất cả sản phẩm trong {parent.label} →
-                              </a>
-                              <a
-                                href="/products"
-                                class="font-medium text-ink-muted hover:text-primary transition-colors"
-                              >
-                                Xem tất cả sản phẩm CFC →
-                              </a>
-                            </div>
                           </div>
                         ))}
                       </div>
@@ -227,7 +197,7 @@ const isActive = (href: string) =>
                     </div>
 
                     {/* Bố cục Mobile (< 768px): Dạng danh mục xếp tầng trực quan */}
-                    <div class="md:hidden flex flex-col gap-3 py-2 max-h-[70vh] overflow-y-auto">
+                    <div class="mega-menu-card md:hidden flex flex-col gap-3 py-2 max-h-[70vh] overflow-y-auto">
                       {item.megaParents.map((parent) => (
                         <details class="group/m-parent border border-line rounded-xl p-3 bg-surface-alt/20">
                           <summary class="flex items-center justify-between cursor-pointer font-bold text-sm text-ink list-none">
@@ -327,18 +297,13 @@ const isActive = (href: string) =>
     wrappers.forEach((wrapper) => {
       const buttons = wrapper.querySelectorAll(".mega-parent-btn");
       const panels = wrapper.querySelectorAll(".mega-panel");
+      const firstSlug = buttons[0]?.getAttribute("data-parent-target");
+      const details = wrapper.closest("details");
 
       function activate(targetSlug) {
         buttons.forEach((btn) => {
           const isTarget = btn.getAttribute("data-parent-target") === targetSlug;
           btn.setAttribute("data-active", isTarget ? "true" : "false");
-          if (isTarget) {
-            btn.classList.add("bg-primary/10", "text-primary", "font-bold", "shadow-xs");
-            btn.classList.remove("text-ink", "font-medium", "hover:bg-surface-tint");
-          } else {
-            btn.classList.remove("bg-primary/10", "text-primary", "font-bold", "shadow-xs");
-            btn.classList.add("text-ink", "font-medium", "hover:bg-surface-tint");
-          }
         });
 
         panels.forEach((panel) => {
@@ -365,13 +330,24 @@ const isActive = (href: string) =>
           if (slug) activate(slug);
         });
       });
+
+      if (details && firstSlug) {
+        details.addEventListener("toggle", () => {
+          if (details.open) activate(firstSlug);
+        });
+      }
     });
 
-    // Đóng dropdown khi click ra ngoài hoặc click vào link bên trong
+    // Đóng dropdown khi click ra ngoài nội dung thực (summary/card), kể cả vào vùng đệm trống quanh mega menu, hoặc click vào link bên trong
     document.addEventListener("click", (e) => {
       const openDetails = document.querySelectorAll("nav[aria-label='Danh mục chính'] details[open]");
       openDetails.forEach((details) => {
-        if (!details.contains(e.target) || e.target.closest("a")) {
+        const hasCard = details.querySelector(".mega-menu-card");
+        const insideContent = hasCard
+          ? e.target.closest("summary")?.parentElement === details ||
+            (e.target.closest(".mega-menu-card") && details.contains(e.target))
+          : details.contains(e.target);
+        if (!insideContent || e.target.closest("a")) {
           details.removeAttribute("open");
         }
       });

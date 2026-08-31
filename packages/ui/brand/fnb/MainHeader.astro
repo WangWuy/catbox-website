@@ -1,7 +1,6 @@
 ---
 /**
- * Header chính — Logo trái + Search bo tròn giữa + pill CTA phải.
- * Theo mockup: chiều cao 92px, search max-width 520px.
+ * Header chính — Logo trái + Search bo tròn full width giữa + pill CTA phải.
  *
  * Chỉ phục vụ khung F&B (CFC + Tetta) — header Catbox ở
  * @ui/brand/catbox/SiteHeader.astro.
@@ -30,7 +29,7 @@ const cta = b.headerCta;
       <BrandLogo brand={brand} />
     </a>
 
-    <div class="mx-auto hidden w-full max-w-(--width-search) flex-1 md:block">
+    <div class="hidden w-full flex-1 md:block">
       <SearchBox placeholder={b.searchPlaceholder} />
     </div>
 

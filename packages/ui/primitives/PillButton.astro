@@ -1,0 +1,31 @@
+---
+/**
+ * Nút pill bo tròn dùng chung (VD: "Xem tất cả →" ở SectionHeader, "Xem thêm
+ * tin →" ở NewsGrid). Render <a> nếu có href, ngược lại <button> để gắn sự
+ * kiện client (onclick, data-*...) qua rest props.
+ */
+export interface Props extends astroHTML.JSX.HTMLAttributes {
+  text: string;
+  href?: string;
+  /** Nền nút — mặc định `white`; `default` cho nền phụ (surface-alt) */
+  tone?: "default" | "white";
+  class?: string;
+}
+
+const { text, href, tone = "white", class: className = "", ...rest } = Astro.props;
+
+const toneClass = tone === "white" ? "bg-white hover:bg-surface-alt" : "bg-surface-alt hover:bg-surface-tint";
+const pillClass = `pill h-10 border border-line px-5 text-label font-semibold text-ink-muted transition-colors ${toneClass} ${className}`;
+---
+
+{
+  href ? (
+    <a href={href} class={pillClass} {...rest}>
+      {text}
+    </a>
+  ) : (
+    <button type="button" class={pillClass} {...rest}>
+      {text}
+    </button>
+  )
+}

@@ -54,6 +54,12 @@ export const faqSchema = z.object({
 
 export const productSchema = z.object({
   title: z.string(),
+  /**
+   * Slug của file trong collection `categories` (KHÔNG phải tên hiển thị) —
+   * Keystatic `fields.relationship` ghi ra slug. Tên hiển thị lấy qua
+   * `categoryTitle()` trong `packages/config/categories.ts`, không đọc thẳng
+   * field này ra UI.
+   */
   category: z.string(),
   /** Dùng cho filter island — lọc bằng URL query param */
   material: z.array(z.string()).default([]),
@@ -83,7 +89,29 @@ export const categorySchema = z.object({
   sub: z.string().optional(),
   description: z.string().optional(),
   image: imageField,
-  icon: z.string().optional(),
+  /**
+   * Tên icon Iconify hiển thị trên CategoryNav (ví dụ `lucide:shopping-bag`).
+   * Trước đây hardcode trong `nav.ts`; giờ khách tự chọn qua Keystatic.
+   * Keystatic ghi `""` khi khách chọn "Không có icon" — quy về `undefined` để
+   * component không truyền chuỗi rỗng vào `<Icon name>` (làm hỏng build).
+   */
+  icon: z
+    .string()
+    .optional()
+    .transform((v) => (v ? v : undefined)),
+  /**
+   * Slug danh mục cha — cây 3 tầng theo sitemap CFC
+   * (Túi giấy thực phẩm → Túi bánh mì → Bao bánh mì que).
+   * Bỏ trống = danh mục gốc, tức mục hiện trên thanh CategoryNav.
+   * `fields.relationship` ghi `null` khi bỏ trống, nên phải nhận cả null.
+   */
+  parent: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? undefined),
+  /** Ẩn khỏi CategoryNav nhưng trang `/danh-muc/<slug>` vẫn build (giữ link cũ) */
+  hideFromNav: z.boolean().default(false),
+  draft: z.boolean().default(false),
   order: z.number().default(999),
   ...seoFields,
 });

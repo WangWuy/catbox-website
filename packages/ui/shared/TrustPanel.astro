@@ -1,0 +1,98 @@
+---
+/**
+ * Khối "hình ảnh + lời cam kết" đứng TRƯỚC form tư vấn (concept CFC trang Liên hệ).
+ *
+ * Vì sao đứng trước form: khách vào trang liên hệ ở trạng thái còn phân vân,
+ * form trần chỉ là chi phí phải trả. Ảnh xưởng thật + số liệu năng lực trả lời
+ * "vì sao tin được" ngay trước ô nhập đầu tiên.
+ *
+ * Số liệu đọc từ `BRANDS[brand].stats` chứ không nhận qua props — trang
+ * /about-us dùng chung nguồn đó, hai trang lệch số là mồi GEO sai. Brand chưa
+ * có số liệu thì lưới tự ẩn, không hiện khung rỗng.
+ */
+import type { AssetMap } from "../lib/images";
+import SmartImage from "@ui/primitives/SmartImage.astro";
+import { BRANDS, type BrandId } from "@config/brands";
+
+interface Props {
+  brand: BrandId;
+  assets: AssetMap;
+  /** Ảnh cam kết — ảnh xưởng/đội ngũ thật, không phải ảnh sản phẩm */
+  image?: string;
+  /** Tiêu đề đậm bên phải ảnh */
+  heading: string;
+  /** Các đoạn mô tả dưới lưới số liệu */
+  body: string[];
+  cta?: { label: string; href: string };
+}
+
+/** Link ra ngoài site thì mở tab mới (CTA hay trỏ sang Zalo/Messenger). */
+const isExternal = (href: string) => /^https?:\/\//.test(href);
+
+const { brand, assets, image, heading, body, cta } = Astro.props;
+const b = BRANDS[brand];
+const stats = b.stats;
+---
+
+<section
+  class="site-container grid items-start gap-8 lg:grid-cols-2 lg:gap-12"
+  aria-labelledby="trust-heading"
+>
+  <div class="overflow-hidden rounded-panel bg-surface-tint">
+    <SmartImage
+      {assets}
+      src={image}
+      alt={`${b.name} — đội ngũ và nhà xưởng`}
+      width={640}
+      height={480}
+      ratio="4x3"
+      class="aspect-4/3 w-full object-cover"
+    />
+  </div>
+
+  <div class="flex flex-col gap-5">
+    <h2 id="trust-heading" class="text-2xl leading-snug font-extrabold text-primary">
+      {heading}
+    </h2>
+    {/* Gạch chân ngắn dưới tiêu đề, theo concept */}
+    <span class="h-(--height-rule-accent) w-(--width-rule-accent) bg-accent" aria-hidden="true"
+    ></span>
+
+    {
+      stats.length > 0 && (
+        <dl class="grid grid-cols-2 gap-x-6 gap-y-5">
+          {stats.map((s) => (
+            <div class="flex flex-col gap-1">
+              <dt class="sr-only">{s.label}</dt>
+              <dd
+                class:list={[
+                  "font-display text-3xl leading-none font-extrabold tracking-tight",
+                  s.highlight ? "text-cta" : "text-primary",
+                ]}
+              >
+                {s.num}
+              </dd>
+              <span class="text-meta font-medium text-ink-muted">{s.label}</span>
+            </div>
+          ))}
+        </dl>
+      )
+    }
+
+    {body.map((p) => <p class="text-meta leading-relaxed text-ink-muted">{p}</p>)}
+
+    {
+      cta && (
+        <a
+          href={cta.href}
+          target={isExternal(cta.href) ? "_blank" : undefined}
+          rel={isExternal(cta.href) ? "noopener" : undefined}
+          data-analytics={cta.href.includes("zalo.me") ? "click_zalo" : undefined}
+          class="pill inline-flex h-11 w-fit items-center bg-cta px-7 text-label font-semibold text-white transition-colors hover:bg-cta-hover"
+        >
+          {cta.label}
+        </a>
+      )
+    }
+  </div>
+</section>

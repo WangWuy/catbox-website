@@ -1,14 +1,15 @@
 ---
 /**
- * TIN TỨC — lưới 4 blog card nền trắng, mỗi card có thumbnail 16:10, ngày,
- * tiêu đề và link "Đọc tiếp →".
+ * TIN TỨC — lưới 4 blog card nền trắng, mỗi card có thumbnail 16:10 kèm badge
+ * ngày đè góc trên trái (theo concept CFC), tiêu đề và link "Đọc tiếp →".
  *
  * Dùng `bg-white` thay `bg-surface` vì trang chủ CFC có nền hoạ tiết; card
- * trắng tách khỏi nền rõ hơn beige. Nút "Xem thêm tin" trắng theo cho đồng bộ.
+ * trắng tách khỏi nền rõ hơn beige.
  */
 import type { AssetMap } from "../lib/images";
 import SmartImage from "@ui/primitives/SmartImage.astro";
 import SectionHeader from "@ui/primitives/SectionHeader.astro";
+import DateBadge from "@ui/primitives/DateBadge.astro";
 
 export interface NewsItem {
   title: string;
@@ -31,13 +32,13 @@ const fmt = (d: Date) =>
 ---
 
 <section class="site-container" aria-labelledby="news-heading">
-  <SectionHeader {title} {action} actionTone="white" />
+  <SectionHeader {title} {action} />
 
   <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
     {
       items.map((a, i) => (
         <article class="group flex flex-col overflow-hidden rounded-card border border-line bg-white">
-          <a href={a.href} class="block bg-white">
+          <a href={a.href} class="relative block bg-white">
             <SmartImage
               {assets}
               src={a.cover}
@@ -48,9 +49,11 @@ const fmt = (d: Date) =>
               variant={i + 1}
               class="aspect-16/10 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
+            <DateBadge date={a.date} />
           </a>
           <div class="flex flex-1 flex-col gap-2.5 p-4 pb-5">
-            <time datetime={a.date.toISOString()} class="text-tiny font-semibold text-ink-faint">
+            {/* Ngày đã hiện ở badge trên ảnh; thẻ <time> ẩn giữ giá trị máy đọc được */}
+            <time datetime={a.date.toISOString()} class="sr-only">
               {fmt(a.date)}
             </time>
             <h3 class="flex-1 text-body leading-snug font-bold">

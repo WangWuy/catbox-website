@@ -7,20 +7,31 @@ import { getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 import ProductCard from "@ui/primitives/ProductCard.astro";
+import { categoryTitle, categoryTrail, descendantSlugs } from "@config/categories";
 
 export async function getStaticPaths() {
   const categories = await getCollection("categories");
   const products = await getCollection("products", ({ data }) => !data.draft);
+  const live = categories.filter((c) => !c.data.draft);
 
-  return categories.map((c) => ({
-    params: { slug: c.id },
-    props: {
-      category: c,
-      items: products
-        .filter((p) => p.data.category === c.data.title || p.data.category === c.data.sub)
-        .sort((a, z) => a.data.order - z.data.order),
-    },
-  }));
+  return live.map((c) => {
+    // Gom cả danh mục con: trang "Túi giấy thực phẩm" phải hiện luôn sản phẩm
+    // gắn vào "Bao bánh mì que" nằm sâu 2 tầng bên dưới (theo sitemap).
+    const branch = new Set(descendantSlugs(categories, c.id));
+
+    return {
+      params: { slug: c.id },
+      props: {
+        category: c,
+        // Đường gốc → danh mục hiện tại, cho breadcrumb nhiều tầng.
+        trail: categoryTrail(categories, c.id),
+        items: products
+          .filter((p) => branch.has(p.data.category))
+          .sort((a, z) => a.data.order - z.data.order)
+          .map((p) => ({ ...p, categoryLabel: categoryTitle(categories, p.data.category) })),
+      },
+    };
+  });
 }
 
 const assets = import.meta.glob<{ default: ImageMetadata }>(
@@ -28,7 +39,7 @@ const assets = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true },
 );
 
-const { category, items } = Astro.props;
+const { category, items, trail } = Astro.props;
 const { data } = category;
 const { Content } = await render(category);
 
@@ -54,7 +65,16 @@ const jsonLd = [
 ---
 
 <Layout title={data.title} {description} {jsonLd}>
-  <Breadcrumb items={[{ label: "Sản phẩm", href: "/products" }, { label: data.title }]} />
+  <Breadcrumb
+    items={[
+      { label: "Sản phẩm", href: "/products" },
+      // Tổ tiên có link, chính nó thì không (đang đứng ở đây).
+      ...trail.map((c, i) => ({
+        label: c.label,
+        href: i < trail.length - 1 ? c.href : undefined,
+      })),
+    ]}
+  />
 
   <div class="site-container pb-16">
     <h1 class="mb-2 text-3xl font-extrabold tracking-tight uppercase md:text-section">
@@ -73,7 +93,7 @@ const jsonLd = [
             <ProductCard
               {assets}
               title={p.data.title}
-              category={p.data.category}
+              category={p.categoryLabel}
               href={`/products/${p.id}`}
               image={p.data.image}
               badge={p.data.badge}

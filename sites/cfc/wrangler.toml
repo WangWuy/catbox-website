@@ -1,0 +1,32 @@
+# Worker CHỈ để chạy Keystatic Admin UI cho site CFC ("Cách B" trong
+# plans/01-keystatic-cms-integration.md Task 0.4 — khách vào bằng URL, không
+# phải cài Node hay chạy lệnh trên máy mình).
+#
+# ĐÂY KHÔNG PHẢI bản deploy của site công khai. Site cfc.vn vẫn là static build
+# trên Cloudflare Pages y như trước (`pnpm build`, không set KEYSTATIC_ADMIN).
+# Worker này chỉ dựng cho vài người sửa nội dung → đặt ở subdomain riêng và
+# BẮT BUỘC chặn bằng Cloudflare Access (xem README, mục vận hành Keystatic).
+#
+# Chỉ khai báo ở đây những thứ adapter KHÔNG tự suy ra. `main`, `assets`,
+# `compatibility_date`, binding SESSION... do @astrojs/cloudflare tự sinh vào
+# dist/server/wrangler.json lúc build — viết tay lại sẽ lệch nhau và làm build
+# fail (plugin kiểm tra `main` tồn tại trước khi build kịp tạo file).
+#
+# Build + deploy:
+#   pnpm --filter @catbox/site-cfc deploy:admin
+
+name = "cfc-keystatic-admin"
+
+[observability]
+enabled = true
+
+# KV lưu session của Astro — adapter tự khai báo binding SESSION, nhưng
+# namespace thì phải tạo một lần rồi điền id vào đây:
+#   pnpm --filter @catbox/site-cfc exec wrangler kv namespace create SESSION
+# [[kv_namespaces]]
+# binding = "SESSION"
+# id = "<điền id wrangler in ra>"
+
+# Secret — KHÔNG commit. Storage 'cloud' hiện tại không cần, nhưng nếu sau này
+# đổi sang GitHub mode thì đặt bằng:
+#   pnpm --filter @catbox/site-cfc exec wrangler secret put KEYSTATIC_SECRET

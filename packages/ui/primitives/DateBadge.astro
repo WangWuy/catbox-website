@@ -1,0 +1,36 @@
+---
+/**
+ * BADGE NGÀY — khung vuông nền primary đè lên góc trên trái thumbnail tin tức
+ * (theo concept CFC): số ngày cỡ lớn ở trên, tháng viết tắt "Th6" nhỏ ở dưới.
+ *
+ * Đặt trong một khung `relative` (thường là thẻ <a> bọc ảnh). Mọi kích thước
+ * lấy từ token `--size-date-badge` / `--text-date-badge-*` / `--offset-date-badge`
+ * để 2 chỗ dùng (NewsGrid trang chủ, lưới /blog) không lệch nhau.
+ */
+interface Props {
+  date: Date;
+  /** Thêm class ở ngoài khi cần chỉnh vị trí riêng */
+  class?: string;
+}
+
+const { date, class: className = "" } = Astro.props;
+
+const day = date.getDate().toString().padStart(2, "0");
+/** Tháng viết tắt kiểu Việt: "Th6" — ngắn hơn "Tháng 6" để lọt khung badge */
+const month = `Th${date.getMonth() + 1}`;
+---
+
+<div
+  class:list={[
+    "pointer-events-none absolute top-(--offset-date-badge) left-(--offset-date-badge)",
+    "flex size-(--size-date-badge) flex-col items-center justify-center",
+    "rounded-sm bg-primary leading-none text-white",
+    className,
+  ]}
+  aria-hidden="true"
+>
+  <span class="text-(--text-date-badge-day) font-extrabold">{day}</span>
+  <span class="mt-0.5 text-(--text-date-badge-month) font-semibold uppercase opacity-90">
+    {month}
+  </span>
+</div>

@@ -4,6 +4,8 @@ import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 import SmartImage from "@ui/primitives/SmartImage.astro";
+import DateBadge from "@ui/primitives/DateBadge.astro";
+import { collectTags, tagHref } from "@config/blog";
 
 const assets = import.meta.glob<{ default: ImageMetadata }>(
   "/src/assets/**/*.{png,jpg,jpeg,webp,avif}",
@@ -13,6 +15,8 @@ const assets = import.meta.glob<{ default: ImageMetadata }>(
 const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, z) => z.data.date.getTime() - a.data.date.getTime(),
 );
+
+const tags = collectTags(posts);
 
 const fmt = (d: Date) =>
   d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
@@ -28,13 +32,30 @@ const description =
     <h1 class="mb-2 text-3xl font-extrabold tracking-tight uppercase md:text-section">
       Tin tức & Cẩm nang
     </h1>
-    <p class="mb-8 max-w-2xl text-ink-muted">{description}</p>
+    <p class="mb-6 max-w-2xl text-ink-muted">{description}</p>
+
+    {
+      tags.length > 0 && (
+        <ul class="mb-8 flex flex-wrap gap-2" aria-label="Lọc theo thẻ">
+          {tags.map((t) => (
+            <li>
+              <a
+                href={tagHref(t.slug)}
+                class="pill inline-flex h-8 items-center border border-line bg-surface-chip px-4 text-meta font-semibold text-ink-muted transition-colors hover:bg-surface-alt hover:text-primary"
+              >
+                {t.label} ({t.count})
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
 
     <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {
         posts.map((p, i) => (
           <article class="group flex flex-col overflow-hidden rounded-card border border-line bg-surface">
-            <a href={`/blog/${p.id}`} class="block bg-surface-tint">
+            <a href={`/blog/${p.id}`} class="relative block bg-surface-tint">
               <SmartImage
                 {assets}
                 src={p.data.cover}
@@ -45,18 +66,20 @@ const description =
                 variant={i + 1}
                 class="aspect-16/10 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               />
+              <DateBadge date={p.data.date} />
             </a>
             <div class="flex flex-1 flex-col gap-2.5 p-5">
-              <time datetime={p.data.date.toISOString()} class="text-[11.5px] font-semibold text-ink-faint">
+              {/* Ngày đã hiện ở badge trên ảnh; thẻ <time> ẩn giữ giá trị máy đọc được */}
+              <time datetime={p.data.date.toISOString()} class="sr-only">
                 {fmt(p.data.date)}
               </time>
-              <h2 class="text-[17px] leading-snug font-bold">
+              <h2 class="text-card-title leading-snug font-bold">
                 <a href={`/blog/${p.id}`} class="transition-colors hover:text-primary">
                   {p.data.title}
                 </a>
               </h2>
-              <p class="flex-1 text-sm leading-relaxed text-ink-muted">{p.data.description}</p>
-              <span class="text-[13px] font-bold text-primary-hover">Đọc tiếp →</span>
+              <p class="flex-1 text-body leading-relaxed text-ink-muted">{p.data.description}</p>
+              <span class="text-meta font-bold text-primary-hover">Đọc tiếp →</span>
             </div>
           </article>
         ))

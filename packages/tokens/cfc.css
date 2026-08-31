@@ -37,6 +37,7 @@
   --color-surface-pill-hover: #D9D5CE;
 
   --color-surface-input:  #FFFFFF;  /* Ô search CFC nền trắng (theo mockup) */
+  --color-surface-hover:  #F4F4F4;  /* Trạng thái hover/active nền xám trung tính — CategoryNav mega menu */
 
   /* Màu thanh trình duyệt (<meta name="theme-color">) */
   --color-theme:         #E67E22;

@@ -8,6 +8,7 @@
  * FnbBrandId chặn việc truyền brand="catbox" vào đây ngay lúc biên dịch.
  */
 import { BRANDS, type FnbBrandId } from "@config/brands";
+import type { CategoryEntryLike, ProductEntryLike } from "@config/categories";
 import SEOHead from "@ui/shared/SEOHead.astro";
 import JsonLd from "@ui/shared/JsonLd.astro";
 import TopbarSwitcher from "@ui/brand/fnb/TopbarSwitcher.astro";
@@ -26,6 +27,17 @@ interface Props {
   /** Schema bổ sung cho trang này (Product, Article, FAQPage…) */
   jsonLd?: Record<string, unknown>[];
   fonts?: string;
+  /**
+   * Collection `categories` để CategoryNav dựng menu từ content thay vì
+   * `NAV[brand]` hardcode. Layout của site tự lấy và truyền xuống (BaseLayout
+   * dùng chung nhiều site nên không tự gọi `getCollection` được).
+   */
+  categories?: CategoryEntryLike[];
+  /**
+   * Collection `products` để CategoryNav gắn danh sách sản phẩm thực tế vào
+   * từng nhóm danh mục con.
+   */
+  products?: ProductEntryLike[];
 }
 
 const {
@@ -37,6 +49,8 @@ const {
   noindex,
   jsonLd = [],
   fonts,
+  categories,
+  products,
 } = Astro.props;
 
 const b = BRANDS[brand];
@@ -60,7 +74,7 @@ const current = Astro.url.pathname;
 
     <TopbarSwitcher {brand} />
     <MainHeader {brand} />
-    <CategoryNav {brand} {current} />
+    <CategoryNav {brand} {current} {categories} {products} />
 
     <main id="main" data-pagefind-body>
       <slot />

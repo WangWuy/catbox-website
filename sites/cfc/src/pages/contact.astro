@@ -1,10 +1,32 @@
 ---
+import type { ImageMetadata } from "astro";
+import { Icon } from "astro-icon/components";
 import Layout from "../layouts/Layout.astro";
 import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 import QuoteForm from "@ui/shared/QuoteForm.astro";
+import TrustPanel from "@ui/shared/TrustPanel.astro";
 import { BRANDS } from "@config/brands";
 
+const assets = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/**/*.{png,jpg,jpeg,webp,avif}",
+  { eager: true },
+);
+
 const b = BRANDS.cfc;
+
+/**
+ * Lời cam kết trước form (concept: "Hình ảnh và lời cam kết trước form cần tư vấn").
+ * TODO(nội dung): ảnh đội ngũ thật chưa có, tạm dùng hero-banner — thay bằng
+ * ảnh xưởng/đội ngũ trước khi lên production.
+ */
+const trust = {
+  heading: `${b.name} — Giải pháp bao bì giấy an toàn cho chuỗi F&B`,
+  body: [
+    "10+ năm kinh nghiệm trong lĩnh vực in ấn và sản xuất bao bì giấy tiếp xúc thực phẩm, là đối tác tin cậy của hàng nghìn quán ăn, chuỗi cà phê và nhà hàng trên toàn quốc.",
+    "Sở hữu dây chuyền in offset và bế hộp đồng bộ, quy trình kiểm soát chất lượng khép kín từ chọn giấy tới thành phẩm — chủ động rút ngắn thời gian giao hàng kể cả với đơn số lượng lớn.",
+  ],
+  cta: { label: `Trò chuyện với ${b.short}`, href: `https://zalo.me/${b.zalo}` },
+};
 
 const segments = [
   {
@@ -55,6 +77,17 @@ const jsonLd = [
 <Layout title="Liên hệ & Báo giá" {description} {jsonLd}>
   <Breadcrumb items={[{ label: "Liên hệ" }]} />
 
+  <div class="pb-12">
+    <TrustPanel
+      brand="cfc"
+      {assets}
+      image="brand/hero-banner.png"
+      heading={trust.heading}
+      body={trust.body}
+      cta={trust.cta}
+    />
+  </div>
+
   <div class="site-container grid gap-10 pb-16 lg:grid-cols-[1fr_360px]">
     <div class="flex flex-col gap-6">
       <header class="flex flex-col gap-3">
@@ -71,30 +104,29 @@ const jsonLd = [
 
     <aside class="flex flex-col gap-4">
       <div class="flex flex-col gap-4 rounded-panel border border-line bg-surface-alt p-6">
-        <h2 class="text-[13px] font-bold tracking-wide uppercase">Liên hệ trực tiếp</h2>
+        <h2 class="text-meta font-bold tracking-wide uppercase">Liên hệ trực tiếp</h2>
         {
           b.contacts.map((c) => (
             <div class="flex items-start gap-3">
-              <span
-                aria-hidden="true"
-                class="grid size-9 flex-none place-items-center rounded-chip bg-surface text-[15px]"
-              >
-                {c.icon}
+              <span class="grid size-9 flex-none place-items-center rounded-chip bg-surface text-primary">
+                {/* `c.icon` là tên icon Lucide — phải render qua astro-icon,
+                    trước đây in thẳng ra chữ "lucide:mail" trên trang. */}
+                <Icon name={c.icon} class="size-(--size-icon-inline)" aria-hidden="true" />
               </span>
               <div class="flex flex-col gap-0.5">
-                <span class="text-[11.5px] font-semibold tracking-wide text-ink-faint uppercase">
+                <span class="text-tiny font-semibold tracking-wide text-ink-faint uppercase">
                   {c.label}
                 </span>
                 {c.href ? (
                   <a
                     href={c.href}
                     data-analytics={c.label === "Hotline" ? "click_hotline" : undefined}
-                    class="text-[14.5px] leading-snug font-semibold transition-colors hover:text-primary"
+                    class="text-nav leading-snug font-semibold transition-colors hover:text-primary"
                   >
                     {c.value}
                   </a>
                 ) : (
-                  <span class="text-[14.5px] leading-snug font-semibold">{c.value}</span>
+                  <span class="text-nav leading-snug font-semibold">{c.value}</span>
                 )}
               </div>
             </div>
@@ -105,14 +137,14 @@ const jsonLd = [
           target="_blank"
           rel="noopener"
           data-analytics="click_zalo"
-          class="pill mt-1 h-11 justify-center bg-[#0088FF] text-white transition-opacity hover:opacity-90"
+          class="pill mt-1 h-11 justify-center bg-zalo text-white transition-opacity hover:opacity-90"
         >
           Chat Zalo
         </a>
       </div>
 
       <div class="rounded-panel border border-line p-6">
-        <h2 class="mb-2 text-[13px] font-bold tracking-wide uppercase">Giờ làm việc</h2>
+        <h2 class="mb-2 text-meta font-bold tracking-wide uppercase">Giờ làm việc</h2>
         <p class="text-sm leading-relaxed text-ink-muted">
           Thứ 2 – Thứ 7: 8:00 – 17:30<br />
           Chủ nhật: nghỉ (Zalo vẫn nhận tin)
@@ -120,7 +152,7 @@ const jsonLd = [
       </div>
 
       <div class="rounded-panel border border-line p-6">
-        <h2 class="mb-2 text-[13px] font-bold tracking-wide uppercase">Thanh toán</h2>
+        <h2 class="mb-2 text-meta font-bold tracking-wide uppercase">Thanh toán</h2>
         <p class="text-sm leading-relaxed text-ink-muted">
           KV Hà Nội / Hà Nam: thanh toán khi nhận hàng.<br />
           Ngoài KV: thanh toán trước khi giao.

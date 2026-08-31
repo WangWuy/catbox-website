@@ -1,0 +1,74 @@
+---
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import Layout from "../layouts/Layout.astro";
+import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
+
+/**
+ * Hub chính sách công ty — chỉ tóm tắt và dẫn sang collection `policies`.
+ * Cố tình KHÔNG chép lại nội dung chính sách vào đây: đã có trang riêng
+ * /policies/[slug], chép hai nơi thì sửa một nơi là lệch.
+ */
+const policies = (await getCollection("policies")).sort((a, b) => a.data.order - b.data.order);
+
+/** Icon theo slug — slug lạ thì rơi về icon mặc định */
+const ICONS: Record<string, string> = {
+  "chinh-sach-thanh-toan": "lucide:wallet",
+  "chinh-sach-bao-hanh": "lucide:shield-check",
+  "dieu-khoan-su-dung": "lucide:scroll-text",
+};
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+
+const description =
+  "Chính sách công ty của xưởng bao bì giấy CFC — thanh toán, đổi trả & bảo hành, điều khoản sử dụng.";
+---
+
+<Layout title="Chính sách công ty" {description}>
+  <Breadcrumb items={[{ label: "Về chúng tôi", href: "/about-us" }, { label: "Chính sách công ty" }]} />
+
+  <div class="site-container flex flex-col gap-12 pb-16">
+    <header class="flex max-w-3xl flex-col gap-4">
+      <h1 class="text-3xl font-extrabold tracking-tight uppercase md:text-section">
+        Chính sách công ty
+      </h1>
+      <p class="leading-relaxed text-ink-muted">
+        Các điều khoản áp dụng cho mọi đơn hàng in theo yêu cầu tại xưởng. Với đơn định kỳ hoặc hợp
+        đồng nguyên tắc, một số điều khoản có thể thoả thuận riêng — liên hệ hotline để trao đổi.
+      </p>
+    </header>
+
+    <section class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" aria-label="Danh sách chính sách">
+      {
+        policies.map((p) => (
+          <a
+            href={`/policies/${p.id}`}
+            class="group flex flex-col gap-3 rounded-panel border border-line bg-surface p-6 transition-colors hover:border-primary"
+          >
+            <span class="flex size-(--size-icon-panel-box) items-center justify-center rounded-panel bg-surface-tint text-primary">
+              <Icon
+                name={ICONS[p.id] ?? "lucide:file-text"}
+                class="size-(--size-icon-panel)"
+                aria-hidden="true"
+              />
+            </span>
+            <h2 class="font-display text-card-title font-bold">{p.data.title}</h2>
+            {p.data.seoDescription && (
+              <p class="text-meta leading-relaxed text-ink-muted">{p.data.seoDescription}</p>
+            )}
+            <span class="mt-auto flex items-center gap-1.5 pt-2 text-label font-semibold text-primary">
+              Xem chi tiết
+              <Icon
+                name="lucide:arrow-right"
+                class="size-(--size-icon-inline) transition-transform group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
+            </span>
+            <span class="text-tiny text-ink-faint">Cập nhật {fmt(p.data.updated)}</span>
+          </a>
+        ))
+      }
+    </section>
+  </div>
+</Layout>

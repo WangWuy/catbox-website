@@ -34,7 +34,7 @@ Thí điểm trên `cfc` cho phép tách bạch rạch ròi: Phase 0-3 chỉ ki�
 **Mục tiêu**: xác nhận toàn bộ chuỗi cài đặt hoạt động trước khi thiết kế schema đầy đủ.
 
 ### Task 0.1 — Tạo Keystatic Cloud team
-- Đăng ký tại keystatic.com/docs/cloud, tạo 1 team (dùng email của owner dự án).
+- Đăng ký tại **keystatic.cloud** (domain riêng — `keystatic.com/cloud` là 404; `keystatic.com/docs/cloud` chỉ là trang tài liệu). Tạo 1 team bằng email của owner dự án.
 - Kết nối team với GitHub repo hiện tại (Keystatic Cloud sẽ tự xin quyền cần thiết qua GitHub App do chính Keystatic quản lý — không phải app tự tạo).
 - Ghi lại `teamName` (Cloud project slug) — sẽ dùng trong `storage: {kind: 'cloud', pathPrefix: ...}`.
 
@@ -64,7 +64,31 @@ integrations: [
 Vì site chính build `output: 'static'` cho Cloudflare Pages, và Keystatic cần server-side code lúc admin thao tác:
 - **Cách A (khuyến nghị để bắt đầu)**: route `/keystatic` chỉ chạy ở **local dev** (`pnpm dev`) — người sửa nội dung chạy `pnpm dev` trên máy họ, vào `localhost:4321/keystatic`, sửa xong Keystatic Cloud tự commit lên GitHub qua API (không cần server production nào cả). Set `SKIP_KEYSTATIC=true` khi chạy `astro build` production (Cloudflare Pages build command) để route này không có trong bundle deploy — site production hoàn toàn không đổi.
 - **Cách B (nếu cửa hàng cần truy cập admin qua URL, không muốn chạy lệnh dev)**: deploy `/keystatic` như 1 route server-side riêng, cần adapter (`@astrojs/cloudflare` ở chế độ Workers, không phải Pages — theo phát hiện nghiên cứu, `@astrojs/cloudflare` bản mới đã bỏ hỗ trợ Pages). Đây là việc phức tạp hơn, để ngỏ cho Phase sau nếu Cách A không đáp ứng đủ (cửa hàng ngại cài Node.js/chạy lệnh).
-- **Quyết định cho plan này: bắt đầu với Cách A.** Ghi rõ trong Phase 3 (Vận hành) hướng dẫn cụ thể để cửa hàng chạy được `pnpm dev` (hoặc cân nhắc: bạn/dev host sẵn 1 máy/service chạy `pnpm dev` liên tục nội bộ, cửa hàng truy cập qua VPN/Tailscale — chi tiết vận hành để bàn ở Phase 3, không chặn Phase 0-2).
+- ~~**Quyết định cho plan này: bắt đầu với Cách A.**~~
+
+> **CẬP NHẬT (2026-08-30) — đã chuyển sang Cách B, đã triển khai xong.**
+>
+> Lý do đổi: Cách A bắt chủ xưởng in cài Node.js + chạy `pnpm dev` trên máy họ — không khả thi trên thực tế.
+>
+> **Lo ngại kỹ thuật ở Cách B (issue Thinkmill/keystatic#1497 — OAuth state sinh sai trên Cloudflare Workers) đã kiểm chứng lại trên bản đang cài và KHÔNG còn áp dụng.** Bằng chứng, đọc thẳng từ `node_modules` chứ không phải từ docs:
+> - `@keystatic/core@0.6.9` khai báo export condition riêng cho Workers: `"./api/generic"` → `"worker": "./dist/keystatic-core-api-generic.worker.js"` (xem `package.json` của package).
+> - File worker đó **không import `node:*` nào** (bản `.node.js` mới có `node:path`/`node:fs` — chỉ dùng cho storage local).
+> - Nó dùng thẳng Web Crypto toàn cục: `const webcrypto = crypto`, và OAuth state sinh bằng `webcrypto.getRandomValues(...)` — đúng API mà workerd cung cấp. Đây chính là chỗ từng lỗi.
+> - Kiểm chứng ở bundle đầu ra: `grep node:` trong `dist/server/` sau khi build ra **rỗng**; cả 4 route (`/keystatic`, `/keystatic/[...params]`, `/keystatic/repo-not-found`, `/api/keystatic/[...params]`) đều có trong bundle.
+> - Chạy thật bằng `wrangler dev`: `/keystatic` trả **200** và render được admin UI.
+>
+> Về ghi chú "`@astrojs/cloudflare` bỏ hỗ trợ Pages": đúng, nhưng không cản trở — Cách B triển khai theo hướng **tách đôi**, không đụng gì tới site công khai:
+>
+> | | Site công khai | Admin |
+> |---|---|---|
+> | Lệnh build | `pnpm build` | `pnpm deploy:admin` |
+> | Output | `static` (như cũ) | `server` + adapter Cloudflare |
+> | Hạ tầng | Cloudflare **Pages**, `cfc.vn` | Cloudflare **Worker**, subdomain riêng |
+> | Có route `/keystatic`? | Không | Có |
+>
+> Nhờ tách đôi, site công khai vẫn tĩnh hoàn toàn — không dính adapter, không tăng cold start, không đổi cách deploy hiện tại. Đã verify: build công khai vẫn ra 39 trang tĩnh, `dist/` không có `_worker.js` lẫn `/keystatic`.
+>
+> Chi tiết vận hành (tạo KV, deploy, chặn truy cập bằng Cloudflare Access): xem `docs/KEYSTATIC_VAN_HANH.md`.
 
 **Verification Phase 0**: `pnpm --filter @catbox/site-cfc build` với `SKIP_KEYSTATIC=true` phải build thành công y hệt hiện tại (không route `/keystatic` trong `dist/`). `pnpm --filter @catbox/site-cfc dev` (không set biến) phải mở được `/keystatic` và đăng nhập được bằng Keystatic Cloud.
 
