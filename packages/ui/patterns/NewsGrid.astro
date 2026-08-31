@@ -32,10 +32,12 @@ interface Props {
 const { assets, title = "Tin tức", action, items } = Astro.props;
 ---
 
-<section class="site-container" aria-labelledby="news-heading">
+<section class="site-container" aria-labelledby="news-heading" data-reveal>
   <SectionHeader {title} {action} />
 
-  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+  {/* Thêm nấc md: trước đây nhảy thẳng 2 → 4 cột nên ở 1024–1200px bốn card
+      chỉ còn ~283px, hẹp hơn cả ngưỡng mà token `-dense` được tính cho. */}
+  <div class="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" data-reveal-group>
     {
       items.map((a, i) => (
         <PostCard

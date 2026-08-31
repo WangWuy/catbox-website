@@ -1,0 +1,301 @@
+---
+/**
+ * Nav mobile cho khung F&B — nút hamburger + drawer trượt từ phải.
+ *
+ * Chỉ hiện dưới `md`; từ `md` trở lên `CategoryNav` render thanh nav ngang như
+ * cũ. Trước đây không có file này: thanh nav ngang render ở MỌI bề ngang với
+ * `whitespace-nowrap` và không có `overflow-x-auto`, nên 5 mục + icon chạy
+ * tràn ra ngoài màn hình điện thoại và không có cách nào chạm tới.
+ *
+ * Vì sao dùng <dialog> gốc thay vì tự dựng overlay bằng div: được sẵn focus
+ * trap, đóng bằng Esc, `inert` phần nền và `::backdrop` — phần script còn lại
+ * chỉ ~20 dòng, giữ đúng tinh thần "0 KB dependencies" của CategoryNav.
+ *
+ * Dữ liệu menu KHÔNG tự dựng ở đây: `CategoryNav` đã gọi `buildMegaMenuTree`
+ * một lần rồi truyền `items` xuống, tránh hai nơi dựng menu bằng hai logic
+ * khác nhau rồi lệch nội dung.
+ */
+import { Icon } from "astro-icon/components";
+import type { NavEntry } from "@config/nav";
+
+interface Props {
+  items: NavEntry[];
+  /** Pathname hiện tại để tô mục đang xem */
+  current?: string;
+  class?: string;
+}
+
+const { items, current = "/", class: className } = Astro.props;
+
+const isActive = (href: string) =>
+  href === "/" ? current === "/" : current.startsWith(href);
+---
+
+{/* Wrapper thường chứ KHÔNG dùng `display: contents`: ghép với `md:hidden` mà
+    site truyền vào thì hai utility display chống nhau, đúng/sai chỉ nhờ thứ tự
+    Tailwind sinh CSS — mong manh không đáng. */}
+<div class:list={["flex items-center", className]}>
+  <button
+    type="button"
+    data-drawer-open
+    aria-controls="mobile-nav-drawer"
+    aria-expanded="false"
+    aria-label="Mở menu danh mục"
+    class="flex items-center gap-2 text-nav font-semibold text-ink transition-colors duration-(--duration-fast) hover:text-primary"
+  >
+    <Icon name="lucide:menu" class="size-5" aria-hidden="true" />
+    Danh mục
+  </button>
+
+  {/* `mr-0` là BẮT BUỘC: UA stylesheet cho <dialog> là `inset: 0; margin: auto`
+      nên chỉ `ml-auto` thì margin-right vẫn `auto` và panel canh GIỮA màn hình
+      thay vì dán mép phải. `max-h-none` gỡ trần `calc(100% - 12px)` của UA để
+      `h-dvh` phủ trọn chiều cao. */}
+  <dialog
+    id="mobile-nav-drawer"
+    aria-label="Danh mục chính"
+    class="mobile-drawer mr-0 ml-auto h-dvh max-h-none w-(--width-drawer) max-w-(--width-drawer-max) bg-surface p-0 text-ink backdrop:bg-black/50"
+  >
+    <div class="flex h-full flex-col">
+      <div class="flex flex-none items-center justify-between border-b border-line px-4 py-3">
+        <span class="font-display text-card-title font-extrabold">Danh mục</span>
+        <button
+          type="button"
+          data-drawer-close
+          aria-label="Đóng menu"
+          class="grid size-9 place-items-center text-ink-muted transition-colors duration-(--duration-fast) hover:text-primary"
+        >
+          <Icon name="lucide:x" class="size-5" aria-hidden="true" />
+        </button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto overscroll-contain px-4 py-3">
+        <ul class="flex flex-col gap-1">
+          {
+            items.map((item) => (
+              <li>
+                {item.isMega && item.megaParents && item.megaParents.length > 0 ? (
+                  <details class="group/m-item">
+                    <summary
+                      class={`flex cursor-pointer list-none items-center justify-between gap-2 py-2.5 text-nav select-none ${
+                        isActive(item.href) ? "font-bold text-primary" : "font-medium text-ink"
+                      }`}
+                    >
+                      <span class="flex items-center gap-2">
+                        {item.icon && <Icon name={item.icon} class="size-4" aria-hidden="true" />}
+                        {item.label}
+                      </span>
+                      <Icon
+                        name="lucide:chevron-down"
+                        class="size-4 flex-none text-ink-faint transition-transform duration-(--duration-fast) group-open/m-item:rotate-180"
+                        aria-hidden="true"
+                      />
+                    </summary>
+
+                    {/* Cây danh mục 2 tầng dạng accordion — chuyển nguyên từ
+                        nhánh mobile cũ của CategoryNav sang đây. */}
+                    <div class="flex flex-col gap-3 border-l border-line pt-1 pb-2 pl-(--indent-dropdown-child)">
+                      {item.megaParents.map((parent) => (
+                        <details class="group/m-parent">
+                          <summary class="flex cursor-pointer list-none items-center justify-between gap-2 py-1.5 text-label font-bold text-ink">
+                            <span class="flex items-center gap-2">
+                              {parent.icon && (
+                                <Icon name={parent.icon} class="size-4 text-primary" aria-hidden="true" />
+                              )}
+                              {parent.label}
+                            </span>
+                            <Icon
+                              name="lucide:chevron-down"
+                              class="size-3.5 flex-none text-ink-faint transition-transform duration-(--duration-fast) group-open/m-parent:rotate-180"
+                              aria-hidden="true"
+                            />
+                          </summary>
+
+                          <div class="flex flex-col gap-3 pt-2 pb-1 pl-(--indent-dropdown-child)">
+                            {parent.subcategories.map((sub) => (
+                              <div class="flex flex-col gap-1.5">
+                                <a
+                                  href={sub.href}
+                                  class="flex items-center gap-1 text-micro font-semibold text-primary"
+                                >
+                                  {sub.label}
+                                  <Icon
+                                    name="lucide:arrow-right"
+                                    class="size-(--size-icon-inline)"
+                                    aria-hidden="true"
+                                  />
+                                </a>
+                                {sub.items.length > 0 && (
+                                  <div class="flex flex-wrap gap-1.5">
+                                    {sub.items.map((p) => (
+                                      <a
+                                        href={p.href}
+                                        class="rounded-chip border border-line-soft bg-surface-alt px-2.5 py-1 text-micro text-ink-muted transition-colors duration-(--duration-fast) hover:border-primary hover:text-primary"
+                                      >
+                                        {p.label}
+                                      </a>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </details>
+                      ))}
+
+                      <a
+                        href="/products"
+                        class="py-1 text-micro font-bold text-primary hover:underline"
+                      >
+                        Xem tất cả sản phẩm →
+                      </a>
+                    </div>
+                  </details>
+                ) : item.fallbackGroups && item.fallbackGroups.length > 0 ? (
+                  <details class="group/m-item">
+                    <summary
+                      class={`flex cursor-pointer list-none items-center justify-between gap-2 py-2.5 text-nav select-none ${
+                        isActive(item.href) ? "font-bold text-primary" : "font-medium text-ink"
+                      }`}
+                    >
+                      <span class="flex items-center gap-2">
+                        {item.icon && <Icon name={item.icon} class="size-4" aria-hidden="true" />}
+                        {item.label}
+                      </span>
+                      <Icon
+                        name="lucide:chevron-down"
+                        class="size-4 flex-none text-ink-faint transition-transform duration-(--duration-fast) group-open/m-item:rotate-180"
+                        aria-hidden="true"
+                      />
+                    </summary>
+                    <div class="flex flex-col border-l border-line pb-2 pl-(--indent-dropdown-child)">
+                      {item.fallbackGroups.map((g) =>
+                        g.items.map((c) => (
+                          <a
+                            href={c.href}
+                            class="py-1.5 text-label text-ink-muted transition-colors duration-(--duration-fast) hover:text-primary"
+                          >
+                            {c.label}
+                          </a>
+                        )),
+                      )}
+                    </div>
+                  </details>
+                ) : (
+                  <a
+                    href={item.href}
+                    class={`flex items-center gap-2 py-2.5 text-nav ${
+                      isActive(item.href) ? "font-bold text-primary" : "font-medium text-ink"
+                    }`}
+                  >
+                    {item.icon && <Icon name={item.icon} class="size-4" aria-hidden="true" />}
+                    {item.label}
+                  </a>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+  </dialog>
+</div>
+
+<style>
+  /* Trượt từ mép phải. `@starting-style` + `allow-discrete` cho phép làm
+   * animation cả lúc MỞ (display: none → block) mà không cần setTimeout trong
+   * JS — trạng thái đầu do CSS lo, script chỉ gọi showModal()/close().
+   *
+   * Không cần tự viết luật cho prefers-reduced-motion: khối ở cuối base.css
+   * đã ép mọi transition-duration về 0.01ms trên toàn trang. */
+  .mobile-drawer {
+    transform: translateX(100%);
+    opacity: 0;
+    transition:
+      transform var(--duration-base) var(--ease-out-soft),
+      opacity var(--duration-base) var(--ease-out-soft),
+      overlay var(--duration-base) allow-discrete,
+      display var(--duration-base) allow-discrete;
+  }
+
+  .mobile-drawer[open] {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  @starting-style {
+    .mobile-drawer[open] {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  .mobile-drawer::backdrop {
+    opacity: 0;
+    transition:
+      opacity var(--duration-base) var(--ease-out-soft),
+      overlay var(--duration-base) allow-discrete,
+      display var(--duration-base) allow-discrete;
+  }
+
+  .mobile-drawer[open]::backdrop {
+    opacity: 1;
+  }
+
+  @starting-style {
+    .mobile-drawer[open]::backdrop {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  // BẮT BUỘC bọc IIFE: Astro gộp mọi <script> inline của một trang vào chung
+  // một bundle, khai báo trần sẽ đụng tên với script khác (xem ProductFilter).
+  (() => {
+    const drawer = document.getElementById("mobile-nav-drawer");
+    if (!(drawer instanceof HTMLDialogElement)) return;
+
+    const openBtn = document.querySelector<HTMLButtonElement>("[data-drawer-open]");
+    const closeBtn = drawer.querySelector<HTMLButtonElement>("[data-drawer-close]");
+    const root = document.documentElement;
+
+    const open = () => {
+      drawer.showModal();
+      openBtn?.setAttribute("aria-expanded", "true");
+      // showModal() chặn tương tác với nền nhưng KHÔNG khoá cuộn — thiếu dòng
+      // này thì vuốt trên drawer đến cuối sẽ cuộn tiếp trang phía sau.
+      root.style.overflow = "hidden";
+    };
+
+    const close = () => {
+      drawer.close();
+    };
+
+    openBtn?.addEventListener("click", open);
+    closeBtn?.addEventListener("click", close);
+
+    // Dọn dẹp ở sự kiện `close` để bắt được cả đường đóng bằng phím Esc (native,
+    // không đi qua nút nào).
+    drawer.addEventListener("close", () => {
+      openBtn?.setAttribute("aria-expanded", "false");
+      root.style.overflow = "";
+    });
+
+    drawer.addEventListener("click", (e) => {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+
+      // Chạm ra ngoài panel: <dialog> phủ kín màn hình nên click vào ::backdrop
+      // vẫn báo target là chính <dialog>, không phải phần tử con nào.
+      if (target === drawer) {
+        close();
+        return;
+      }
+
+      // Điều hướng trong SPA-less site vẫn tải lại trang, nhưng đóng trước cho
+      // chắc: link neo (#) không tải lại nên drawer sẽ kẹt mở.
+      if (target.closest("a")) close();
+    });
+  })();
+</script>

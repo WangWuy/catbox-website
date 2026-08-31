@@ -117,7 +117,7 @@ const excerpt = description ? clip(description, excerptChars) : undefined;
       height={Math.round((width * 10) / 16)}
       ratio="16x10"
       {variant}
-      class="aspect-16/10 w-full object-cover transition-transform duration-500 group-hover:scale-(--scale-card-hover)"
+      class="aspect-16/10 w-full object-cover transition-transform duration-(--duration-slow) group-hover:scale-(--scale-card-hover)"
     />
   </div>
   {/* Badge nằm NGOÀI div trên, neo vào <article>: nó thò ra ngoài mép trái ảnh

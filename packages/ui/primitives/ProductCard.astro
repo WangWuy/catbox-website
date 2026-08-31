@@ -68,11 +68,11 @@ const minimal = layout === "minimal";
       height={600}
       ratio="1x1"
       {variant}
-      class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+      class="aspect-square w-full object-cover transition-transform duration-(--duration-slow) group-hover:scale-(--scale-card-hover)"
     />
     {
       badge && !minimal && (
-        <span class="pill pointer-events-none absolute bottom-3 left-3 bg-kraft px-3.5 py-1.5 text-[11px] text-white">
+        <span class="pill pointer-events-none absolute bottom-3 left-3 bg-kraft px-3.5 py-1.5 text-badge-card text-white">
           {badge}
         </span>
       )
@@ -100,7 +100,7 @@ const minimal = layout === "minimal";
             {swatches.slice(0, 4).map((s, i) => (
               <span
                 title={s.label}
-                class={`size-[22px] rounded-sm border border-line ${
+                class={`size-(--size-swatch) rounded-sm border border-line ${
                   i === 0 ? "outline-2 outline-offset-2 outline-ink" : ""
                 }`}
                 style={`background:${s.color}`}

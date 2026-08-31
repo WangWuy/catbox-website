@@ -23,7 +23,7 @@ const { assets, title = "Bán chạy", action, tabs, items } = Astro.props;
 const allTabs = ["Tất cả", ...tabs];
 ---
 
-<section class="site-container" aria-labelledby="bestseller-heading">
+<section class="site-container" aria-labelledby="bestseller-heading" data-reveal>
   <SectionHeader {title} {action} class="mb-5" />
 
   <div
@@ -47,7 +47,11 @@ const allTabs = ["Tất cả", ...tabs];
     }
   </div>
 
-  <div class="grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-4" data-product-grid>
+  <div
+    class="grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-4"
+    data-product-grid
+    data-reveal-group
+  >
     {
       items.map((p, i) => (
         <ProductCard

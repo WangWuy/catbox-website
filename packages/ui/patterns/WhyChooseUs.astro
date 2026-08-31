@@ -82,7 +82,7 @@ const {
                 <Icon name={p.icon} class="size-5 text-primary" />
               </span>
               <span class="flex flex-col gap-1">
-                <span class="font-display text-[17px] font-bold">{p.title}</span>
+                <span class="font-display text-card-title font-bold">{p.title}</span>
                 <span class="text-sm leading-relaxed text-ink-muted">{p.desc}</span>
               </span>
             </li>
@@ -112,7 +112,7 @@ const {
                   aria-hidden="true"
                   class="grid size-16 place-items-center rounded-full bg-primary"
                 >
-                  <span class="ml-1 border-y-[11px] border-l-[18px] border-y-transparent border-l-white" />
+                  <span class="ml-1 border-y-(--height-play-triangle-half) border-l-(--width-play-triangle) border-y-transparent border-l-white" />
                 </span>
                 <p class="text-sm font-semibold text-white/85">
                   {videoLabel}

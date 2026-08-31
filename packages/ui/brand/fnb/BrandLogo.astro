@@ -38,19 +38,29 @@ const subClass = variant === "dark" ? "text-white/50" : "text-ink-faint";
 
 {
   brand === "cfc" ? (
-    <img src="/logo.png" alt={b.name} width="820" height="462" class="h-[80px] w-auto flex-none object-contain" />
+    <img
+      src="/logo.png"
+      alt={b.name}
+      width="820"
+      height="462"
+      class="h-(--height-logo-mobile) w-auto flex-none object-contain md:h-(--height-logo)"
+    />
   ) : (
     <>
-      <span class={`grid size-[46px] flex-none place-items-center rounded-chip text-[22px] ${boxClass}`}>
+      {/* Trước đây khung này còn khai một font-size cứng 22px — vô nghĩa vì bên
+          trong chỉ có <Icon> tự quyết kích thước qua `size-6`. Đã bỏ hẳn. */}
+      <span
+        class={`grid size-(--size-logo-box) flex-none place-items-center rounded-chip ${boxClass}`}
+      >
         <Icon name={b.icon} class="size-6" aria-hidden="true" />
       </span>
       <span class="flex flex-col gap-1">
-        <span class="font-display text-[27px] leading-none font-extrabold tracking-tight">
+        <span class="font-display text-wordmark leading-none font-extrabold tracking-tight">
           <span class={headClass}>{mark.head}</span><span class="text-primary">{mark.tail}</span>
         </span>
         {
           b.memberOf && (
-            <span class={`text-[11px] leading-none font-medium ${subClass}`}>{b.memberOf}</span>
+            <span class={`text-memberof leading-none font-medium ${subClass}`}>{b.memberOf}</span>
           )
         }
       </span>

@@ -14,14 +14,16 @@ const { brand } = Astro.props;
 const b = BRANDS[brand];
 ---
 
-<div class="fixed right-4 bottom-5 z-50 flex flex-col gap-3 print:hidden">
+{/* Nhỏ lại ở mobile: hai nút 56px xếp dọc chiếm một mảng đáng kể của màn hẹp
+    và đè lên nội dung/CTA trong Footer khi cuộn tới cuối trang. */}
+<div class="fixed right-3 bottom-4 z-50 flex flex-col gap-2.5 print:hidden md:right-4 md:bottom-5 md:gap-3">
   <a
     href={`https://zalo.me/${b.zalo}`}
     target="_blank"
     rel="noopener"
     aria-label="Chat Zalo"
     data-analytics="click_zalo"
-    class="grid size-14 place-items-center rounded-full bg-zalo text-xs font-extrabold text-white transition-transform hover:scale-105"
+    class="grid size-12 place-items-center rounded-full bg-zalo text-xs font-extrabold text-white transition-transform duration-(--duration-fast) hover:scale-105 md:size-14"
   >
     Zalo
   </a>
@@ -29,8 +31,8 @@ const b = BRANDS[brand];
     href={`tel:${b.hotline.replace(/\D/g, "")}`}
     aria-label={`Gọi hotline ${b.hotline}`}
     data-analytics="click_hotline"
-    class="grid size-14 place-items-center rounded-full bg-primary transition-transform hover:scale-105"
+    class="grid size-12 place-items-center rounded-full bg-primary transition-transform duration-(--duration-fast) hover:scale-105 md:size-14"
   >
-    <Icon name="lucide:phone" class="size-6 text-white" aria-hidden="true" />
+    <Icon name="lucide:phone" class="size-5 text-white md:size-6" aria-hidden="true" />
   </a>
 </div>

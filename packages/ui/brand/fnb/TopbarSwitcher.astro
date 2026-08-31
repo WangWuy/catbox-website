@@ -1,7 +1,7 @@
 ---
 /**
  * Topbar Switcher — điểm đồng bộ bắt buộc #1 (REQUIREMENTS §2).
- * [🌟 CATBOX | 🎁 TETTA | 🥖 CFC] + link phụ + hotline + CTA pill.
+ * [CATBOX | TETTA | CFC] + link phụ + hotline + CTA pill.
  *
  * Vì 3 site nằm trên 3 domain riêng, link chéo dùng URL tuyệt đối lấy từ
  * brands.ts — brand đang xem thì render <span>, không phải <a>.
@@ -21,17 +21,27 @@ const { brand } = Astro.props;
 const b = BRANDS[brand];
 const links = TOPBAR_LINKS[brand];
 const isCfc = brand === "cfc";
+
+/** Ngôn ngữ site phục vụ — hiển thị bằng mã ISO thay cho emoji cờ */
+const LANGUAGE_CODES = ["VI", "EN", "TH", "KO", "ZH"];
 ---
 
 {
   isCfc ? (
     <div class="border-b border-line-soft bg-surface-topbar text-ink-muted">
       <div class="site-container flex h-(--height-topbar) items-center justify-between gap-4">
-        <nav aria-label="Ngôn ngữ & liên kết phụ" class="flex items-center gap-4">
-          <span class="flex items-center gap-1.5 text-micro font-medium">
+        <nav aria-label="Ngôn ngữ & liên kết phụ" class="flex min-w-0 items-center gap-4">
+          {/* Nhường chỗ cho hotline ở màn hẹp: cụm cờ chỉ để trang trí, còn
+              hotline là đường chuyển đổi chính trên điện thoại. */}
+          {/* Mã ngôn ngữ dạng chữ + icon lucide, KHÔNG dùng emoji cờ: emoji cờ
+              render khác nhau hẳn giữa Windows/Android (nhiều máy ra hai chữ
+              cái trong ô vuông), và quy ước dự án là mọi biểu tượng đi qua
+              astro-icon. */}
+          <span class="hidden items-center gap-1.5 text-micro font-medium sm:flex">
+            <Icon name="lucide:globe" class="size-3.5 flex-none" aria-hidden="true" />
             Ngôn Ngữ
-            <span class="flex items-center gap-1" aria-hidden="true">
-              🇻🇳 🇬🇧 🇹🇭 🇰🇷 🇨🇳
+            <span class="flex items-center gap-1 text-ink-faint" aria-hidden="true">
+              {LANGUAGE_CODES.join(" · ")}
             </span>
           </span>
           <span aria-hidden="true" class="hidden h-3.5 w-px bg-line md:inline-block" />
@@ -46,12 +56,14 @@ const isCfc = brand === "cfc";
         </nav>
 
         <div class="flex items-center gap-4">
+          {/* Hiện từ 0px (trước đây `hidden sm:flex` nên biến mất đúng lúc cần
+              nhất) — trên điện thoại chạm số là gọi được ngay. */}
           <a
             href={`tel:${b.hotline.replace(/\D/g, "")}`}
             data-analytics="click_hotline"
-            class="hidden items-center gap-1.5 text-meta font-normal text-ink sm:flex"
+            class="flex items-center gap-1.5 text-meta font-normal whitespace-nowrap text-ink"
           >
-            <Icon name="lucide:phone" class="size-3.5" aria-hidden="true" />
+            <Icon name="lucide:phone" class="size-3.5 flex-none" aria-hidden="true" />
             {b.hotline}
           </a>
           <span aria-hidden="true" class="hidden h-3.5 w-px bg-line sm:inline-block" />
@@ -59,7 +71,9 @@ const isCfc = brand === "cfc";
             href={b.topbarCta.href}
             class="flex items-center gap-1.5 text-micro font-semibold transition-colors hover:text-primary"
           >
-            <span class="flex -space-x-1.5" aria-hidden="true">
+            {/* Cụm avatar chỉ là trang trí — ẩn ở màn hẹp để hotline bên cạnh
+                đủ chỗ hiển thị trọn số. */}
+            <span class="hidden -space-x-1.5 sm:flex" aria-hidden="true">
               <span class="size-5 rounded-full border border-surface-alt bg-line-soft" />
               <span class="size-5 rounded-full border border-surface-alt bg-line-soft" />
               <span class="size-5 rounded-full border border-surface-alt bg-line-soft" />
@@ -83,7 +97,7 @@ const isCfc = brand === "cfc";
                   {active ? (
                     <span
                       aria-current="page"
-                      class="flex items-center gap-1 border-b-2 border-primary pb-[3px] text-micro font-bold text-white"
+                      class="flex items-center gap-1 border-b-2 border-primary pb-(--offset-topbar-active) text-micro font-bold text-white"
                     >
                       <Icon name={other.icon} class="size-3.5" aria-hidden="true" /> {other.short}
                     </span>
@@ -117,9 +131,10 @@ const isCfc = brand === "cfc";
           <a
             href={`tel:${b.hotline.replace(/\D/g, "")}`}
             data-analytics="click_hotline"
-            class="hidden text-meta font-bold text-white sm:inline"
+            class="hidden items-center gap-1.5 text-meta font-bold text-white sm:inline-flex"
           >
-            ☎ {b.hotline}
+            <Icon name="lucide:phone" class="size-3.5 flex-none" aria-hidden="true" />
+            {b.hotline}
           </a>
           <a
             href={b.topbarCta.href}

@@ -37,7 +37,9 @@ const copy = newsletterCopy[brand];
 ---
 
 <footer class="bg-primary-deep text-white">
-  <div class="site-container grid gap-14 py-18 lg:grid-cols-[1.25fr_1.1fr_0.95fr]">
+  <div
+    class="site-container grid gap-10 py-14 md:grid-cols-2 md:gap-14 md:py-18 lg:grid-cols-(--cols-footer)"
+  >
     <!-- Cột 1: pháp nhân + chứng nhận + policy + social -->
     <div class="flex flex-col gap-5">
       <div class="flex items-center gap-3">
@@ -60,7 +62,7 @@ const copy = newsletterCopy[brand];
         {
           b.contacts.map((c) => (
             <li class="flex items-start gap-3">
-              <Icon name={c.icon} class="mt-0.5 size-[18px] flex-none text-white/70" aria-hidden="true" />
+              <Icon name={c.icon} class="mt-0.5 size-(--size-icon-contact) flex-none text-white/70" aria-hidden="true" />
               <div class="flex flex-col gap-0.5">
                 <span class="text-tiny font-semibold tracking-wide text-white/45 uppercase">
                   {c.label}
@@ -68,12 +70,12 @@ const copy = newsletterCopy[brand];
                 {c.href ? (
                   <a
                     href={c.href}
-                    class="text-[14px] leading-snug font-semibold text-white transition-colors hover:text-primary"
+                    class="text-footer-contact leading-snug font-semibold text-white transition-colors hover:text-primary"
                   >
                     {c.value}
                   </a>
                 ) : (
-                  <span class="text-[14px] leading-snug font-semibold text-white">{c.value}</span>
+                  <span class="text-footer-contact leading-snug font-semibold text-white">{c.value}</span>
                 )}
               </div>
             </li>
@@ -99,7 +101,7 @@ const copy = newsletterCopy[brand];
             <a
               href={s.href}
               aria-label={s.label}
-              class="grid size-[38px] place-items-center rounded-[11px] bg-white/10 text-xs font-bold text-white transition-colors hover:bg-white/20"
+              class="grid size-(--size-social-btn) place-items-center rounded-social-btn bg-white/10 text-xs font-bold text-white transition-colors hover:bg-white/20"
             >
               {s.label}
             </a>
@@ -110,7 +112,7 @@ const copy = newsletterCopy[brand];
 
     <!-- Cột 2: tư vấn bán hàng (sale trực page) + hotline dịch vụ -->
     <div class="flex flex-col gap-4.5">
-      <h2 class="text-meta font-bold tracking-[1.2px] text-white uppercase">Tư vấn bán hàng</h2>
+      <h2 class="text-meta font-bold tracking-eyebrow text-white uppercase">Tư vấn bán hàng</h2>
       <ul class="flex flex-col gap-2.5">
         {
           b.salesReps.map((r) => (
@@ -138,7 +140,7 @@ const copy = newsletterCopy[brand];
         }
       </ul>
 
-      <h2 class="mt-2 text-meta font-bold tracking-[1.2px] text-white uppercase">
+      <h2 class="mt-2 text-meta font-bold tracking-eyebrow text-white uppercase">
         Hotline phản ánh dịch vụ
       </h2>
       <ul class="flex flex-col gap-2.5">
@@ -170,7 +172,7 @@ const copy = newsletterCopy[brand];
 
     <!-- Cột 3: newsletter -->
     <div class="flex flex-col gap-4">
-      <h2 class="text-meta font-bold tracking-[1.2px] text-white uppercase">{copy.title}</h2>
+      <h2 class="text-meta font-bold tracking-eyebrow text-white uppercase">{copy.title}</h2>
       <p class="text-sm leading-relaxed text-white/60">{copy.desc}</p>
       <form
         method="post"
@@ -187,7 +189,7 @@ const copy = newsletterCopy[brand];
           tabindex="-1"
           autocomplete="off"
           aria-hidden="true"
-          class="absolute -left-[9999px] size-px"
+          class="absolute -left-(--offset-offscreen) size-px"
         />
         <label class="sr-only" for="footer-email">Email của bạn</label>
         <input
@@ -217,9 +219,9 @@ const copy = newsletterCopy[brand];
       <a
         href="#top"
         aria-label="Lên đầu trang"
-        class="grid size-[42px] flex-none place-items-center rounded-full bg-primary text-[17px] font-bold text-white transition-colors hover:bg-primary-hover"
+        class="grid size-(--size-back-to-top) flex-none place-items-center rounded-full bg-primary text-white transition-colors hover:bg-primary-hover"
       >
-        ↑
+        <Icon name="lucide:arrow-up" class="size-5" aria-hidden="true" />
       </a>
     </div>
   </div>

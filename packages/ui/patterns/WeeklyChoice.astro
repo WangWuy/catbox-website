@@ -43,7 +43,7 @@ const {
 <section class="site-container">
   <SectionHeader {title} {subtitle} />
 
-  <div class="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
+  <div class="grid gap-5 lg:grid-cols-(--cols-weekly-choice)">
     <div class="grid gap-4 sm:grid-cols-3">
       {items.slice(0, 3).map((p, i) => <ProductCard {assets} {...p} variant={i + 4} />)}
     </div>
@@ -76,7 +76,7 @@ const {
             <div
               data-hotspot-panel={i}
               hidden
-              class="absolute bottom-[calc(100%+10px)] left-1/2 z-10 w-56 -translate-x-1/2 rounded-chip border border-line bg-surface p-3.5 text-left"
+              class="absolute bottom-[calc(100%+var(--offset-tooltip))] left-1/2 z-10 w-56 -translate-x-1/2 rounded-chip border border-line bg-surface p-3.5 text-left"
             >
               <p class="text-label font-bold">{h.title}</p>
               {h.desc && <p class="mt-1 text-micro leading-relaxed text-ink-muted">{h.desc}</p>}

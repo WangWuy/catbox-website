@@ -8,7 +8,7 @@
  * Chạy bằng <details> kết hợp script chuyển tab tức thì trên hover (0 KB dependencies).
  */
 import { Icon } from "astro-icon/components";
-import { NAV, type NavItem } from "@config/nav";
+import { NAV, type NavItem, type NavEntry } from "@config/nav";
 import {
   buildMegaMenuTree,
   type CategoryEntryLike,
@@ -16,6 +16,7 @@ import {
   type MegaMenuParent,
 } from "@config/categories";
 import { BRANDS, type FnbBrandId } from "@config/brands";
+import MobileNav from "@ui/brand/fnb/MobileNav.astro";
 
 interface Props {
   brand: FnbBrandId;
@@ -33,21 +34,6 @@ interface Props {
 
 const { brand, current = "/", categories, products = [] } = Astro.props;
 const b = BRANDS[brand];
-
-/** Kiểu fallback cho site dùng NAV tĩnh */
-type FallbackGroup = {
-  heading?: { label: string; href: string; icon?: string };
-  items: { label: string; href: string }[];
-};
-
-type NavEntry = {
-  label: string;
-  href: string;
-  icon?: string;
-  isMega?: boolean;
-  megaParents?: MegaMenuParent[];
-  fallbackGroups?: FallbackGroup[];
-};
 
 const megaParents: MegaMenuParent[] =
   categories && categories.length > 0
@@ -91,8 +77,12 @@ const isActive = (href: string) =>
 ---
 
 <nav aria-label="Danh mục chính" class="relative z-30 border-b border-line bg-surface">
-  <div class="site-container flex h-(--height-catnav) items-center justify-between gap-6">
-    <ul class="flex items-center gap-4 lg:gap-6">
+  <div
+    class="site-container flex h-(--height-catnav-mobile) items-center justify-between gap-6 md:h-(--height-catnav)"
+  >
+    <MobileNav {items} {current} class="md:hidden" />
+
+    <ul class="hidden items-center gap-4 md:flex lg:gap-6">
       {
         items.map((item) => (
           <li class="flex-none">
@@ -105,23 +95,28 @@ const isActive = (href: string) =>
                 >
                   {item.icon && <Icon name={item.icon} class="size-4" aria-hidden="true" />}
                   {item.label}
-                  <span class="chev text-caret text-ink-faint transition-transform duration-200">▼</span>
+                  <Icon
+                    name="lucide:chevron-down"
+                    class="chev size-3.5 text-ink-faint transition-transform duration-(--duration-fast)"
+                    aria-hidden="true"
+                  />
                 </summary>
 
                 {/* Dropdown Mega Menu */}
                 <div class="mega-menu-wrapper absolute top-full left-0 z-40 w-full">
                   <div class="site-container py-4">
-                    {/* Bố cục Desktop (>= 768px): 2 Cột chuẩn như Ảnh 1 */}
-                    <div class="mega-menu-card hidden md:flex rounded-2xl border border-line bg-surface-input shadow-lg overflow-hidden min-h-[420px]">
+                    {/* Bố cục 2 cột. Chỉ tồn tại từ md trở lên — cả <ul> bọc
+                        ngoài đã `hidden md:flex`; dưới md là MobileNav lo. */}
+                    <div class="mega-menu-card flex rounded-2xl border border-line bg-surface-input shadow-lg overflow-hidden min-h-(--height-mega-min)">
 
                       {/* CỘT TRÁI: Danh mục cha (Parent Categories Sidebar) */}
-                      <div class="w-[260px] lg:w-[280px] shrink-0 border-r border-line bg-surface-input py-3 flex flex-col gap-1.5">
+                      <div class="w-(--width-mega-sidebar) lg:w-(--width-mega-sidebar-lg) shrink-0 border-r border-line bg-surface-input py-3 flex flex-col gap-1.5">
                         {item.megaParents.map((parent, idx) => (
                           <a
                             href={parent.href}
                             data-parent-target={parent.slug}
                             data-active={idx === 0 ? "true" : "false"}
-                            class="mega-parent-btn group/parent flex items-center justify-between gap-3 px-6 py-3 font-medium transition-all duration-150 text-sm cursor-pointer select-none text-ink data-[active=true]:bg-surface-hover data-[active=true]:text-ink data-[active=true]:shadow-xs data-[active=false]:hover:bg-surface-hover"
+                            class="mega-parent-btn group/parent flex items-center justify-between gap-3 px-6 py-3 font-medium transition-all duration-(--duration-fast) text-sm cursor-pointer select-none text-ink data-[active=true]:bg-surface-hover data-[active=true]:text-ink data-[active=true]:shadow-xs data-[active=false]:hover:bg-surface-hover"
                           >
                             <div class="flex items-center gap-3 min-w-0">
                               {parent.icon && (
@@ -151,7 +146,7 @@ const isActive = (href: string) =>
                             class={`mega-panel flex-col justify-between h-full ${idx === 0 ? "flex" : "hidden"}`}
                           >
                             {/* Lưới các cột Danh mục con */}
-                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-6">
+                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-6">
                               {parent.subcategories.map((sub) => (
                                 <div class="flex flex-col gap-2 min-w-0">
                                   {/* Tiêu đề Danh mục con (Bold Header) */}
@@ -173,7 +168,7 @@ const isActive = (href: string) =>
                                         <li class="min-w-0">
                                           <a
                                             href={p.href}
-                                            class="text-[13px] leading-snug text-ink-muted hover:text-primary hover:translate-x-0.5 transition-all block py-0.5"
+                                            class="text-(length:--text-meta) leading-snug text-ink-muted hover:text-primary hover:translate-x-0.5 transition-all duration-(--duration-fast) block py-0.5"
                                           >
                                             {p.label}
                                           </a>
@@ -196,45 +191,6 @@ const isActive = (href: string) =>
 
                     </div>
 
-                    {/* Bố cục Mobile (< 768px): Dạng danh mục xếp tầng trực quan */}
-                    <div class="mega-menu-card md:hidden flex flex-col gap-3 py-2 max-h-[70vh] overflow-y-auto">
-                      {item.megaParents.map((parent) => (
-                        <details class="group/m-parent border border-line rounded-xl p-3 bg-surface-alt/20">
-                          <summary class="flex items-center justify-between cursor-pointer font-bold text-sm text-ink list-none">
-                            <div class="flex items-center gap-2">
-                              {parent.icon && <Icon name={parent.icon} class="size-4 text-primary" aria-hidden="true" />}
-                              <span>{parent.label}</span>
-                            </div>
-                            <span class="text-xs text-ink-faint group-open/m-parent:rotate-180 transition-transform">▼</span>
-                          </summary>
-                          <div class="mt-3 pt-3 border-t border-line flex flex-col gap-4 pl-2">
-                            {parent.subcategories.map((sub) => (
-                              <div class="flex flex-col gap-1.5">
-                                <a href={sub.href} class="font-semibold text-xs text-primary flex items-center gap-1">
-                                  {sub.label} →
-                                </a>
-                                <div class="flex flex-wrap gap-2 pt-1">
-                                  {sub.items.map((p) => (
-                                    <a
-                                      href={p.href}
-                                      class="rounded-chip bg-surface px-2.5 py-1 text-xs text-ink-muted border border-line-soft hover:text-primary hover:border-primary transition-colors"
-                                    >
-                                      {p.label}
-                                    </a>
-                                  ))}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </details>
-                      ))}
-                      <div class="pt-2 text-center">
-                        <a href="/products" class="text-xs font-bold text-primary hover:underline">
-                          Xem tất cả sản phẩm →
-                        </a>
-                      </div>
-                    </div>
-
                   </div>
                 </div>
               </details>
@@ -247,7 +203,11 @@ const isActive = (href: string) =>
                 >
                   {item.icon && <Icon name={item.icon} class="size-4" aria-hidden="true" />}
                   {item.label}
-                  <span class="chev text-caret text-ink-faint transition-transform">▼</span>
+                  <Icon
+                    name="lucide:chevron-down"
+                    class="chev size-3.5 text-ink-faint transition-transform duration-(--duration-fast)"
+                    aria-hidden="true"
+                  />
                 </summary>
                 <div class="absolute top-full left-0 z-30 w-full border-y border-line bg-surface shadow-lg">
                   <div class="site-container grid gap-x-6 gap-y-4 py-5 sm:grid-cols-2 lg:grid-cols-4">

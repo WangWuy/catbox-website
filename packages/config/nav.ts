@@ -1,10 +1,34 @@
 import type { BrandId } from "./brands";
+import type { MegaMenuParent } from "./categories";
 
 export interface NavItem {
   label: string;
   href: string;
   icon?: string;
   children?: { label: string; href: string }[];
+}
+
+/** Nhóm link phẳng cho site chưa CMS-hoá danh mục (dựng từ `NavItem.children`) */
+export interface FallbackGroup {
+  heading?: { label: string; href: string; icon?: string };
+  items: { label: string; href: string }[];
+}
+
+/**
+ * Một mục trên thanh nav sau khi đã trộn hai nguồn: cây danh mục từ content
+ * (CFC) hoặc `NAV[brand]` tĩnh (Tetta/Catbox).
+ *
+ * Đặt ở đây thay vì khai trong `CategoryNav.astro` vì `MobileNav.astro` cũng
+ * nhận đúng danh sách này — CategoryNav tính một lần rồi truyền xuống, hai
+ * component không được dựng menu bằng hai logic khác nhau.
+ */
+export interface NavEntry {
+  label: string;
+  href: string;
+  icon?: string;
+  isMega?: boolean;
+  megaParents?: MegaMenuParent[];
+  fallbackGroups?: FallbackGroup[];
 }
 
 /**

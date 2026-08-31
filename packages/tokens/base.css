@@ -34,7 +34,8 @@
   --text-micro: 0.78125rem;   /* 12.5px — topbar, chip khuyến mãi */
   --text-tiny:  0.71875rem;   /* 11.5px — eyebrow, ngày tháng */
   --text-promo-pill: 0.6875rem; /* 11px — pill khuyến mãi "Miễn phí giao hàng..." trong CategoryNav */
-  --text-caret: 0.625rem;     /* 10px — mũi tên ▼ mở dropdown CategoryNav */
+  /* (đã bỏ --text-caret: mũi tên dropdown giờ là icon lucide, cỡ theo `size-`
+   * chứ không còn là ký tự ▼ ăn theo font-size) */
 
   /* Cỡ chữ tiêu đề phụ trong panel (tên card "Dây chuyền Offset", tên bước
    * quy trình) — nhỏ hơn h2 section nhưng lớn hơn body. */
@@ -109,6 +110,34 @@
   --chars-post-card-excerpt-dense: 68;
   /* Phóng ảnh khi rê chuột vào card */
   --scale-card-hover: 1.03;
+  /* Nhãn badge đè lên góc ảnh sản phẩm ("Bán chạy", "Mới") */
+  --text-badge-card: 0.6875rem; /* 11px */
+  /* Ô vuông màu giấy (kraft/MG) dưới thẻ sản phẩm */
+  --size-swatch: 22px;
+
+  /* Logo chữ (wordmark) của Tetta/Catbox — brand chưa có file logo gốc nên vẽ
+   * bằng khung icon + chữ. CFC dùng ảnh thật, xem --height-logo. */
+  --size-logo-box: 46px;        /* khung vuông bọc icon thương hiệu */
+  --text-wordmark: 1.6875rem;   /* 27px — chữ TETTA / CATBOX */
+  --text-memberof: 0.6875rem;   /* 11px — dòng "A Member of Catbox Packaging…" */
+
+  /* Khối liên hệ ở Footer (cả 2 khung: fnb và catbox) */
+  --size-icon-contact: 18px;       /* icon đứng đầu mỗi dòng liên hệ */
+  --size-icon-contact-box: 34px;   /* khung bọc icon đó ở footer Catbox */
+  --text-footer-contact: 0.875rem; /* 14px — số điện thoại, địa chỉ */
+
+  /* Nút mạng xã hội và nút "lên đầu trang" ở chân Footer */
+  --size-social-btn: 38px;
+  --radius-social-btn: 11px;
+  --size-back-to-top: 42px;
+
+  /* Tỉ lệ 3 cột Footer. Trước đây chép nguyên chuỗi `1.25fr_1.1fr_0.95fr` ở cả
+   * fnb/Footer lẫn catbox/SiteFooter — sửa một bên là hai footer lệch nhau. */
+  --cols-footer: 1.25fr 1.1fr 0.95fr;
+
+  /* Giãn chữ của dòng eyebrow in hoa (HeroBanner, các tiêu đề nhóm ở Footer).
+   * Lặp ở 5 component nên phải có token đứng sau. */
+  --tracking-eyebrow: 1.2px;
 
   /* Khung tròn chứa icon nhỏ (Zalo, hotline...) ở Footer — đặt tên theo vai trò
    * thay vì rải `size-[22px]` từng chỗ, để đổi một chỗ là đổi toàn hệ. */
@@ -163,6 +192,35 @@
   /* Chiều cao ô search ở MainHeader */
   --height-search: 42px;
 
+  /* Bản mobile của chrome. Tách thành token riêng thay vì @media đè lại
+   * --height-header: component tự khai `h-(--height-header-mobile)
+   * md:h-(--height-header)` nên đọc class là thấy ngay có hai nấc, không phải
+   * lần ngược vào file token mới biết. Trước đây cả ba thanh đều cứng một giá
+   * trị nên header 100px + logo 80px ăn gần hết bề ngang màn 375px. */
+  --height-header-mobile: 64px;
+  --height-catnav-mobile: 48px;
+
+  /* Logo CFC (file ảnh thật, hiển thị theo tỉ lệ gốc — xem BrandLogo.astro).
+   * Bản mobile phải lọt trong --height-header-mobile và còn chừa chỗ cho nút
+   * CTA bên phải. */
+  --height-logo-mobile: 44px;
+  --height-logo: 80px;
+
+  /* Banner hero trang chủ — ba nấc theo bề ngang màn hình. Ảnh 16x10 nên ở
+   * màn hẹp mà giữ 520px thì banner cao gần bằng cả khung nhìn điện thoại,
+   * người dùng phải cuộn hết một màn mới thấy nội dung. */
+  --height-hero-mobile: 340px;
+  --height-hero-sm: 420px;
+  --height-hero: 520px;
+
+  /* Drawer nav mobile (MobileNav.astro). Hẹp hơn màn hình để luôn lộ một dải
+   * backdrop bên trái — người dùng nhận ra đây là lớp phủ tạm và biết chạm ra
+   * ngoài để đóng, thay vì tưởng đã chuyển sang trang khác. */
+  --width-drawer: 320px;
+  /* Trần theo bề ngang màn hình: ở máy hẹp nhất (320px) thì 320px cứng sẽ phủ
+   * kín, mất luôn dải backdrop nói trên. */
+  --width-drawer-max: 85vw;
+
   /* Dropdown danh mục trên CategoryNav */
   --width-dropdown-min: 240px;
   /* Khoảng cách từ mép trên thanh nav xuống panel dropdown */
@@ -171,6 +229,12 @@
   --space-dropdown-item-x: 0.75rem;
   /* Thụt lề thêm cho mỗi tầng con (tầng 3 của cây danh mục) trong dropdown */
   --indent-dropdown-child: 0.75rem;
+
+  /* Mega menu 2 cột của CategoryNav. Chiều cao tối thiểu giữ khung không nhảy
+   * lên xuống khi đổi tab danh mục cha (mỗi nhóm có số danh mục con khác nhau). */
+  --height-mega-min: 420px;
+  --width-mega-sidebar: 260px;
+  --width-mega-sidebar-lg: 280px;
 
   /* --- Trang catalog (/products, /danh-muc/<slug>) ----------------------- *
    * Bố cục hai cột: sidebar bộ lọc bên TRÁI + lưới sản phẩm bên phải. Dùng
@@ -185,9 +249,52 @@
   /* Ô chọn (checkbox) trong bộ lọc */
   --size-filter-checkbox: 16px;
 
+  /* Dải khuyến mãi 2 cột (PromoBanner): ảnh vuông bên trái, khối chữ nền đậm
+   * bên phải. Tiêu đề nhỏ hơn --text-section vì đứng trong khối màu chật. */
+  --height-promo-banner: 380px;
+  --text-promo-title: 2.125rem; /* 34px */
+
+  /* Khối "Lựa chọn trong tuần" (WeeklyChoice) */
+  --cols-weekly-choice: 1.6fr 1fr;
+  --offset-tooltip: 10px; /* khoảng hở giữa tooltip và phần tử neo */
+
+  /* Mũi tam giác trong nút play (WhyChooseUs) — vẽ bằng border nên cần cả bề
+   * ngang lẫn nửa chiều cao, không dùng được --size-* vuông. */
+  --width-play-triangle: 18px;
+  --height-play-triangle-half: 11px;
+
+  /* Gạch chân mục đang xem trên Topbar Catbox — đẩy xuống cho hở khỏi chữ */
+  --offset-topbar-active: 3px;
+
+  /* Đẩy trường honeypot (chống bot) ra ngoài khung nhìn. Không dùng
+   * `display: none` vì bot bỏ qua trường ẩn kiểu đó. */
+  --offset-offscreen: 9999px;
+
   /* Phân trang lưới sản phẩm — nút số trang hình vuông theo mockup Thái Dương */
   --size-page-btn: 38px;
   --text-page-btn: 0.875rem; /* 14px — số trang, đủ rõ trong ô 38px */
+
+  /* --- Chuyển động ------------------------------------------------------ *
+   * Trước đây duration rải rác dạng `duration-500` (ProductCard, PostCard,
+   * CategoryCards), `duration-200` và `duration-150` (CategoryNav) — ba nguồn
+   * sự thật cho cùng một ý đồ, đúng loại giá trị lặp lại mà quy tắc dự án cấm.
+   * Gom về đây, đặt tên theo VAI TRÒ chứ không theo số mili-giây. */
+  --duration-fast: 150ms;   /* đổi màu chữ/nền khi hover, xoay mũi tên */
+  --duration-base: 300ms;   /* dịch chuyển nhỏ, mở/đóng drawer nav mobile */
+  --duration-slow: 500ms;   /* phóng ảnh trong card khi rê chuột */
+  --duration-reveal: 600ms; /* khối fade + trồi lên khi cuộn vào khung nhìn */
+
+  /* Giảm tốc mềm ở cuối — chuyển động "đặt xuống" thay vì phanh gấp. Dùng cho
+   * mọi hiệu ứng vào/hiện; hover đổi màu thì không cần, ease mặc định là đủ. */
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* Quãng trồi lên của khối reveal. Giữ nhỏ có chủ đích: trồi xa thì lúc cuộn
+   * nhanh khối vẫn đang bay khi mắt đã tới nơi — cảm giác trang lag chứ không
+   * mượt, ngược hẳn ý đồ. */
+  --distance-reveal: 16px;
+  /* Lệch pha giữa các card cùng một lưới. 60ms × 4 card = 240ms, còn đọc được
+   * là "lần lượt"; lớn hơn thì card cuối tới quá trễ, trông như ảnh tải chậm. */
+  --stagger-reveal: 60ms;
 }
 
 /* Chiều rộng nội dung chuẩn — dùng như <div class="site-container"> */
@@ -281,6 +388,41 @@
   }
 }
 
+/* --- Reveal khi cuộn ------------------------------------------------------
+ * Khối chờ cuộn tới mới hiện dần. Điều kiện `[data-reveal-root="on"]` là phần
+ * QUAN TRỌNG NHẤT ở đây: thuộc tính đó do một script inline trong <head> của
+ * BaseLayout gắn vào <html>. Không có JS (người dùng tắt, script lỗi, trình
+ * duyệt cũ) thì thuộc tính không tồn tại → luật này không khớp → nội dung hiện
+ * bình thường. Nếu viết thẳng `[data-reveal] { opacity: 0 }` thì mọi sự cố JS
+ * đều biến thành trang trắng — hồi quy tệ nhất có thể có.
+ *
+ * Hai cách dùng:
+ *   [data-reveal]        — một khối đứng riêng (cả <section>).
+ *   [data-reveal-group]  — lưới card: CON TRỰC TIẾP hiện lần lượt, độ trễ do
+ *                          script gán qua `--reveal-delay`.
+ *
+ * Vì sao nhóm điều khiển con thay vì gắn [data-reveal] vào từng card: card
+ * trong lưới catalog bị `ProductFilter`/`Pagination` bật tắt bằng thuộc tính
+ * `hidden` → `display: none` → IntersectionObserver KHÔNG bao giờ bắn cho
+ * chúng, nên card sẽ kẹt `opacity: 0` vĩnh viễn khi người dùng đổi bộ lọc hay
+ * sang trang 2. Quan sát chính cái lưới (luôn hiển thị) thì card ẩn hiện lại
+ * lúc nào cũng đã ở trạng thái `in`. */
+[data-reveal-root="on"] [data-reveal],
+[data-reveal-root="on"] [data-reveal-group] > * {
+  opacity: 0;
+  transform: translateY(var(--distance-reveal));
+  transition:
+    opacity var(--duration-reveal) var(--ease-out-soft),
+    transform var(--duration-reveal) var(--ease-out-soft);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-reveal-root="on"] [data-reveal="in"],
+[data-reveal-root="on"] [data-reveal-group="in"] > * {
+  opacity: 1;
+  transform: none;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -316,5 +458,15 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* BẮT BUỘC phải có, không thừa: ba dòng trên chỉ rút ngắn transition, chúng
+   * KHÔNG gỡ trạng thái đầu `opacity: 0` của khối reveal. Thiếu luật này thì
+   * người bật "giảm chuyển động" vẫn phải chờ script gắn data-reveal="in" mới
+   * thấy nội dung — và nếu script hỏng thì không thấy gì cả. */
+  [data-reveal-root="on"] [data-reveal],
+  [data-reveal-root="on"] [data-reveal-group] > * {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

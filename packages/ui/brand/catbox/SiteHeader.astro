@@ -84,7 +84,7 @@ const isActive = (href: string) =>
       items.map((item) => (
         <a
           href={item.href}
-          class={`text-[14px] whitespace-nowrap transition-colors ${
+          class={`text-nav whitespace-nowrap transition-colors ${
             isActive(item.href) ? "font-bold text-primary" : "font-medium text-ink-muted"
           }`}
         >

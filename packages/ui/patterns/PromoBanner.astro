@@ -29,12 +29,12 @@ const { assets, image, title, description, primaryCta, secondaryCta } = Astro.pr
         height={760}
         ratio="1x1"
         variant={3}
-        class="h-56 w-full object-cover md:h-[380px]"
+        class="h-56 w-full object-cover md:h-(--height-promo-banner)"
       />
     </div>
 
     <div class="flex flex-col justify-center gap-4 bg-primary-deep p-10 md:p-13">
-      <h2 class="text-2xl leading-tight font-extrabold tracking-tight text-white md:text-[34px]">
+      <h2 class="text-2xl leading-tight font-extrabold tracking-tight text-white md:text-promo-title">
         {title}
       </h2>
       {

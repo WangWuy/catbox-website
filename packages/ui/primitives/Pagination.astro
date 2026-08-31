@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 /**
  * Island #3 — Phân trang lưới sản phẩm (~1.5 KB, không framework).
  *
@@ -47,7 +48,7 @@ const { total, perPage = PRODUCTS_PER_PAGE } = Astro.props;
         aria-label="Trang trước"
         class="pill size-(--size-page-btn) justify-center border border-line text-(length:--text-page-btn) text-ink-muted transition-colors hover:bg-surface-alt disabled:pointer-events-none disabled:opacity-40"
       >
-        &#8249;
+        <Icon name="lucide:chevron-left" class="size-4" aria-hidden="true" />
       </button>
 
       {/* Các nút số do script sinh ra: số trang phụ thuộc bộ lọc đang bật nên
@@ -60,7 +61,7 @@ const { total, perPage = PRODUCTS_PER_PAGE } = Astro.props;
         aria-label="Trang sau"
         class="pill size-(--size-page-btn) justify-center border border-line text-(length:--text-page-btn) text-ink-muted transition-colors hover:bg-surface-alt disabled:pointer-events-none disabled:opacity-40"
       >
-        &#8250;
+        <Icon name="lucide:chevron-right" class="size-4" aria-hidden="true" />
       </button>
     </nav>
   )

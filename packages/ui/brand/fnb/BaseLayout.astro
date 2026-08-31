@@ -63,6 +63,16 @@ const current = Astro.url.pathname;
     <SEOHead {brand} {title} {description} {ogImage} {ogType} {noindex} {fonts} />
     <JsonLd {brand} extra={jsonLd} />
     <slot name="head" />
+
+    <script is:inline>
+      // Bật hiệu ứng reveal. Phải nằm trong <head> và chạy đồng bộ: luật ẩn
+      // trong base.css chỉ khớp khi có thuộc tính này, nên đặt sớm hơn lần vẽ
+      // đầu tiên thì nội dung không kịp hiện rồi mới biến mất.
+      //
+      // Đặt bằng JS thay vì viết thẳng vào <html>: không có JS thì thuộc tính
+      // không tồn tại → không khối nào bị ẩn → trang vẫn đọc được đầy đủ.
+      document.documentElement.setAttribute("data-reveal-root", "on");
+    </script>
   </head>
   <body id="top">
     <a
@@ -92,6 +102,76 @@ const current = Astro.url.pathname;
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ event: name, hotline });
       });
+    </script>
+
+    <script is:inline>
+      // Reveal khi cuộn — IntersectionObserver thuần, không thư viện.
+      // Bọc IIFE theo đúng quy ước của dự án (Astro gộp script inline của một
+      // trang vào chung một scope, xem chú thích trong ProductFilter.astro).
+      (() => {
+        const targets = document.querySelectorAll("[data-reveal], [data-reveal-group]");
+        if (!targets.length) return;
+
+        const show = (el) => el.setAttribute(el.hasAttribute("data-reveal-group") ? "data-reveal-group" : "data-reveal", "in");
+
+        // Trình duyệt không hỗ trợ thì hiện tất cả ngay, không để trang trắng.
+        if (!("IntersectionObserver" in window)) {
+          targets.forEach(show);
+          return;
+        }
+
+        // Gán độ trễ lần lượt cho con của mỗi lưới. Làm ngay lúc này (không đợi
+        // lúc hiện) vì đặt một CSS variable không đụng gì tới hiển thị — không
+        // có nguy cơ nháy như khi thêm/bớt thuộc tính điều khiển opacity.
+        document.querySelectorAll("[data-reveal-group]").forEach((group) => {
+          Array.from(group.children).forEach((child, i) => {
+            child.style.setProperty("--reveal-delay", `calc(var(--stagger-reveal) * ${i})`);
+          });
+        });
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              show(entry.target);
+              // Chạy một lần: cuộn ngược lên không làm nội dung biến mất lại.
+              io.unobserve(entry.target);
+            });
+          },
+          // Lùi mép dưới 10%: khối chỉ hiện khi đã cuộn vào hẳn khung nhìn,
+          // không phải lúc vừa ló một đường ở đáy màn hình.
+          //
+          // `threshold: 0` chứ KHÔNG phải 0.1: ngưỡng theo tỉ lệ tính trên chiều
+          // cao chính khối đó, nên khối cao hơn khung nhìn không bao giờ đạt
+          // nổi — lưới sản phẩm mobile 2 cột dài vài nghìn px thì 10% của nó
+          // lớn hơn cả màn hình, card sẽ kẹt opacity 0 vĩnh viễn. Riêng mép
+          // dưới -10% đã đủ giữ ý đồ "vào hẳn rồi mới hiện".
+          { rootMargin: "0px 0px -10% 0px", threshold: 0 },
+        );
+
+        targets.forEach((el) => io.observe(el));
+
+        // LẦN VẼ ĐẦU: mọi khối đã nằm trong khung nhìn phải hiện ngay, kể cả
+        // khối mới ló một phần ở đáy. Giao hết cho observer thì mép dưới -10%
+        // quay ra hại: người mới vào trang thấy một mảng trắng ngay dưới nếp
+        // gấp (trên mobile là lưới BÁN CHẠY) và tưởng trang lỗi, vì nội dung
+        // chỉ hiện sau cú cuộn đầu tiên. Sau lần này observer lo phần còn lại.
+        //
+        // Hai lớp requestAnimationFrame là BẮT BUỘC, không phải cho chắc: script
+        // này chạy cuối <body>, có thể trước lần vẽ đầu tiên. Đổi opacity lúc đó
+        // thì trình duyệt gộp 0 → 1 vào cùng một lần tính style, không có giá
+        // trị đầu nào từng được vẽ nên transition KHÔNG chạy — khối chữ hiện
+        // bụp một cái. Chờ qua một frame là chắc chắn đã vẽ trạng thái mờ.
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            targets.forEach((el) => {
+              if (el.getBoundingClientRect().top >= window.innerHeight) return;
+              io.unobserve(el);
+              show(el);
+            });
+          });
+        });
+      })();
     </script>
   </body>
 </html>

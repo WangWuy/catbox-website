@@ -25,7 +25,7 @@ const siblings = otherBrands("catbox");
 ---
 
 <footer class="border-t border-line bg-primary-deep text-ink">
-  <div class="site-container grid gap-14 py-18 lg:grid-cols-[1.25fr_1.1fr_0.95fr]">
+  <div class="site-container grid gap-14 py-18 lg:grid-cols-(--cols-footer)">
     <!-- Cột 1: pháp nhân + chứng nhận + policy + social -->
     <div class="flex flex-col gap-5">
       <div class="flex items-center gap-3">
@@ -62,7 +62,7 @@ const siblings = otherBrands("catbox");
             <a
               href={s.href}
               aria-label={s.label}
-              class="grid size-[38px] place-items-center rounded-chip bg-surface-alt text-xs font-bold text-ink transition-colors hover:bg-surface-tint"
+              class="grid size-(--size-social-btn) place-items-center rounded-chip bg-surface-alt text-xs font-bold text-ink transition-colors hover:bg-surface-tint"
             >
               {s.label}
             </a>
@@ -73,15 +73,15 @@ const siblings = otherBrands("catbox");
 
     <!-- Cột 2: liên hệ -->
     <div class="flex flex-col gap-4.5">
-      <h2 class="text-meta font-bold tracking-[1.2px] text-ink uppercase">Liên hệ chúng tôi</h2>
+      <h2 class="text-meta font-bold tracking-eyebrow text-ink uppercase">Liên hệ chúng tôi</h2>
       {
         b.contacts.map((c) => (
           <div class="flex items-start gap-3">
             <span
               aria-hidden="true"
-              class="grid size-[34px] flex-none place-items-center rounded-chip bg-surface-alt"
+              class="grid size-(--size-icon-contact-box) flex-none place-items-center rounded-chip bg-surface-alt"
             >
-              <Icon name={c.icon} class="size-[18px] text-primary" />
+              <Icon name={c.icon} class="size-(--size-icon-contact) text-primary" />
             </span>
             <div class="flex flex-col gap-0.5">
               <span class="text-tiny font-semibold tracking-wide text-ink-faint uppercase">
@@ -106,7 +106,7 @@ const siblings = otherBrands("catbox");
 
     <!-- Cột 3: catalogue năng lực -->
     <div class="flex flex-col gap-4">
-      <h2 class="text-meta font-bold tracking-[1.2px] text-ink uppercase">
+      <h2 class="text-meta font-bold tracking-eyebrow text-ink uppercase">
         Đăng ký nhận catalogue năng lực
       </h2>
       <p class="text-sm leading-relaxed text-ink-muted">
@@ -127,7 +127,7 @@ const siblings = otherBrands("catbox");
           tabindex="-1"
           autocomplete="off"
           aria-hidden="true"
-          class="absolute -left-[9999px] size-px"
+          class="absolute -left-(--offset-offscreen) size-px"
         />
         <label class="sr-only" for="footer-email">Email của bạn</label>
         <input
@@ -176,9 +176,9 @@ const siblings = otherBrands("catbox");
       <a
         href="#top"
         aria-label="Lên đầu trang"
-        class="grid size-[42px] flex-none place-items-center rounded-full bg-primary text-[17px] font-bold text-white transition-colors hover:bg-primary-hover"
+        class="grid size-(--size-back-to-top) flex-none place-items-center rounded-full bg-primary text-white transition-colors hover:bg-primary-hover"
       >
-        ↑
+        <Icon name="lucide:arrow-up" class="size-5" aria-hidden="true" />
       </a>
     </div>
   </div>

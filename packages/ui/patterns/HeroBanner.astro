@@ -38,7 +38,9 @@ interface Props {
 const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } = Astro.props;
 ---
 
-<section class:list={["px-2 pt-2", stats && stats.length > 0 && "pb-12 md:pb-14"]}>
+{/* Padding đáy chỉ chừa từ `lg` — đó là bề ngang duy nhất dải stat hiện ra
+    (dưới `lg` khối stat bị ẩn hẳn, xem chú thích ở khối stat bên dưới). */}
+<section class:list={["px-2 pt-2", stats && stats.length > 0 && "lg:pb-14"]}>
   <div class="relative">
     <div class="relative overflow-hidden rounded-panel bg-surface-tint">
       <SmartImage
@@ -50,7 +52,7 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
         ratio="16x10"
         priority
         sizes="100vw"
-        class="h-[380px] w-full object-cover md:h-[520px]"
+        class="h-(--height-hero-mobile) w-full object-cover sm:h-(--height-hero-sm) md:h-(--height-hero)"
       />
 
       <!-- Gradient từ trái sang giúp chữ đọc được trên mọi ảnh khách gửi sau -->
@@ -69,25 +71,40 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
         )
       }
 
-      <div class:list={["absolute inset-0 flex items-center", stats && stats.length > 0 && "pb-14 md:pb-16"]}>
+      <div class:list={["absolute inset-0 flex items-center", stats && stats.length > 0 && "lg:pb-16"]}>
         <div class="site-container">
+          {/* Hiệu ứng VÀO TRANG (không phải cuộn): hero luôn nằm trong khung
+              nhìn đầu tiên nên lượt quét lần-vẽ-đầu ở BaseLayout gắn `in` cho
+              mấy dòng này ngay, không chờ cuộn. `--reveal-delay` tăng dần để
+              bốn dòng hiện lần lượt từ trên xuống. */}
           <div class="flex max-w-2xl flex-col items-start gap-5">
             {
               eyebrow && (
-                <span class="pill bg-white/15 px-4 py-2 text-tiny tracking-[1.2px] text-white uppercase backdrop-blur-sm">
+                <span
+                  data-reveal
+                  class="pill bg-white/15 px-4 py-2 text-tiny tracking-eyebrow text-white uppercase backdrop-blur-sm"
+                >
                   {eyebrow}
                 </span>
               )
             }
 
-            <h1 class="text-3xl leading-[1.08] font-extrabold tracking-tight text-white uppercase md:text-hero">
+            <h1
+              data-reveal
+              style="--reveal-delay: var(--stagger-reveal)"
+              class="text-3xl leading-(--text-hero--line-height) font-extrabold tracking-tight text-white uppercase sm:text-4xl md:text-hero"
+            >
               {title}
               {titleAccent && <span class="text-primary"> {titleAccent}</span>}
             </h1>
 
             {
               subtitle && (
-                <p class="max-w-lg text-body leading-relaxed text-white/85 md:text-base">
+                <p
+                  data-reveal
+                  style="--reveal-delay: calc(var(--stagger-reveal) * 2)"
+                  class="max-w-lg text-body leading-relaxed text-white/85 md:text-base"
+                >
                   {subtitle}
                 </p>
               )
@@ -95,7 +112,11 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
 
             {
               hashtag && (
-                <p class="text-sm font-semibold text-white/80">
+                <p
+                  data-reveal
+                  style="--reveal-delay: calc(var(--stagger-reveal) * 3)"
+                  class="text-sm font-semibold text-white/80"
+                >
                   #nhận nhiều <span class="text-cta">{hashtag}</span>
                 </p>
               )
@@ -107,16 +128,19 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
 
     {
       stats && stats.length > 0 && (
-        <div class="absolute inset-x-0 -bottom-12 px-2 md:-bottom-14">
+        /* Chỉ hiện từ `lg` — bề ngang duy nhất 5 thẻ xếp gọn MỘT hàng chờm lên
+           banner. Dưới `lg` ẩn hẳn: xếp 2–3 cột thì dải stat cao ~280px, đẩy
+           hero xuống và ngốn trọn khung nhìn đầu tiên trên mobile. */
+        <div class="hidden px-2 lg:absolute lg:inset-x-0 lg:-bottom-14 lg:block">
           <div class="site-container">
-            <div class="grid grid-cols-2 gap-3 lg:grid-cols-5 lg:gap-4">
+            <div data-reveal-group class="grid grid-cols-5 gap-4">
               {stats.map((s) => (
                 <div class="flex flex-col items-center gap-1.5 rounded-panel bg-white/95 px-3 py-4 text-center backdrop-blur-sm">
-                  <Icon name={s.icon} class="size-7 text-primary md:size-8" aria-hidden="true" />
-                  <span class="font-display text-lg font-extrabold tracking-tight text-ink md:text-2xl">
+                  <Icon name={s.icon} class="size-8 text-primary" aria-hidden="true" />
+                  <span class="font-display text-2xl font-extrabold tracking-tight text-ink">
                     {s.num}
                   </span>
-                  <span class="text-[12px] text-ink-muted md:text-meta">{s.label}</span>
+                  <span class="text-(length:--text-meta) text-ink-muted">{s.label}</span>
                 </div>
               ))}
             </div>

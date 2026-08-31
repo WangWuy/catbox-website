@@ -35,7 +35,7 @@ const { brand, endpoint = "/api/quote", segments } = Astro.props;
     tabindex="-1"
     autocomplete="off"
     aria-hidden="true"
-    class="absolute -left-[9999px] size-px"
+    class="absolute -left-(--offset-offscreen) size-px"
   />
 
   <fieldset class="flex flex-col gap-3 border-0 p-0">
@@ -53,7 +53,7 @@ const { brand, endpoint = "/api/quote", segments } = Astro.props;
                 value={s.value}
                 required
                 checked={i === 0}
-                class="size-4 accent-[var(--color-primary)]"
+                class="size-4 accent-(--color-primary)"
               />
               <span class="text-sm font-bold">{s.label}</span>
             </span>
