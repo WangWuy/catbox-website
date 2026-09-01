@@ -53,7 +53,7 @@ const description =
 ---
 
 <Layout title="Trang chủ" {description}>
-  <div class="flex flex-col gap-20 pb-20 md:gap-24">
+  <div class="flex flex-col gap-(--space-section-gap) pb-(--space-section-gap) md:gap-(--space-section-gap-lg) md:pb-(--space-section-gap-lg)">
     <HeroBanner
       {assets}
       image="brand/hero-banner.png"
@@ -80,7 +80,7 @@ const description =
 
     <NewsGrid
       {assets}
-      title="Tin Tức/ Blog"
+      title="Tin Tức"
       action={{ label: "Xem thêm tin →", href: "/blog" }}
       items={posts.map((p) => ({
         title: p.data.title,
@@ -93,8 +93,8 @@ const description =
 
   </div>
 
-  <!-- Nằm NGOÀI wrapper `gap-20 pb-20`: khối video không lấy khoảng cách
-       chung của trang, dán thẳng vào Footer. -->
+  <!-- Nằm NGOÀI wrapper `gap-(--space-section-gap) pb-(--space-section-gap)`:
+       khối video không lấy khoảng cách chung của trang, dán thẳng vào Footer. -->
   <FactoryReels
     {assets}
     label="Mẫu túi bánh mì que in 4 màu theo yêu cầu"

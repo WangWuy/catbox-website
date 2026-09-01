@@ -21,7 +21,7 @@ const fmt = (d: Date) =>
 
   <article class="site-container pb-16">
     <header class="mx-auto mb-8 flex max-w-3xl flex-col gap-2">
-      <h1 class="text-3xl font-extrabold tracking-tight">{data.title}</h1>
+      <h1 class="text-(length:--text-policy-title-mobile) font-extrabold tracking-tight md:text-(length:--text-policy-title)">{data.title}</h1>
       <p class="text-[13px] text-ink-faint">Cập nhật {fmt(data.updated)}</p>
     </header>
     <div class="prose-catbox mx-auto">

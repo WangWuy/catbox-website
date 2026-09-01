@@ -26,7 +26,9 @@ const isActive = (href: string) =>
   href === "/" ? current === "/" : current.startsWith(href);
 ---
 
-<header class="sticky top-0 z-40 border-b border-line bg-primary-deep/85 backdrop-blur-md">
+<header
+  class="sticky top-0 z-(--z-header) border-b border-line bg-primary-deep/85 backdrop-blur-md"
+>
   <div class="site-container flex h-(--height-header) items-center gap-6 lg:gap-10">
     <a href="/" class="flex flex-none items-center gap-3" aria-label={`${b.name} — trang chủ`}>
       <BrandLogo />

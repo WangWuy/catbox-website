@@ -1,5 +1,11 @@
-import type { BrandId } from "./brands";
-import type { MegaMenuParent } from "./categories";
+import type { BrandId, FnbBrandId } from "./brands";
+import { BRANDS } from "./brands";
+import {
+  buildMegaMenuTree,
+  type CategoryEntryLike,
+  type MegaMenuParent,
+  type ProductEntryLike,
+} from "./categories";
 
 export interface NavItem {
   label: string;
@@ -18,9 +24,10 @@ export interface FallbackGroup {
  * Một mục trên thanh nav sau khi đã trộn hai nguồn: cây danh mục từ content
  * (CFC) hoặc `NAV[brand]` tĩnh (Tetta/Catbox).
  *
- * Đặt ở đây thay vì khai trong `CategoryNav.astro` vì `MobileNav.astro` cũng
- * nhận đúng danh sách này — CategoryNav tính một lần rồi truyền xuống, hai
- * component không được dựng menu bằng hai logic khác nhau.
+ * Đặt ở đây thay vì khai trong component vì cả `CategoryNav` (thanh ngang từ
+ * md) lẫn `MobileNav` (drawer dưới md, mở từ nút trên `MainHeader`) đều nhận
+ * đúng danh sách này — `BaseLayout` dựng một lần qua `buildNavEntries` rồi
+ * truyền xuống, hai component không được dựng menu bằng hai logic khác nhau.
  */
 export interface NavEntry {
   label: string;
@@ -102,3 +109,55 @@ export const TOPBAR_LINKS: Record<BrandId, { label: string; href: string }[]> = 
     { label: "Quy Trình", href: "/quy-trinh" },
   ],
 };
+
+/** Dựng nhóm link phẳng từ `NAV[brand]` cho site chưa CMS-hoá danh mục */
+const fromNav = (nav: NavItem[]): NavEntry[] =>
+  nav.map((item) => ({
+    label: item.label,
+    href: item.href,
+    icon: item.icon,
+    fallbackGroups: item.children?.length ? [{ items: item.children }] : [],
+  }));
+
+/**
+ * Dựng danh sách mục cho thanh nav của khung F&B — MỘT nguồn sự thật cho cả
+ * `CategoryNav` (thanh ngang + mega menu, từ md) lẫn `MobileNav` (drawer, dưới
+ * md).
+ *
+ * Vì sao nằm ở đây chứ không trong `CategoryNav.astro` như trước: từ khi nút
+ * hamburger chuyển lên `MainHeader`, hai component ở hai nhánh khác nhau của
+ * cây DOM cùng cần đúng danh sách này. Để logic trong một component thì
+ * component kia phải dựng lại lần hai — đúng cái bẫy mà chú thích đầu
+ * `MobileNav.astro` đã cảnh báo (hai nơi dựng menu bằng hai logic khác nhau
+ * rồi lệch nội dung). Giờ `BaseLayout` gọi một lần rồi truyền xuống cả hai.
+ *
+ * Hàm thuần, không đụng `astro:content` — site tự lấy collection rồi truyền
+ * vào, giống `buildMegaMenuTree`.
+ */
+export function buildNavEntries(
+  brand: FnbBrandId,
+  categories?: CategoryEntryLike[],
+  products: ProductEntryLike[] = [],
+): NavEntry[] {
+  // Chưa có danh mục trong content (site mới clone, hoặc Tetta dùng menu tĩnh)
+  // → quay về `NAV[brand]`.
+  if (!categories || categories.length === 0) return fromNav(NAV[brand]);
+
+  return [
+    { label: "Trang chủ", href: "/", icon: BRANDS[brand].icon },
+    {
+      label: "Sản phẩm",
+      href: "/products",
+      icon: "lucide:package",
+      isMega: true,
+      megaParents: buildMegaMenuTree(categories, products),
+    },
+    {
+      label: "Về chúng tôi",
+      href: "/about-us",
+      icon: "lucide:factory",
+    },
+    { label: "Tin tức", href: "/blog", icon: "lucide:newspaper" },
+    { label: "Liên hệ", href: "/contact", icon: "lucide:phone" },
+  ];
+}

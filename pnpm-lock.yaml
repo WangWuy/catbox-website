@@ -37,6 +37,9 @@ importers:
       '@catbox/tokens':
         specifier: workspace:*
         version: link:../tokens
+      '@iconify-json/circle-flags':
+        specifier: ^1.2.0
+        version: 1.2.10
       '@iconify-json/lucide':
         specifier: ^1.2.0
         version: 1.2.127
@@ -64,6 +67,9 @@ importers:
       '@catbox/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@iconify-json/circle-flags':
+        specifier: ^1.2.0
+        version: 1.2.10
       '@iconify-json/lucide':
         specifier: ^1.2.0
         version: 1.2.127
@@ -106,6 +112,9 @@ importers:
       '@catbox/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@iconify-json/circle-flags':
+        specifier: ^1.2.0
+        version: 1.2.10
       '@iconify-json/lucide':
         specifier: ^1.2.0
         version: 1.2.127
@@ -170,6 +179,9 @@ importers:
       '@catbox/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@iconify-json/circle-flags':
+        specifier: ^1.2.0
+        version: 1.2.10
       '@iconify-json/lucide':
         specifier: ^1.2.0
         version: 1.2.127
@@ -1137,6 +1149,9 @@ packages:
     resolution: {integrity: sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==}
     peerDependencies:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+
+  '@iconify-json/circle-flags@1.2.10':
+    resolution: {integrity: sha512-sZRxs689a281RtZvuAiKtV7pQHv8Tk0HkinSM7QvLgdLEK8xgGRCcbDvL09Rq+/KtemmsMzGhS9/qt+r3ca+Ug==}
 
   '@iconify-json/lucide@1.2.127':
     resolution: {integrity: sha512-7KuCCpkly00kefna4wEnCr8l2HFRkbn4mD4zRib8wCSbrBmnR/l57ExpU6j5jv/Bo+qHpWuHpDtcqceQ0ptArw==}
@@ -5271,6 +5286,10 @@ snapshots:
   '@graphql-typed-document-node/core@3.2.0(graphql@16.14.2)':
     dependencies:
       graphql: 16.14.2
+
+  '@iconify-json/circle-flags@1.2.10':
+    dependencies:
+      '@iconify/types': 2.0.0
 
   '@iconify-json/lucide@1.2.127':
     dependencies:

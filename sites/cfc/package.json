@@ -20,6 +20,7 @@
     "@catbox/config": "workspace:*",
     "@catbox/tokens": "workspace:*",
     "@catbox/ui": "workspace:*",
+    "@iconify-json/circle-flags": "^1.2.0",
     "@iconify-json/lucide": "^1.2.0",
     "@keystatic/astro": "^6.0.0",
     "@keystatic/core": "^0.6.9",

@@ -22,26 +22,39 @@ const b = BRANDS[brand];
 const links = TOPBAR_LINKS[brand];
 const isCfc = brand === "cfc";
 
-/** Ngôn ngữ site phục vụ — hiển thị bằng mã ISO thay cho emoji cờ */
-const LANGUAGE_CODES = ["VI", "EN", "TH", "KO", "ZH"];
+/**
+ * Ngôn ngữ site phục vụ — icon cờ SVG (circle-flags qua astro-icon), KHÔNG
+ * dùng emoji cờ: emoji cờ render khác nhau hẳn giữa Windows/Android (nhiều
+ * máy ra hai chữ cái trong ô vuông), và quy ước dự án là mọi biểu tượng đi
+ * qua astro-icon.
+ */
+const LANGUAGES = [
+  { code: "VI", flag: "circle-flags:vn" },
+  { code: "EN", flag: "circle-flags:gb" },
+  { code: "TH", flag: "circle-flags:th" },
+  { code: "KO", flag: "circle-flags:kr" },
+  { code: "ZH", flag: "circle-flags:cn" },
+];
 ---
 
 {
   isCfc ? (
-    <div class="border-b border-line-soft bg-surface-topbar text-ink-muted">
+    <div class="hidden border-b border-line-soft bg-surface-topbar text-ink-muted md:block">
       <div class="site-container flex h-(--height-topbar) items-center justify-between gap-4">
         <nav aria-label="Ngôn ngữ & liên kết phụ" class="flex min-w-0 items-center gap-4">
           {/* Nhường chỗ cho hotline ở màn hẹp: cụm cờ chỉ để trang trí, còn
               hotline là đường chuyển đổi chính trên điện thoại. */}
-          {/* Mã ngôn ngữ dạng chữ + icon lucide, KHÔNG dùng emoji cờ: emoji cờ
-              render khác nhau hẳn giữa Windows/Android (nhiều máy ra hai chữ
-              cái trong ô vuông), và quy ước dự án là mọi biểu tượng đi qua
-              astro-icon. */}
+          {/* Icon cờ SVG (circle-flags) qua astro-icon, KHÔNG dùng emoji cờ:
+              emoji cờ render khác nhau hẳn giữa Windows/Android (nhiều máy ra
+              hai chữ cái trong ô vuông), và quy ước dự án là mọi biểu tượng
+              đi qua astro-icon. */}
           <span class="hidden items-center gap-1.5 text-micro font-medium sm:flex">
-            <Icon name="lucide:globe" class="size-3.5 flex-none" aria-hidden="true" />
+            <Icon name="lucide:globe" class="size-(--size-icon-inline) flex-none" aria-hidden="true" />
             Ngôn Ngữ
-            <span class="flex items-center gap-1 text-ink-faint" aria-hidden="true">
-              {LANGUAGE_CODES.join(" · ")}
+            <span class="flex items-center gap-1" aria-hidden="true">
+              {LANGUAGES.map((l) => (
+                <Icon name={l.flag} class="size-(--size-icon-inline) flex-none rounded-full" />
+              ))}
             </span>
           </span>
           <span aria-hidden="true" class="hidden h-3.5 w-px bg-line md:inline-block" />
@@ -72,11 +85,18 @@ const LANGUAGE_CODES = ["VI", "EN", "TH", "KO", "ZH"];
             class="flex items-center gap-1.5 text-micro font-semibold transition-colors hover:text-primary"
           >
             {/* Cụm avatar chỉ là trang trí — ẩn ở màn hẹp để hotline bên cạnh
-                đủ chỗ hiển thị trọn số. */}
+                đủ chỗ hiển thị trọn số. Icon người (lucide) là placeholder
+                tạm thời, chờ ảnh avatar nhân viên tư vấn thật thay thế. */}
             <span class="hidden -space-x-1.5 sm:flex" aria-hidden="true">
-              <span class="size-5 rounded-full border border-surface-alt bg-line-soft" />
-              <span class="size-5 rounded-full border border-surface-alt bg-line-soft" />
-              <span class="size-5 rounded-full border border-surface-alt bg-line-soft" />
+              <span class="flex size-5 items-center justify-center rounded-full border border-surface-alt bg-line-soft">
+                <Icon name="lucide:user" class="size-3 text-ink-faint" />
+              </span>
+              <span class="flex size-5 items-center justify-center rounded-full border border-surface-alt bg-line-soft">
+                <Icon name="lucide:user" class="size-3 text-ink-faint" />
+              </span>
+              <span class="flex size-5 items-center justify-center rounded-full border border-surface-alt bg-line-soft">
+                <Icon name="lucide:user" class="size-3 text-ink-faint" />
+              </span>
             </span>
             Liên Hệ
           </a>
@@ -84,7 +104,7 @@ const LANGUAGE_CODES = ["VI", "EN", "TH", "KO", "ZH"];
       </div>
     </div>
   ) : (
-    <div class="bg-primary-deep text-white/70">
+    <div class="hidden bg-primary-deep text-white/70 md:block">
       <div class="site-container flex h-(--height-topbar) items-center justify-between gap-4">
         <nav aria-label="Hệ sinh thái Catbox" class="flex items-center gap-4">
           {

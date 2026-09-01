@@ -24,7 +24,7 @@ const { title = "Đặt hàng thế nào?", subtitle, steps } = Astro.props;
 
 <section class="site-container" aria-labelledby="steps-heading">
   <div class="mb-7 flex flex-col gap-1.5">
-    <h2 id="steps-heading" class="text-3xl font-extrabold tracking-tight uppercase md:text-section">
+    <h2 id="steps-heading" class="text-(length:--text-section-mobile) font-extrabold tracking-tight uppercase md:text-section">
       {title}
     </h2>
     {subtitle && <p class="text-body text-ink-muted">{subtitle}</p>}

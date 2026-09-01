@@ -17,9 +17,10 @@ import { BRANDS, type FnbBrandId } from "@config/brands";
 interface Props {
   brand: FnbBrandId;
   variant?: "light" | "dark";
+  compact?: boolean;
 }
 
-const { brand, variant = "light" } = Astro.props;
+const { brand, variant = "light", compact = false } = Astro.props;
 const b = BRANDS[brand];
 
 const wordmark: Record<FnbBrandId, { head: string; tail: string }> = {
@@ -43,23 +44,25 @@ const subClass = variant === "dark" ? "text-white/50" : "text-ink-faint";
       alt={b.name}
       width="820"
       height="462"
-      class="h-(--height-logo-mobile) w-auto flex-none object-contain md:h-(--height-logo)"
+      class={compact
+        ? "h-(--height-logo-mobile-compact) w-auto flex-none object-contain md:h-(--height-logo-compact)"
+        : "h-(--height-logo-mobile) w-auto flex-none object-contain md:h-(--height-logo)"}
     />
   ) : (
     <>
       {/* Trước đây khung này còn khai một font-size cứng 22px — vô nghĩa vì bên
           trong chỉ có <Icon> tự quyết kích thước qua `size-6`. Đã bỏ hẳn. */}
       <span
-        class={`grid size-(--size-logo-box) flex-none place-items-center rounded-chip ${boxClass}`}
+        class={`grid ${compact ? "size-9" : "size-(--size-logo-box)"} flex-none place-items-center rounded-chip ${boxClass}`}
       >
-        <Icon name={b.icon} class="size-6" aria-hidden="true" />
+        <Icon name={b.icon} class={compact ? "size-5" : "size-6"} aria-hidden="true" />
       </span>
-      <span class="flex flex-col gap-1">
-        <span class="font-display text-wordmark leading-none font-extrabold tracking-tight">
+      <span class="flex flex-col gap-0.5">
+        <span class={`font-display ${compact ? "text-xl" : "text-wordmark"} leading-none font-extrabold tracking-tight`}>
           <span class={headClass}>{mark.head}</span><span class="text-primary">{mark.tail}</span>
         </span>
         {
-          b.memberOf && (
+          b.memberOf && !compact && (
             <span class={`text-memberof leading-none font-medium ${subClass}`}>{b.memberOf}</span>
           )
         }

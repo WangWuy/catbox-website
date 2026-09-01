@@ -5,9 +5,9 @@
   "type": "module",
   "packageManager": "pnpm@10.34.5",
   "scripts": {
-    "dev:catbox": "pnpm --filter @catbox/site-catbox dev",
-    "dev:tetta": "pnpm --filter @catbox/site-tetta dev",
-    "dev:cfc": "pnpm --filter @catbox/site-cfc dev",
+    "dev:catbox": "pnpm --filter @catbox/site-catbox exec astro dev stop --ignore-lock; pnpm --filter @catbox/site-catbox dev",
+    "dev:tetta": "pnpm --filter @catbox/site-tetta exec astro dev stop --ignore-lock; pnpm --filter @catbox/site-tetta dev",
+    "dev:cfc": "pnpm --filter @catbox/site-cfc exec astro dev stop --ignore-lock; pnpm --filter @catbox/site-cfc dev",
     "build": "pnpm -r --filter \"./sites/*\" build",
     "build:catbox": "pnpm --filter @catbox/site-catbox build",
     "build:tetta": "pnpm --filter @catbox/site-tetta build",

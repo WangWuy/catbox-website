@@ -17,6 +17,7 @@
  */
 import { Icon } from "astro-icon/components";
 import type { NavEntry } from "@config/nav";
+import SearchBox from "@ui/primitives/SearchBox.astro";
 
 interface Props {
   items: NavEntry[];
@@ -33,44 +34,45 @@ const isActive = (href: string) =>
 
 {/* Wrapper thường chứ KHÔNG dùng `display: contents`: ghép với `md:hidden` mà
     site truyền vào thì hai utility display chống nhau, đúng/sai chỉ nhờ thứ tự
-    Tailwind sinh CSS — mong manh không đáng. */}
-<div class:list={["flex items-center", className]}>
+    Tailwind sinh CSS — mong manh không đáng.
+
+    KHÔNG dùng `id` cho nút/drawer: `MainHeader` render `MobileNav` HAI LẦN
+    (header tĩnh + sticky clone `isStickyClone`), nên hai instance cùng tồn
+    tại trong DOM cùng lúc. `id` trùng khiến `getElementById`/`querySelector`
+    toàn document luôn trúng bản đầu tiên (header tĩnh) — khi cuộn xuống, đó
+    là bản đã khuất, còn nút người dùng thực sự bấm (sticky clone) không có
+    listener nào cả. Script bên dưới scope theo `data-mobile-nav` của CHÍNH
+    wrapper này để mỗi instance tự quản lý nút/drawer của mình. */}
+<div class:list={["flex items-center", className]} data-mobile-nav>
   <button
     type="button"
     data-drawer-open
-    aria-controls="mobile-nav-drawer"
     aria-expanded="false"
     aria-label="Mở menu danh mục"
     class="flex items-center gap-2 text-nav font-semibold text-ink transition-colors duration-(--duration-fast) hover:text-primary"
   >
     <Icon name="lucide:menu" class="size-5" aria-hidden="true" />
-    Danh mục
   </button>
 
-  {/* `mr-0` là BẮT BUỘC: UA stylesheet cho <dialog> là `inset: 0; margin: auto`
-      nên chỉ `ml-auto` thì margin-right vẫn `auto` và panel canh GIỮA màn hình
-      thay vì dán mép phải. `max-h-none` gỡ trần `calc(100% - 12px)` của UA để
+  {/* `ml-0` là BẮT BUỘC: UA stylesheet cho <dialog> là `inset: 0; margin: auto`
+      nên chỉ `mr-auto` thì margin-left vẫn `auto` và panel canh GIỮA màn hình
+      thay vì dán mép trái. `max-h-none` gỡ trần `calc(100% - 12px)` của UA để
       `h-dvh` phủ trọn chiều cao. */}
   <dialog
-    id="mobile-nav-drawer"
+    data-drawer
     aria-label="Danh mục chính"
-    class="mobile-drawer mr-0 ml-auto h-dvh max-h-none w-(--width-drawer) max-w-(--width-drawer-max) bg-surface p-0 text-ink backdrop:bg-black/50"
+    class="mobile-drawer ml-0 mr-auto h-dvh max-h-none w-(--width-drawer) max-w-(--width-drawer-max) bg-surface-drawer p-0 text-ink backdrop:bg-black/50"
   >
     <div class="flex h-full flex-col">
-      <div class="flex flex-none items-center justify-between border-b border-line px-4 py-3">
-        <span class="font-display text-card-title font-extrabold">Danh mục</span>
-        <button
-          type="button"
-          data-drawer-close
-          aria-label="Đóng menu"
-          class="grid size-9 place-items-center text-ink-muted transition-colors duration-(--duration-fast) hover:text-primary"
-        >
-          <Icon name="lucide:x" class="size-5" aria-hidden="true" />
-        </button>
+      {/* Ô tìm kiếm thay cho tiêu đề "Danh mục" + nút đóng (X): đóng drawer giờ
+          chỉ còn qua backdrop, Esc, hoặc chọn một mục — xem phần script bên
+          dưới, `data-drawer-close` đã bỏ nên không còn phần tử nào trỏ tới nó. */}
+      <div class="flex-none border-b border-line px-4 py-3">
+        <SearchBox placeholder="Tìm kiếm" class="border-0 px-0" />
       </div>
 
-      <nav class="flex-1 overflow-y-auto overscroll-contain px-4 py-3">
-        <ul class="flex flex-col gap-1">
+      <nav class="flex-1 overflow-y-auto overscroll-contain px-4">
+        <ul class="flex flex-col divide-y divide-line">
           {
             items.map((item) => (
               <li>
@@ -202,14 +204,14 @@ const isActive = (href: string) =>
 </div>
 
 <style>
-  /* Trượt từ mép phải. `@starting-style` + `allow-discrete` cho phép làm
+  /* Trượt từ mép trái. `@starting-style` + `allow-discrete` cho phép làm
    * animation cả lúc MỞ (display: none → block) mà không cần setTimeout trong
    * JS — trạng thái đầu do CSS lo, script chỉ gọi showModal()/close().
    *
    * Không cần tự viết luật cho prefers-reduced-motion: khối ở cuối base.css
    * đã ép mọi transition-duration về 0.01ms trên toàn trang. */
   .mobile-drawer {
-    transform: translateX(100%);
+    transform: translateX(-100%);
     opacity: 0;
     transition:
       transform var(--duration-base) var(--ease-out-soft),
@@ -225,7 +227,7 @@ const isActive = (href: string) =>
 
   @starting-style {
     .mobile-drawer[open] {
-      transform: translateX(100%);
+      transform: translateX(-100%);
       opacity: 0;
     }
   }
@@ -252,50 +254,57 @@ const isActive = (href: string) =>
 <script>
   // BẮT BUỘC bọc IIFE: Astro gộp mọi <script> inline của một trang vào chung
   // một bundle, khai báo trần sẽ đụng tên với script khác (xem ProductFilter).
+  //
+  // Lặp qua TẤT CẢ `[data-mobile-nav]`: `MainHeader` render `MobileNav` hai
+  // lần (header tĩnh + sticky clone), nên có 2 instance cùng lúc trong DOM.
+  // Mỗi wrapper phải tự tìm nút/drawer BÊN TRONG chính nó — query toàn
+  // document từng khiến cả hai nút cùng điều khiển bản đầu tiên trong DOM,
+  // nên nút của sticky clone (bản người dùng thực sự thấy sau khi cuộn) im
+  // lặng không phản hồi.
   (() => {
-    const drawer = document.getElementById("mobile-nav-drawer");
-    if (!(drawer instanceof HTMLDialogElement)) return;
-
-    const openBtn = document.querySelector<HTMLButtonElement>("[data-drawer-open]");
-    const closeBtn = drawer.querySelector<HTMLButtonElement>("[data-drawer-close]");
     const root = document.documentElement;
 
-    const open = () => {
-      drawer.showModal();
-      openBtn?.setAttribute("aria-expanded", "true");
-      // showModal() chặn tương tác với nền nhưng KHÔNG khoá cuộn — thiếu dòng
-      // này thì vuốt trên drawer đến cuối sẽ cuộn tiếp trang phía sau.
-      root.style.overflow = "hidden";
-    };
+    document.querySelectorAll("[data-mobile-nav]").forEach((wrapper) => {
+      const drawer = wrapper.querySelector("[data-drawer]");
+      const openBtn = wrapper.querySelector<HTMLButtonElement>("[data-drawer-open]");
+      if (!(drawer instanceof HTMLDialogElement) || !openBtn) return;
 
-    const close = () => {
-      drawer.close();
-    };
+      const open = () => {
+        drawer.showModal();
+        openBtn.setAttribute("aria-expanded", "true");
+        // showModal() chặn tương tác với nền nhưng KHÔNG khoá cuộn — thiếu dòng
+        // này thì vuốt trên drawer đến cuối sẽ cuộn tiếp trang phía sau.
+        root.style.overflow = "hidden";
+      };
 
-    openBtn?.addEventListener("click", open);
-    closeBtn?.addEventListener("click", close);
+      const close = () => {
+        drawer.close();
+      };
 
-    // Dọn dẹp ở sự kiện `close` để bắt được cả đường đóng bằng phím Esc (native,
-    // không đi qua nút nào).
-    drawer.addEventListener("close", () => {
-      openBtn?.setAttribute("aria-expanded", "false");
-      root.style.overflow = "";
-    });
+      openBtn.addEventListener("click", open);
 
-    drawer.addEventListener("click", (e) => {
-      const target = e.target;
-      if (!(target instanceof Element)) return;
+      // Dọn dẹp ở sự kiện `close` để bắt được cả đường đóng bằng phím Esc (native,
+      // không đi qua nút nào).
+      drawer.addEventListener("close", () => {
+        openBtn.setAttribute("aria-expanded", "false");
+        root.style.overflow = "";
+      });
 
-      // Chạm ra ngoài panel: <dialog> phủ kín màn hình nên click vào ::backdrop
-      // vẫn báo target là chính <dialog>, không phải phần tử con nào.
-      if (target === drawer) {
-        close();
-        return;
-      }
+      drawer.addEventListener("click", (e) => {
+        const target = e.target;
+        if (!(target instanceof Element)) return;
 
-      // Điều hướng trong SPA-less site vẫn tải lại trang, nhưng đóng trước cho
-      // chắc: link neo (#) không tải lại nên drawer sẽ kẹt mở.
-      if (target.closest("a")) close();
+        // Chạm ra ngoài panel: <dialog> phủ kín màn hình nên click vào ::backdrop
+        // vẫn báo target là chính <dialog>, không phải phần tử con nào.
+        if (target === drawer) {
+          close();
+          return;
+        }
+
+        // Điều hướng trong SPA-less site vẫn tải lại trang, nhưng đóng trước cho
+        // chắc: link neo (#) không tải lại nên drawer sẽ kẹt mở.
+        if (target.closest("a")) close();
+      });
     });
   })();
 </script>

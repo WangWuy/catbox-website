@@ -1,0 +1,68 @@
+---
+/**
+ * MỤC TIÊU CHIẾN LƯỢC — lưới thẻ ngang, mỗi thẻ là một số thứ tự lớn trong
+ * khung tròn nền nhạt, kèm nhãn nhỏ + đoạn mô tả bên phải (theo mockup).
+ *
+ * Số thứ tự thay cho icon vì đây là các cột mốc theo trình tự, không phải các
+ * hạng mục song song như CoreValues. Đánh số "01/02/03" (đệm số 0) chứ không
+ * "1/2/3": hai chữ số giữ mọi khung tròn cùng một khối lượng thị giác.
+ *
+ * Số đã có `aria-hidden` — `<ol>` tự nó báo "mục 1/3" cho trình đọc màn hình
+ * nên đọc thêm "01" là thừa.
+ */
+import SectionHeader from "@ui/primitives/SectionHeader.astro";
+
+export interface StrategicGoal {
+  /** Nhãn nhỏ trên đoạn mô tả — bỏ trống thì lấy `label` chung của khối */
+  title?: string;
+  desc: string;
+}
+
+interface Props {
+  title?: string;
+  /**
+   * Phần đuôi tiêu đề tô màu primary, gõ từng chữ rồi lặp lại. Truyền mảng để
+   * luân phiên nhiều từ — xem `accent` + `typing` của SectionHeader.
+   */
+  accent?: string | string[];
+  /** Nhãn nhỏ lặp lại trên mỗi thẻ khi goal không tự đặt `title` */
+  label?: string;
+  goals: StrategicGoal[];
+}
+
+const {
+  title = "Mục tiêu",
+  accent = "chiến lược",
+  label = "Mục tiêu",
+  goals,
+} = Astro.props;
+---
+
+<section
+  class="site-container flex flex-col gap-7"
+  aria-labelledby="strategic-goals-heading"
+  data-reveal
+>
+  <SectionHeader id="strategic-goals-heading" {title} {accent} rule typing spacing="none" />
+
+  <ol class="grid gap-5 md:grid-cols-3" data-reveal-group>
+    {
+      goals.map((g, i) => (
+        <li class="flex min-h-(--height-goal-card) items-center gap-4 rounded-card-soft border border-line bg-surface-card p-6 shadow-card">
+          <span
+            class="flex size-(--size-goal-number-box) flex-none items-center justify-center rounded-full bg-surface-alt font-display text-goal-number leading-none font-extrabold text-primary"
+            aria-hidden="true"
+          >
+            {String(i + 1).padStart(2, "0")}
+          </span>
+          <span class="flex flex-col gap-1.5">
+            <span class="text-tiny tracking-(--tracking-eyebrow) text-ink-muted uppercase">
+              {g.title ?? label}
+            </span>
+            <span class="text-meta leading-relaxed font-semibold text-ink">{g.desc}</span>
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+</section>

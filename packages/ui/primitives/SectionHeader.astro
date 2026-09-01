@@ -2,30 +2,213 @@
 /**
  * Tiêu đề section theo mockup: chữ in hoa đậm bên trái, chỗ trống bên phải cho
  * tabs hoặc nút "Xem thêm →". Dùng lại ở BÁN CHẠY, TIN TỨC, LỰA CHỌN CỦA TUẦN.
+ *
+ * Mobile: căn giữa toàn bộ khối (title, subtitle, action) và dùng cỡ chữ nhỏ
+ * hơn (`--text-section-mobile`) — màn hẹp không đủ chỗ cho layout 2 cột dàn
+ * ngang lẫn chữ 38px in hoa đậm. Từ `md:` trở lên quay lại layout ngang gốc.
+ *
+ * Hai prop trang trí tuỳ chọn theo concept CFC: `accent` tô màu primary cho
+ * phần đuôi tiêu đề, `rule` thêm gạch chân ngắn bên dưới.
+ *
+ * Nút action ("Xem thêm tin →"…) ẩn ở mobile: đứng ngay dưới tiêu đề đã căn
+ * giữa trông thừa và rối bố cục hẹp — chỉ hiện từ `md:` trở lên. `slot` (tabs
+ * lọc của BestsellerGrid) vẫn hiện ở mọi cỡ vì đó là điều khiển chức năng,
+ * không phải link "xem thêm".
  */
 import PillButton from "./PillButton.astro";
 
 interface Props {
   title: string;
+  /**
+   * Phần đuôi tiêu đề được tô màu primary — vd. `title="Giá trị"` +
+   * `accent="cốt lõi"` cho ra "GIÁ TRỊ **CỐT LÕI**". Tách làm 2 prop thay vì
+   * cho phép HTML trong `title` để chỗ gọi không dựng được markup tuỳ ý.
+   *
+   * Truyền MẢNG kèm `typing` để luân phiên nhiều đuôi tiêu đề — vd.
+   * `accent={["chiến lược", "phát triển"]}` gõ lần lượt từng từ rồi quay lại
+   * từ đầu. Không có `typing` thì chỉ phần tử đầu được hiển thị.
+   */
+  accent?: string | string[];
+  /** Gạch chân ngắn dưới tiêu đề (--width-rule-accent), như concept CFC */
+  rule?: boolean;
+  /**
+   * Gõ từng chữ phần `accent` + con trỏ nháy khi tiêu đề cuộn vào khung nhìn,
+   * giữ `--duration-type-hold` rồi xoá đi gõ tiếp (luân phiên nếu `accent` là
+   * mảng, lặp lại chính nó nếu chỉ một từ). Chỉ đoạn `accent` chịu ảnh hưởng
+   * nên phần `title` vẫn xuống dòng bình thường, nhưng bản thân `accent` cần
+   * `nowrap` — hãy giữ nó NGẮN, đủ lọt một dòng ở mobile.
+   * Xem [data-typing] trong base.css.
+   */
+  typing?: boolean;
+  /** id gắn vào <h2> để <section aria-labelledby> trỏ tới được */
+  id?: string;
   subtitle?: string;
   /** Nút pill bên phải */
   action?: { label: string; href: string };
   /** Nền nút action — mặc định `white`; `default` (surface-alt) cho nền phụ */
   actionTone?: "default" | "white";
+  /**
+   * Khoảng cách xuống nội dung bên dưới. `none` khi khối cha đã tự lo bằng
+   * `gap-*` — KHÔNG đè bằng `class="mb-0"`: Tailwind xếp `mb-0` trước `mb-7`
+   * trong CSS nên `mb-7` vẫn thắng, đè kiểu đó im lặng không có tác dụng.
+   */
+  spacing?: "default" | "none";
   class?: string;
 }
 
-const { title, subtitle, action, actionTone = "white", class: className = "" } = Astro.props;
+const {
+  title,
+  accent,
+  rule = false,
+  typing = false,
+  id,
+  subtitle,
+  action,
+  actionTone = "white",
+  spacing = "default",
+  class: className = "",
+} = Astro.props;
+
+/* `accent` nhận cả chuỗi lẫn mảng — chuẩn hoá về mảng một lần ở đây để phần
+ * markup bên dưới không phải xét hai kiểu. */
+const accents = accent ? (Array.isArray(accent) ? accent : [accent]) : [];
+/* Không bật `typing` thì chỉ hiện từ đầu tiên: những từ sau là các vòng của
+ * hiệu ứng, in hết ra một dòng là sai nghĩa tiêu đề. */
+const accentText = accents[0];
 ---
 
-<div class={`mb-7 flex flex-wrap items-center justify-between gap-4 ${className}`}>
-  <div class="flex flex-col gap-1.5">
-    <h2 class="text-3xl font-extrabold tracking-tight uppercase md:text-section">{title}</h2>
+<div
+  class={`${spacing === "none" ? "" : "mb-7"} flex flex-col items-center gap-4 text-center md:flex-row md:flex-wrap md:items-center md:justify-between md:text-left ${className}`}
+>
+  <div class="flex flex-col items-center gap-1.5 md:items-start">
+    <h2
+      {id}
+      class="text-(length:--text-section-mobile) font-extrabold tracking-tight uppercase md:text-(length:--text-section)"
+    >
+      {title}{
+        accentText && (
+          <>
+            {" "}
+            <span
+              class="text-primary"
+              data-typing={typing ? "" : undefined}
+              data-typing-words={
+                typing ? JSON.stringify(accents) : undefined
+              }
+            >
+              {accentText}
+            </span>
+          </>
+        )
+      }
+    </h2>
+    {
+      rule && (
+        <span
+          class="h-(--height-rule-accent) w-(--width-rule-accent) bg-primary"
+          aria-hidden="true"
+        />
+      )
+    }
     {subtitle && <p class="text-body text-ink-muted">{subtitle}</p>}
   </div>
 
   <div class="flex items-center gap-2.5">
     <slot />
-    {action && <PillButton text={action.label} href={action.href} tone={actionTone} />}
+    {
+      action && (
+        <PillButton
+          text={action.label}
+          href={action.href}
+          tone={actionTone}
+          class="hidden md:inline-flex"
+        />
+      )
+    }
   </div>
 </div>
+
+<script>
+  // Gõ chữ phần `accent` khi tiêu đề cuộn tới khung nhìn (prop `typing`), giữ
+  // một nhịp rồi xoá đi gõ từ kế — lặp vô hạn. Phần hình thức (con trỏ, hộp
+  // cắt) nằm ở [data-typing] trong base.css; ở đây chỉ cắt chuỗi và bấm giờ.
+
+  /** Đọc token thời lượng ra mili-giây — nguồn giá trị vẫn là base.css. */
+  function ms(name: string, fallback: number) {
+    const raw = getComputedStyle(document.documentElement)
+      .getPropertyValue(name)
+      .trim();
+    if (raw.endsWith("ms")) return parseFloat(raw) || fallback;
+    if (raw.endsWith("s")) return (parseFloat(raw) || fallback / 1000) * 1000;
+    return fallback;
+  }
+
+  const sleep = (t: number) => new Promise((r) => setTimeout(r, t));
+
+  document.querySelectorAll<HTMLElement>("[data-typing]").forEach((el) => {
+    let words: string[];
+    try {
+      words = JSON.parse(el.dataset.typingWords || "[]");
+    } catch {
+      words = [];
+    }
+    words = words.filter((w) => typeof w === "string" && w.length > 0);
+    if (!words.length) return;
+
+    // "Giảm chuyển động": để nguyên chữ đã render sẵn, không lặp gì cả. Vòng
+    // lặp này chạy bằng JS nên khối prefers-reduced-motion ở base.css (vốn chỉ
+    // rút ngắn animation CSS) không chặn được nó.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    // Con trỏ bám sát mép chữ nên bề ngang đoạn accent co giãn từng ký tự —
+    // khoá bề ngang của cả DÒNG tiêu đề theo từ dài nhất, nếu không thì ở
+    // mobile (khối căn giữa) cả dòng nhún ngang theo mỗi ký tự gõ ra.
+    // Khoá ở <h2> chứ không ở chính element: khoá ở đây thì con trỏ vẫn tự do
+    // chạy bên trong, khoá ở element là nó đứng im ở mép phải như cũ.
+    const line = el.closest("h2") ?? el.parentElement;
+    if (line) {
+      const measure = (text: string) => {
+        el.textContent = text;
+        return line.getBoundingClientRect().width;
+      };
+      line.style.minWidth = `${Math.ceil(Math.max(...words.map(measure)))}px`;
+      // `measure` vừa ghi đè textContent — trả lại từ đầu, vì observer bên
+      // dưới có thể còn lâu mới bắn (tiêu đề nằm cuối trang).
+      el.textContent = words[0];
+    }
+
+    async function loop() {
+      const type = ms("--duration-type-char", 55);
+      const untype = ms("--duration-untype-char", 30);
+      const hold = ms("--duration-type-hold", 3000);
+
+      for (let i = 0; ; i = (i + 1) % words.length) {
+        const word = words[i];
+        for (let n = 1; n <= word.length; n++) {
+          el.textContent = word.slice(0, n);
+          await sleep(type);
+        }
+        el.dataset.typing = "hold";
+        await sleep(hold);
+        el.dataset.typing = "";
+        for (let n = word.length - 1; n >= 0; n--) {
+          el.textContent = word.slice(0, n);
+          await sleep(untype);
+        }
+      }
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          io.disconnect();
+          el.textContent = "";
+          loop();
+        }
+      },
+      { threshold: 0.6 },
+    );
+    io.observe(el);
+  });
+</script>

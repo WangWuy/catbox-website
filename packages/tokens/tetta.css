@@ -39,6 +39,14 @@
 
   --color-surface-input:  #FAF8F5;  /* = surface-alt, giữ đúng diện mạo cũ */
 
+  /* Nền panel nổi (drawer nav mobile...) — cùng token với CFC; ở Tetta trùng
+   * `surface` vì nền trang đã trắng sẵn. */
+  --color-surface-drawer: #FFFFFF;
+
+  /* Nền thẻ nổi trên nền trang (StrategicGoals...) — cũng trùng `surface` vì
+   * nền trang Tetta đã trắng; thẻ tách khỏi nền bằng viền `line`. */
+  --color-surface-card: #FFFFFF;
+
   /* Màu thanh trình duyệt (<meta name="theme-color">) */
   --color-theme:         #8B1E2D;
 

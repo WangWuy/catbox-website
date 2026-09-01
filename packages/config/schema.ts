@@ -65,6 +65,8 @@ export const productSchema = z.object({
   material: z.array(z.string()).default([]),
   shape: z.array(z.string()).default([]),
   moq: z.string().optional(),
+  /** Mã sản phẩm (SKU) hiển thị cạnh tên sản phẩm trên trang chi tiết */
+  sku: z.string().optional(),
   badge: z.string().optional(),
   excerpt: z.string().optional(),
   image: imageField,

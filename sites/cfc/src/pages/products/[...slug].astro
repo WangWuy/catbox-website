@@ -6,12 +6,14 @@
  * Bảng thông số ở đây vừa phục vụ người mua vừa là mồi GEO (§6B.3): AI ưu tiên
  * trích dẫn dữ liệu dạng bảng có đơn vị rõ ràng.
  */
+import type { ImageMetadata } from "astro";
 import { getCollection, render } from "astro:content";
 import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
+import ProductCarousel from "@ui/patterns/ProductCarousel.astro";
 import { BRANDS } from "@config/brands";
-import { categoryTrail } from "@config/categories";
+import { categoryTitle, categoryTrail } from "@config/categories";
 
 export async function getStaticPaths() {
   const products = await getCollection("products", ({ data }) => !data.draft);
@@ -24,6 +26,11 @@ export async function getStaticPaths() {
   }));
 }
 
+const assets = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/**/*.{png,jpg,jpeg,webp,avif}",
+  { eager: true },
+);
+
 const { product, trail } = Astro.props;
 const { data } = product;
 /** Danh mục trực tiếp của sản phẩm (lá cuối đường) — dùng làm nhãn hiển thị. */
@@ -32,6 +39,15 @@ const { Content } = await render(product);
 const b = BRANDS.cfc;
 
 const image = data.image ?? "/placeholders/1x1-1.svg";
+/** Ảnh chính luôn là ảnh đầu gallery — tránh trùng lặp khi khách đã điền cả hai. */
+const galleryImages = [image, ...data.gallery.filter((g) => g !== image)];
+
+const categories = await getCollection("categories");
+const allProducts = await getCollection("products", ({ data: d }) => !d.draft);
+const relatedProducts = allProducts
+  .filter((p) => p.id !== product.id && p.data.category === data.category)
+  .sort((a, z) => a.data.order - z.data.order)
+  .slice(0, 4);
 
 const jsonLd: Record<string, unknown>[] = [
   {
@@ -92,6 +108,24 @@ if (data.faq.length) {
       </div>
 
       {
+        galleryImages.length > 1 && (
+          <div class="flex flex-wrap gap-3" data-gallery>
+            {galleryImages.map((g, i) => (
+              <button
+                type="button"
+                data-gallery-thumb
+                data-image={g}
+                aria-pressed={i === 0}
+                class="size-(--size-thumb-gallery) shrink-0 overflow-hidden rounded-panel border border-line outline-offset-2 aria-pressed:outline-2 aria-pressed:outline-ink"
+              >
+                <img src={g} alt="" width="72" height="72" class="size-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )
+      }
+
+      {
         data.swatches.length > 0 && (
           <div class="flex items-center gap-3" data-swatches>
             <span class="text-[13px] font-semibold text-ink-muted">Chất liệu:</span>
@@ -128,7 +162,8 @@ if (data.faq.length) {
           )
         }
       </p>
-      <h1 class="text-4xl leading-tight font-extrabold tracking-tight">{data.title}</h1>
+      <h1 class="text-(length:--text-product-title-mobile) leading-tight font-extrabold tracking-tight md:text-(length:--text-product-title)">{data.title}</h1>
+      {data.sku && <p class="text-meta text-ink-faint">Mã sản phẩm: {data.sku}</p>}
       {data.excerpt && <p class="text-[15px] leading-relaxed text-ink-muted">{data.excerpt}</p>}
 
       {data.moq && <p class="text-sm text-ink-faint">MOQ {data.moq}</p>}
@@ -137,7 +172,7 @@ if (data.faq.length) {
         <a
           href="/contact"
           data-analytics="submit_quote_intent"
-          class="pill h-12 bg-cta px-7 text-white transition-colors hover:bg-cta-hover"
+          class="pill h-12 bg-primary px-7 text-white transition-colors hover:bg-primary-hover"
         >
           Nhận báo giá ngay
         </a>
@@ -173,14 +208,20 @@ if (data.faq.length) {
       }
     </div>
 
-    <div class="prose-catbox lg:col-span-2">
-      <Content />
+  </article>
+
+  <div class="site-container flex flex-col gap-12 pb-16">
+    <div>
+      <h2 class="mb-5 text-(length:--text-section-mobile) font-extrabold tracking-tight uppercase md:text-section">Mô tả sản phẩm</h2>
+      <div class="prose-catbox">
+        <Content />
+      </div>
     </div>
 
     {
       data.faq.length > 0 && (
-        <section class="lg:col-span-2">
-          <h2 class="mb-5 text-section font-extrabold tracking-tight uppercase">Câu hỏi thường gặp</h2>
+        <section>
+          <h2 class="mb-5 text-(length:--text-section-mobile) font-extrabold tracking-tight uppercase md:text-section">Câu hỏi thường gặp</h2>
           <div class="flex flex-col gap-3">
             {data.faq.map((f) => (
               <details class="rounded-panel border border-line bg-surface p-5">
@@ -192,7 +233,20 @@ if (data.faq.length) {
         </section>
       )
     }
-  </article>
+
+    <ProductCarousel
+      assets={assets}
+      title="Sản phẩm liên quan"
+      products={relatedProducts.map((p) => ({
+        title: p.data.title,
+        category: categoryTitle(categories, p.data.category),
+        href: `/products/${p.id}`,
+        image: p.data.image,
+        badge: p.data.badge,
+        swatches: p.data.swatches,
+      }))}
+    />
+  </div>
 </Layout>
 
 <script>
@@ -209,6 +263,21 @@ if (data.faq.length) {
         btn.setAttribute("aria-pressed", "true");
         if (img && btn.dataset.image) img.src = btn.dataset.image;
         if (label && btn.dataset.label) label.textContent = btn.dataset.label;
+      });
+    });
+  }
+
+  // Island #5 — Gallery: click thumbnail đổi ảnh chính.
+  const gallery = document.querySelector<HTMLElement>("[data-gallery]");
+  if (gallery) {
+    const img = document.querySelector<HTMLImageElement>("[data-product-image]");
+    gallery.querySelectorAll<HTMLButtonElement>("[data-gallery-thumb]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        gallery
+          .querySelectorAll("[data-gallery-thumb]")
+          .forEach((b) => b.setAttribute("aria-pressed", "false"));
+        btn.setAttribute("aria-pressed", "true");
+        if (img && btn.dataset.image) img.src = btn.dataset.image;
       });
     });
   }

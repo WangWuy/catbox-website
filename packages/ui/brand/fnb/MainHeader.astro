@@ -1,6 +1,7 @@
 ---
 /**
- * Header chính — Logo trái + Search bo tròn full width giữa + pill CTA phải.
+ * Header chính — nút menu mobile + Logo trái + Search bo tròn full width giữa
+ * + pill CTA phải. Dính (sticky) ở mép trên và thu gọn lại khi trang đã cuộn.
  *
  * Chỉ phục vụ khung F&B (CFC + Tetta) — header Catbox ở
  * @ui/brand/catbox/SiteHeader.astro.
@@ -8,43 +9,84 @@
  * Nhãn/đích CTA lấy thẳng từ `headerCta` trong brands.ts — không rẽ nhánh
  * theo brand trong component (trước đây CFC bị ép cứng sang /login, một trang
  * không tồn tại). Màu nền lấy từ token `surface-pill` của từng theme.
+ *
+ * Nút hamburger nằm ở ĐÂY chứ không ở `CategoryNav` như trước: dưới md thanh
+ * CategoryNav chỉ còn mỗi cái nút đó (menu ngang và pill khuyến mãi đều ẩn),
+ * nên nó chiếm trọn một dải 48px ngay trên banner chỉ để chứa một nút. Gộp lên
+ * đây thì mobile bớt hẳn một thanh.
  */
 import { Icon } from "astro-icon/components";
 import { BRANDS, type FnbBrandId } from "@config/brands";
+import type { NavEntry } from "@config/nav";
 import SearchBox from "@ui/primitives/SearchBox.astro";
 import BrandLogo from "@ui/brand/fnb/BrandLogo.astro";
+import MobileNav from "@ui/brand/fnb/MobileNav.astro";
 
 interface Props {
   brand: FnbBrandId;
+  /**
+   * Menu đã dựng sẵn ở BaseLayout (`buildNavEntries`) — chỉ dùng cho drawer
+   * mobile. Không tự dựng ở đây: CategoryNav phải nhận đúng danh sách này.
+   */
+  items?: NavEntry[];
+  /** Pathname hiện tại để drawer tô mục đang xem */
+  current?: string;
+  /** Biến thể sticky clone thu gọn khi cuộn trang */
+  isStickyClone?: boolean;
 }
 
-const { brand } = Astro.props;
+const { brand, items = [], current = "/", isStickyClone = false } = Astro.props;
 const b = BRANDS[brand];
 const cta = b.headerCta;
 ---
 
-<header class="border-b border-line-soft bg-surface">
-  <div
-    class="site-container flex h-(--height-header-mobile) items-center gap-3 md:h-(--height-header) md:gap-6 lg:gap-10"
-  >
-    <a href="/" class="flex flex-none items-center gap-3" aria-label={`${b.name} — trang chủ`}>
-      <BrandLogo brand={brand} />
-    </a>
-
-    <div class="hidden w-full flex-1 md:block">
-      <SearchBox placeholder={b.searchPlaceholder} />
-    </div>
-
-    <a
-      href={cta.href}
-      class="pill h-11 flex-none bg-surface-pill px-5 text-sm text-primary-deep transition-colors hover:bg-surface-pill-hover"
+{
+  isStickyClone ? (
+    <header
+      data-sticky-clone
+      class="fixed top-0 left-0 right-0 z-(--z-header) -translate-y-full border-b border-line-soft bg-surface shadow-(--shadow-header) transition-transform duration-(--duration-base) ease-(--ease-out-soft)"
     >
-      <Icon name="lucide:user" class="size-4" aria-hidden="true" />
-      <span class="hidden sm:inline">{cta.label}</span>
-    </a>
-  </div>
+      <div class="site-container grid h-(--height-header-mobile-compact) grid-cols-[1fr_auto_1fr] items-center gap-3 md:flex md:h-(--height-header-compact) md:gap-6 lg:gap-10">
+        {items.length > 0 && <MobileNav {items} {current} class="md:hidden" />}
 
-  <div class="site-container pb-3 md:hidden">
-    <SearchBox placeholder={b.searchPlaceholder} />
-  </div>
-</header>
+        <a href="/" class="flex flex-none items-center gap-3 justify-self-center md:justify-self-auto" aria-label={`${b.name} — trang chủ`}>
+          <BrandLogo brand={brand} compact />
+        </a>
+
+        <div class="hidden w-full flex-1 md:block">
+          <SearchBox placeholder={b.searchPlaceholder} />
+        </div>
+
+        <a
+          href={cta.href}
+          class="pill hidden h-9 flex-none bg-surface-pill px-4 text-xs text-primary-deep transition-colors hover:bg-surface-pill-hover md:flex md:h-10 md:px-5 md:text-sm"
+        >
+          <Icon name="lucide:user" class="size-4" aria-hidden="true" />
+          <span class="hidden sm:inline">{cta.label}</span>
+        </a>
+      </div>
+    </header>
+  ) : (
+    <header class="border-b border-line-soft bg-surface">
+      <div class="site-container grid h-(--height-header-mobile) grid-cols-[1fr_auto_1fr] items-center gap-3 md:flex md:h-(--height-header) md:gap-6 lg:gap-10">
+        {items.length > 0 && <MobileNav {items} {current} class="md:hidden" />}
+
+        <a href="/" class="flex flex-none items-center gap-3 justify-self-center md:justify-self-auto" aria-label={`${b.name} — trang chủ`}>
+          <BrandLogo brand={brand} />
+        </a>
+
+        <div class="hidden w-full flex-1 md:block">
+          <SearchBox placeholder={b.searchPlaceholder} />
+        </div>
+
+        <a
+          href={cta.href}
+          class="pill hidden h-11 flex-none bg-surface-pill px-5 text-sm text-primary-deep transition-colors hover:bg-surface-pill-hover md:flex"
+        >
+          <Icon name="lucide:user" class="size-4" aria-hidden="true" />
+          <span class="hidden sm:inline">{cta.label}</span>
+        </a>
+      </div>
+    </header>
+  )
+}

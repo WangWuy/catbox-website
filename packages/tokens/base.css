@@ -8,6 +8,13 @@
   /* Container — mockup Thái Dương/CFC dùng max-width 1280px, padding 24px */
   --container-site: 1280px;
 
+  /* Khoảng cách dọc giữa các section của trang chủ (Hero → Bán chạy → Tin
+   * tức...). Mobile hẹp hơn desktop: 96px giữa các khối trên màn nhỏ đẩy nội
+   * dung liên quan ra quá xa nhau, trong khi ở desktop khoảng trắng đó lại vừa
+   * mắt vì section rộng hơn. */
+  --space-section-gap: 3.5rem;    /* 56px — mobile */
+  --space-section-gap-lg: 6rem;   /* 96px — md trở lên */
+
   /* Radius — DNA chung, cả 3 site giống nhau */
   --radius-pill: 999px;
   --radius-card: 0px;
@@ -17,12 +24,30 @@
   /* Ô search là ngoại lệ duy nhất bo góc nhẹ trong hệ 0px (theo mockup) —
    * khai báo thành token riêng thay vì rounded-[4px] rải trong component. */
   --radius-input: 4px;
+  /* Thẻ nổi có đổ bóng (StrategicGoals) — bo nhẹ để góc thẻ không cắt cụt vệt
+   * bóng toả quanh. Tách khỏi `--radius-card` (0px, cố ý thẳng góc cho card
+   * phẳng nằm trên nền) chứ KHÔNG sửa token đó: đổi `--radius-card` là bo tròn
+   * luôn mọi card của cả 3 site. */
+  --radius-card-soft: 10px;
 
-  /* Font scale — dùng chung, font-family do từng theme quyết định */
-  --text-hero: 3.375rem;      /* 54px */
+  /* Font scale — dùng chung, font-family do từng theme quyết định.
+   *
+   * Mọi cỡ chữ TIÊU ĐỀ LỚN (hero, section, page-hero, article, promo...) đều
+   * có cặp token `--text-x` (desktop, từ `md:` trở lên) + `--text-x-mobile`
+   * (dưới `md`) — không dùng chung một cỡ cho mọi màn hình. Trước đây nhiều
+   * nơi tự vá tạm bằng `text-3xl`/`text-2xl` (giá trị Tailwind cứng, không
+   * qua token) hoặc dùng thẳng token desktop full-size trên mobile (vd.
+   * --text-section 38px in hoa đậm ở search.astro, /products mô tả sản phẩm)
+   * khiến tiêu đề mobile quá to so với bề ngang màn hình hẹp. Component dùng
+   * cú pháp: `text-(length:--text-x-mobile) md:text-(length:--text-x)`. */
+  --text-hero: 3.375rem;      /* 54px — desktop */
   --text-hero--line-height: 1.08;
+  --text-hero-mobile: 1.875rem; /* 30px — mobile */
   --text-section: 2.375rem;   /* 38px — "BÁN CHẠY", "TIN TỨC" */
   --text-section--line-height: 1.1;
+  /* Cỡ tiêu đề section trên mobile — nhỏ hơn hẳn --text-section vì màn hẹp
+   * không đủ chỗ cho 38px in hoa đậm; từ `md:` trở lên đổi sang --text-section. */
+  --text-section-mobile: 1.5rem; /* 24px */
 
   /* Các cỡ chữ nhỏ lặp lại khắp mockup. Đặt tên theo VAI TRÒ, không theo số px,
    * để đổi một chỗ là đổi toàn hệ — trước đây rải rác `text-[12.5px]` v.v.
@@ -41,9 +66,18 @@
    * quy trình) — nhỏ hơn h2 section nhưng lớn hơn body. */
   --text-card-title: 1.0625rem; /* 17px */
 
+  /* Tên sản phẩm ở đầu trang chi tiết (/products/<slug>) */
+  --text-product-title: 2.25rem; /* 36px — desktop */
+  --text-product-title-mobile: 1.5rem; /* 24px — mobile */
+
+  /* Tiêu đề trang chính sách (/policies/<slug>) */
+  --text-policy-title: 1.875rem; /* 30px — desktop */
+  --text-policy-title-mobile: 1.375rem; /* 22px — mobile */
+
   /* Tiêu đề bài viết ở trang chi tiết blog — lớn hơn --text-section vì đứng
    * một mình đầu trang, không phải nhãn của một khối. */
-  --text-article-title: 2.625rem; /* 42px */
+  --text-article-title: 2.625rem; /* 42px — desktop */
+  --text-article-title-mobile: 1.625rem; /* 26px — mobile */
 
   /* Gạch chân ngắn dưới tiêu đề khối (concept CFC: dưới "2T Print — Giải pháp
    * Thiết kế & In ấn"), thay cho border-b chạy hết chiều rộng. */
@@ -114,6 +148,8 @@
   --text-badge-card: 0.6875rem; /* 11px */
   /* Ô vuông màu giấy (kraft/MG) dưới thẻ sản phẩm */
   --size-swatch: 22px;
+  /* Thumbnail chọn ảnh trong gallery trang chi tiết sản phẩm */
+  --size-thumb-gallery: 72px;
 
   /* Logo chữ (wordmark) của Tetta/Catbox — brand chưa có file logo gốc nên vẽ
    * bằng khung icon + chữ. CFC dùng ảnh thật, xem --height-logo. */
@@ -139,8 +175,9 @@
    * Lặp ở 5 component nên phải có token đứng sau. */
   --tracking-eyebrow: 1.2px;
 
-  /* Khung tròn chứa icon nhỏ (Zalo, hotline...) ở Footer — đặt tên theo vai trò
-   * thay vì rải `size-[22px]` từng chỗ, để đổi một chỗ là đổi toàn hệ. */
+  /* Khung tròn chứa icon nhỏ (Zalo, hotline...) ở Footer, và icon dẫn đầu mỗi
+   * dòng trong danh sách chọn (CoreValues) — đặt tên theo vai trò thay vì rải
+   * `size-[22px]` từng chỗ, để đổi một chỗ là đổi toàn hệ. */
   --size-icon-chip: 22px;
   /* Icon nhỏ đi kèm chữ trong pill/list (dấu check, mũi tên nhánh) */
   --size-icon-inline: 14px;
@@ -149,11 +186,45 @@
   /* Khung tròn nền nhạt bọc ngoài --size-icon-panel */
   --size-icon-panel-box: 52px;
 
+  /* --- Mục tiêu chiến lược (StrategicGoals) ------------------------------ *
+   * Số thứ tự lớn trong khung tròn nền nhạt, đứng thay icon ở mỗi thẻ. Khung
+   * to hơn hẳn --size-icon-panel-box (52px — khung bọc icon dẫn đầu đoạn chữ)
+   * vì ở đây con số LÀ hình ảnh chính của thẻ, không phải phần phụ. */
+  --size-goal-number-box: 88px;
+  /* Cỡ số bên trong khung. Giữ quanh 35–40% đường kính khung để còn vành nền
+   * rõ quanh chữ — to hơn thì con số chạm mép và khung tròn biến mất. */
+  --text-goal-number: 2rem; /* 32px */
+  /* Chiều cao thẻ theo mockup (390×190). Chỉ khai chiều CAO, bề ngang để lưới
+   * tự chia: ở container 1280px thì 3 cột + gap ra ~397px, đúng cỡ mockup mà
+   * mép thẻ vẫn thẳng hàng với các section khác — ép cứng 390px sẽ dư ra một
+   * dải lệch bên phải. Là `min-height` chứ không `height`: nội dung thật dài
+   * hơn placeholder thì thẻ giãn ra thay vì tràn chữ. */
+  --height-goal-card: 190px;
+
   /* Thụt lề mỗi tầng con trong cây "Quy trình làm việc" (/quy-trinh) — cùng vai
    * trò với --indent-dropdown-child nhưng cho nội dung trang, không phải menu. */
   --indent-flow-child: 1.25rem;
   /* Bề dày đường nối dọc giữa các tầng của cây quy trình */
   --width-flow-connector: 2px;
+
+  /* --- Danh sách chọn + panel chi tiết (CoreValues) --------------------- *
+   * Bố cục 2 cột: cột trái là các mục chọn, cột phải là panel nội dung của
+   * mục đang chọn. Dưới `lg` gập thành 1 cột (danh sách trên, panel dưới). */
+  --width-values-list: 17.5rem;      /* 280px — cột chọn bên trái */
+  /* Panel phải phải cao tối thiểu bằng cột chọn, nếu không mỗi lần đổi mục có
+   * đoạn mô tả dài ngắn khác nhau là cả khối co giãn, nội dung phía dưới nhảy
+   * theo. 5 mục × ~48px + gap ≈ 272px. */
+  --min-height-values-panel: 17rem;  /* 272px */
+  /* Thanh dọc đánh dấu mục đang chọn — cùng bề dày với gạch chân accent
+   * (--height-rule-accent) để hai dấu nhấn của cùng một trang không lệch nhau. */
+  --width-marker-active: 3px;
+  /* Icon phóng to làm hoa văn mờ ở góc panel. Thay cho kiểu chèn logo watermark
+   * ĐẰNG SAU chữ (mẫu tham khảo của đối thủ làm vậy và rớt tương phản) — icon
+   * đặt tràn ở góc, không nằm dưới vùng chữ. */
+  --size-icon-watermark: 160px;
+  /* Mờ tới mức chỉ còn là vệt nền: đậm hơn thì icon tranh chấp với icon thật
+   * trong panel, nhạt hơn thì mất hẳn trên nền beige. */
+  --opacity-watermark: 0.07;
 
   /* Banner đầu trang trong (PageHero) — dải nền màu chạy hết bề ngang, chứa
    * tiêu đề lớn + breadcrumb bên trái, ảnh sản phẩm nghiêng bên phải.
@@ -177,34 +248,48 @@
   /* Đổ bóng cho khung ảnh nghiêng — tách khung khỏi nền tint cùng tông sáng.
    * Nghiêng nên bóng phải toả đều, không lệch theo một hướng. */
   --shadow-page-hero-image: 0 10px 30px rgb(0 0 0 / 0.16);
+  /* Đổ bóng thẻ nổi trên nền trang (StrategicGoals). Nhạt hơn hẳn
+   * --shadow-header: thẻ đứng thành lưới 3 cái cạnh nhau nên bóng đậm bị nhân
+   * lên thành một vệt xám chạy dưới cả hàng. */
+  --shadow-card: 0 2px 12px rgb(0 0 0 / 0.06);
+  /* Đổ bóng của header khi đã cuộn — tách thanh dính khỏi nội dung trôi bên
+   * dưới. Nhẹ hơn hẳn --shadow-page-hero-image: bóng trải suốt bề ngang màn
+   * hình nên đậm một chút là thành vệt xám rõ mồn một dưới header. */
+  --shadow-header: 0 2px 12px rgb(0 0 0 / 0.08);
   /* Khoảng cách từ mép phải khối nội dung tới ảnh — giữ ảnh không đè lên chữ
    * ở màn hình hẹp vừa (lg), nơi hai bên gần chạm nhau nhất. */
   --offset-page-hero-image-right: 2rem;
   /* Tiêu đề banner: lớn hơn --text-section (nhãn của một khối) vì đứng một
    * mình đầu trang, nhưng nhỏ hơn --text-hero của banner ảnh trang chủ. */
-  --text-page-hero-title: 3rem; /* 48px */
+  --text-page-hero-title: 3rem; /* 48px — desktop */
   --text-page-hero-title--line-height: 1.1;
+  --text-page-hero-title-mobile: 1.75rem; /* 28px — mobile */
 
   /* Chiều cao các thanh cố định (theo mockup) */
   --height-topbar: 40px;
   --height-header: 100px;
+  --height-header-compact: 64px;
   --height-catnav: 54px;
   /* Chiều cao ô search ở MainHeader */
   --height-search: 42px;
 
-  /* Bản mobile của chrome. Tách thành token riêng thay vì @media đè lại
-   * --height-header: component tự khai `h-(--height-header-mobile)
-   * md:h-(--height-header)` nên đọc class là thấy ngay có hai nấc, không phải
-   * lần ngược vào file token mới biết. Trước đây cả ba thanh đều cứng một giá
-   * trị nên header 100px + logo 80px ăn gần hết bề ngang màn 375px. */
+  /* Bản mobile của chrome */
   --height-header-mobile: 64px;
+  --height-header-mobile-compact: 56px;
   --height-catnav-mobile: 48px;
 
-  /* Logo CFC (file ảnh thật, hiển thị theo tỉ lệ gốc — xem BrandLogo.astro).
-   * Bản mobile phải lọt trong --height-header-mobile và còn chừa chỗ cho nút
-   * CTA bên phải. */
+  /* --- Tầng xếp lớp (z-index) ------------------------------------------ *
+   * Gom về đây theo VAI TRÒ. */
+  --z-catnav: 30; /* thanh danh mục + panel mega menu xổ xuống từ nó */
+  --z-header: 40; /* header dính — phải nằm trên nội dung cuộn bên dưới */
+  --z-floating: 50; /* FloatingCta (Zalo + hotline) */
+  --z-skiplink: 100; /* link "bỏ qua tới nội dung", luôn trên cùng khi focus */
+
+  /* Logo CFC (file ảnh thật, hiển thị theo tỉ lệ gốc — xem BrandLogo.astro). */
   --height-logo-mobile: 44px;
+  --height-logo-mobile-compact: 36px;
   --height-logo: 80px;
+  --height-logo-compact: 44px;
 
   /* Banner hero trang chủ — ba nấc theo bề ngang màn hình. Ảnh 16x10 nên ở
    * màn hẹp mà giữ 520px thì banner cao gần bằng cả khung nhìn điện thoại,
@@ -252,11 +337,25 @@
   /* Dải khuyến mãi 2 cột (PromoBanner): ảnh vuông bên trái, khối chữ nền đậm
    * bên phải. Tiêu đề nhỏ hơn --text-section vì đứng trong khối màu chật. */
   --height-promo-banner: 380px;
-  --text-promo-title: 2.125rem; /* 34px */
+  --text-promo-title: 2.125rem; /* 34px — desktop */
+  --text-promo-title-mobile: 1.375rem; /* 22px — mobile */
 
   /* Khối "Lựa chọn trong tuần" (WeeklyChoice) */
   --cols-weekly-choice: 1.6fr 1fr;
   --offset-tooltip: 10px; /* khoảng hở giữa tooltip và phần tử neo */
+
+  /* Khung video giới thiệu dạng viên thuốc (FactoryReels) — không còn chạy hết
+   * bề ngang site-container mà thu về một cửa sổ hẹp hơn, bo tròn hai đầu.
+   * 1000 × 399.2 theo mockup: khai tỉ lệ thay vì chốt chiều cao cứng để khung
+   * tự co đúng dáng trên màn hẹp hơn 1000px. */
+  --width-reel-pill: 1000px;
+  --aspect-reel-pill: 1000 / 399.2;
+  /* Bo hai đầu thành nửa hình tròn. Phải là một số px lớn, KHÔNG phải `50%`:
+   * `50%` cho bán kính theo cả hai trục nên bốn góc thành cung ELIP và cạnh
+   * trên/dưới cong hết chiều dài — ra hình bầu dục, không phải viên thuốc. Số
+   * px lớn bị trình duyệt tự kẹp xuống nửa chiều cao khung, nên hai đầu luôn
+   * là nửa tròn hoàn hảo còn cạnh trên/dưới vẫn thẳng, ở mọi bề ngang. */
+  --radius-reel-pill: 999px;
 
   /* Mũi tam giác trong nút play (WhyChooseUs) — vẽ bằng border nên cần cả bề
    * ngang lẫn nửa chiều cao, không dùng được --size-* vuông. */
@@ -273,6 +372,14 @@
   /* Phân trang lưới sản phẩm — nút số trang hình vuông theo mockup Thái Dương */
   --size-page-btn: 38px;
   --text-page-btn: 0.875rem; /* 14px — số trang, đủ rõ trong ô 38px */
+
+  /* Carousel "Sản phẩm liên quan" ở trang chi tiết sản phẩm (ProductCarousel).
+   * Nút mũi tên tròn nổi hai bên khung cuộn. */
+  --size-carousel-nav: 38px;
+  /* Bề ngang một card trong track cuộn ngang — đủ hẹp để hé lộ card kế tiếp,
+   * gợi ý còn nội dung để cuộn thay vì lấp đầy đúng viewport. */
+  --width-carousel-card: 260px;
+  --space-carousel-gap: 1.25rem;
 
   /* --- Chuyển động ------------------------------------------------------ *
    * Trước đây duration rải rác dạng `duration-500` (ProductCard, PostCard,
@@ -292,9 +399,42 @@
    * nhanh khối vẫn đang bay khi mắt đã tới nơi — cảm giác trang lag chứ không
    * mượt, ngược hẳn ý đồ. */
   --distance-reveal: 16px;
+
+  /* Độ sâu phối cảnh cho card lật 3D (FlipCard) — giá trị càng nhỏ độ "phồng"
+   * càng mạnh, càng lớn càng phẳng như xoay 2D. 1200px giữ chiều sâu vừa
+   * phải, không gây méo mặt card ở góc nhìn rộng. */
+  --perspective-flip-card: 1200px;
+  /* Chiều cao cố định của FlipCard — cố định thay vì theo tỉ lệ vì hai mặt
+   * lật (icon/tiêu đề vs đoạn văn dài) có nhu cầu chiều cao khác hẳn nhau,
+   * tỉ lệ theo bề ngang sẽ khiến mặt sau bị bóp chữ trên màn hẹp. */
+  --height-flip-card: 300px;
   /* Lệch pha giữa các card cùng một lưới. 60ms × 4 card = 240ms, còn đọc được
    * là "lần lượt"; lớn hơn thì card cuối tới quá trễ, trông như ảnh tải chậm. */
   --stagger-reveal: 60ms;
+
+  /* --- Gõ chữ ở tiêu đề section (SectionHeader prop `typing`) ------------ *
+   * Thời gian MỘT ký tự, không phải cả câu: tiêu đề dài ngắn khác nhau nên
+   * tổng thời lượng phải tính theo số ký tự (xem `--type-chars` ở cuối file),
+   * cố định cả câu thì tiêu đề dài gõ nhanh như máy, tiêu đề ngắn lê thê. */
+  --duration-type-char: 55ms;
+  /* Thời gian XOÁ một ký tự trước khi gõ từ kế. Nhanh hơn lúc gõ vì xoá là
+   * thao tác chuyển cảnh, không phải nội dung cần đọc — bằng nhau thì mỗi
+   * vòng dài gấp đôi và người xem phải ngồi nhìn chữ lùi. */
+  --duration-untype-char: 30ms;
+  /* Giữ nguyên chữ đã gõ xong bao lâu trước khi xoá đi gõ từ tiếp theo. */
+  --duration-type-hold: 3s;
+  /* Nhịp nháy con trỏ sau khi gõ xong — theo nhịp con trỏ thật của terminal. */
+  --duration-caret-blink: 1s;
+  /* Bề dày con trỏ — nét mảnh cho ra con trỏ chữ I của trình soạn thảo, dày
+   * hơn thì đọc ra thành khối chữ nhật đang che mất ký tự kế tiếp. */
+  --width-type-caret: 1px;
+  /* Khoảng hở giữa ký tự cuối và con trỏ. `em` để giãn theo cỡ chữ: cùng một
+   * token phải hở đều ở cả tiêu đề 24px mobile lẫn 38px desktop. */
+  --space-type-caret-gap: 0.18em;
+  /* Nới hộp cắt của hiệu ứng gõ theo chiều dọc — xem [data-typing] cuối file.
+   * Đơn vị `em` để nới theo cỡ chữ: cùng một token phải đủ cho cả tiêu đề 24px
+   * ở mobile lẫn 38px ở desktop. */
+  --space-type-clip-gutter: 0.2em;
 }
 
 /* Chiều rộng nội dung chuẩn — dùng như <div class="site-container"> */
@@ -423,9 +563,76 @@
   transform: none;
 }
 
+/* --- Gõ chữ ở tiêu đề section ---------------------------------------------
+ * Bật bằng prop `typing` của SectionHeader; script trong component đó lo phần
+ * cắt chuỗi và bấm giờ. Cùng nguyên tắc an toàn với khối reveal ở trên: trạng
+ * thái MẶC ĐỊNH là chữ hiện đủ, con trỏ đứng yên — không JS (người dùng tắt,
+ * script lỗi) thì tiêu đề vẫn đọc bình thường, không có luật nào ẩn nó đi.
+ *
+ * Chỉ phần ĐUÔI tiêu đề (`accent`, chữ màu primary) chạy hiệu ứng — phần đầu
+ * đứng yên làm mỏ neo cho mắt, và nhờ vậy tiêu đề dài vẫn xuống dòng bình
+ * thường: chỉ riêng đoạn đang gõ mới cần `nowrap`.
+ *
+ * Vòng lặp gõ bằng JS cắt chuỗi (không phải animation bề ngang + `steps()`):
+ * mỗi từ trong danh sách dài ngắn khác nhau nên cách cũ phải đo lại width sau
+ * mỗi vòng, sai một nhịp là cụt chữ. CSS ở đây chỉ còn lo con trỏ.
+ *
+ * `overflow: hidden` cắt theo hộp dòng (line-height 1.1) nên dấu thanh của
+ * chữ hoa tiếng Việt (Ố, Ụ) bị xén mất — nới hộp bằng padding-block rồi trừ
+ * lại đúng bằng ngần ấy margin âm để chiều cao khối không đổi. Kèm
+ * `vertical-align: bottom` vì inline-block có overflow ẩn lấy MÉP DƯỚI làm
+ * baseline, để mặc định thì cả dòng bị đội lên. */
+[data-typing] {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+  padding-block: var(--space-type-clip-gutter);
+  margin-block: calc(var(--space-type-clip-gutter) * -1);
+  /* Hở chữ ↔ con trỏ. Bằng PADDING chứ không phải margin/gap: con trỏ là
+   * border của chính element này nên phải đẩy nó ra từ bên trong; margin sẽ
+   * đẩy cả con trỏ đi cùng và không hở thêm được chút nào. */
+  padding-inline-end: var(--space-type-caret-gap);
+  /* Con trỏ lấy màu CHỮ THƯỜNG (`--color-ink`), không phải `currentColor` —
+   * element này tô primary nên currentColor cho ra con trỏ cam. Con trỏ là
+   * dấu nháy của cả dòng tiêu đề, thuộc về phần chữ đen bên trái chứ không
+   * phải một nét trang trí của riêng từ đang gõ. */
+  border-inline-end: var(--width-type-caret) solid var(--color-ink);
+}
+
+/* Con trỏ chỉ nháy lúc ĐỨNG YÊN (đang giữ chữ, chờ vòng sau). Trong lúc gõ và
+ * xoá thì để yên: con trỏ vừa chạy vừa chớp tắt đọc ra thành giật hình. */
+[data-typing="hold"] {
+  animation: type-caret var(--duration-caret-blink) step-end infinite;
+}
+
+/* Chưa tới lượt gõ (đã cuộn tới đâu thì JS mới bật): giữ chỗ bằng chiều cao
+ * dòng để tiêu đề không nhảy khi chữ bắt đầu chạy. */
+[data-typing]:empty::before {
+  content: "\200b";
+}
+
+/* Khung CUỐI phải là khung có con trỏ: người bật "giảm chuyển động" bị rút
+ * animation xuống 0.01ms nên dừng lại ở đúng khung này. */
+@keyframes type-caret {
+  50% {
+    border-color: transparent;
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Chừa chỗ cho header dính: nhảy tới link neo (#main, #top, mục lục bài
+     * viết…) mà không bị header phủ mất mấy dòng đầu của khối đích. Dưới md
+     * header dính là hàng chính 64px (hàng search đã thu lại khi cuộn). */
+    scroll-padding-top: calc(var(--height-header-mobile) + 54px);
+  }
+
+  @media (width >= 48rem) {
+    html {
+      scroll-padding-top: var(--height-header);
+    }
   }
 
   body {

@@ -37,6 +37,11 @@
 
   --color-surface-input:  #131315;  /* = surface-alt (nền tối) */
 
+  /* Nền thẻ nổi trên nền trang (StrategicGoals...). Ở CFC/Tetta là trắng
+   * thuần, ở đây phải là xám than nổi trên nền đen — thẻ trắng trên nền
+   * #0B0B0B là mảng chói giữa trang tối. */
+  --color-surface-card:   #131315;  /* = surface-alt */
+
   /* Màu thanh trình duyệt (<meta name="theme-color">) */
   --color-theme:         #0B0B0B;
 

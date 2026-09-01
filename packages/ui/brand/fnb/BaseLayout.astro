@@ -9,6 +9,7 @@
  */
 import { BRANDS, type FnbBrandId } from "@config/brands";
 import type { CategoryEntryLike, ProductEntryLike } from "@config/categories";
+import { buildNavEntries } from "@config/nav";
 import SEOHead from "@ui/shared/SEOHead.astro";
 import JsonLd from "@ui/shared/JsonLd.astro";
 import TopbarSwitcher from "@ui/brand/fnb/TopbarSwitcher.astro";
@@ -55,6 +56,13 @@ const {
 
 const b = BRANDS[brand];
 const current = Astro.url.pathname;
+
+/**
+ * Dựng menu MỘT lần rồi truyền xuống cả `MainHeader` (drawer mobile) lẫn
+ * `CategoryNav` (thanh ngang + mega menu từ md). Hai component nằm ở hai nhánh
+ * DOM khác nhau nhưng phải hiển thị đúng cùng một danh sách.
+ */
+const navEntries = buildNavEntries(brand, categories, products);
 ---
 
 <!doctype html>
@@ -77,14 +85,22 @@ const current = Astro.url.pathname;
   <body id="top">
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-100 focus:rounded-chip focus:bg-primary focus:px-4 focus:py-2 focus:text-white"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-(--z-skiplink) focus:rounded-chip focus:bg-primary focus:px-4 focus:py-2 focus:text-white"
     >
       Bỏ qua tới nội dung chính
     </a>
 
     <TopbarSwitcher {brand} />
-    <MainHeader {brand} />
-    <CategoryNav {brand} {current} {categories} {products} />
+    <MainHeader {brand} items={navEntries} {current} />
+    <CategoryNav {brand} {current} items={navEntries} />
+
+    {/* Mốc cho IntersectionObserver: nằm SAU CategoryNav. Khi người dùng cuộn
+        qua hết cụm header tĩnh, thanh sticky compact clone sẽ trượt êm ái xuống
+        từ mép trên theo chuẩn cấu trúc Woodmart / lygiaythaiduong.com */}
+    <div data-header-sentinel aria-hidden="true" class="h-px -mt-px pointer-events-none"></div>
+
+    {/* Thanh Header Sticky Thu Gọn (Clone chuẩn Woodmart / lygiaythaiduong.com) */}
+    <MainHeader {brand} items={navEntries} {current} isStickyClone />
 
     <main id="main" data-pagefind-body>
       <slot />
@@ -102,6 +118,32 @@ const current = Astro.url.pathname;
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ event: name, hotline });
       });
+    </script>
+
+    <script is:inline>
+      // Header sticky clone trượt xuống khi cuộn qua cụm header tĩnh (chuẩn Woodmart).
+      // Quan sát thẻ mốc sentinel: callback chỉ chạy khi vượt qua hoặc quay lại,
+      // hoạt động 100% trên GPU với transform translateY nên không drop FPS và không layout shift.
+      (() => {
+        const sentinel = document.querySelector("[data-header-sentinel]");
+        const stickyHeader = document.querySelector("[data-sticky-clone]");
+        if (!sentinel || !stickyHeader) return;
+
+        if (!("IntersectionObserver" in window)) return;
+
+        new IntersectionObserver(
+          ([entry]) => {
+            if (entry.isIntersecting) {
+              stickyHeader.classList.add("-translate-y-full");
+              stickyHeader.classList.remove("translate-y-0");
+            } else {
+              stickyHeader.classList.remove("-translate-y-full");
+              stickyHeader.classList.add("translate-y-0");
+            }
+          },
+          { threshold: 0 },
+        ).observe(sentinel);
+      })();
     </script>
 
     <script is:inline>

@@ -13,6 +13,7 @@
   "dependencies": {
     "@catbox/config": "workspace:*",
     "@catbox/tokens": "workspace:*",
+    "@iconify-json/circle-flags": "^1.2.0",
     "@iconify-json/lucide": "^1.2.0",
     "astro": "^7.2.9",
     "astro-icon": "^1.1.5"

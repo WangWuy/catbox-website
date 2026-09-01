@@ -1,0 +1,155 @@
+---
+/**
+ * GIÁ TRỊ CỐT LÕI — danh sách chọn bên trái + panel chi tiết bên phải, dùng
+ * cho trang About us.
+ *
+ * Vì sao không phải lưới card như trước: N giá trị × một đoạn mô tả = một bức
+ * tường chữ, và với N = 5 thì lưới 3 cột còn thừa ra hàng lẻ 2 ô. Ở đây mỗi
+ * giá trị chỉ là một dòng chọn ngắn, phần chữ dài nằm gọn trong MỘT panel duy
+ * nhất — mắt luôn chỉ có một chỗ để đọc, và thêm/bớt giá trị không phá bố cục.
+ *
+ * Ngữ nghĩa là tablist thật (`role="tab"`/`role="tabpanel"`), không phải div
+ * bấm được: bàn phím đi bằng ↑↓ + Home/End và trình đọc màn hình đọc đúng
+ * "tab 2/5". Kèm roving tabindex — cả nhóm tab chỉ tốn MỘT nhịp Tab, không bắt
+ * người dùng phím bấm Tab 5 lần mới qua được khối này.
+ *
+ * Dưới `lg`: gập 1 cột — danh sách trên, panel dưới. Cố ý KHÔNG làm accordion
+ * (panel chèn ngay dưới mục vừa chọn) vì kiểu đó buộc panel phải nằm xen giữa
+ * các tab trong DOM, phá mất quan hệ tablist → tab của ARIA.
+ *
+ * LƯU Ý khi sửa chú thích này: KHÔNG viết dấu `<` dính liền chữ (`<lg`, `<h2>`)
+ * trong khối frontmatter. Astro dịch frontmatter sang TSX nên đọc đó là mở thẻ
+ * JSX, hỏng luôn suy luận kiểu của `Astro.props` — `values` thành `any`, mọi
+ * chỗ gọi component mất kiểm tra kiểu mà build vẫn chạy bình thường. Lỗi im
+ * lặng, chỉ `astro check` trong `packages/ui` mới bắt được.
+ */
+import { Icon } from "astro-icon/components";
+import SectionHeader from "@ui/primitives/SectionHeader.astro";
+
+export interface CoreValue {
+  icon: string;
+  title: string;
+  /** Câu chốt ngắn in nghiêng đứng trên đoạn mô tả — vd. "Nền móng của mọi hành động" */
+  tagline?: string;
+  desc: string;
+}
+
+interface Props {
+  title?: string;
+  /** Phần đuôi tiêu đề tô màu primary — xem `accent` của SectionHeader */
+  accent?: string;
+  values: CoreValue[];
+}
+
+const { title = "Giá trị", accent = "cốt lõi", values } = Astro.props;
+---
+
+<section class="site-container" aria-labelledby="core-values-heading" data-reveal>
+  <SectionHeader id="core-values-heading" {title} {accent} rule />
+
+  <div
+    class="grid gap-4 lg:grid-cols-[var(--width-values-list)_1fr] lg:gap-6"
+    data-core-values
+  >
+    <div
+      class="flex flex-col gap-2"
+      role="tablist"
+      aria-orientation="vertical"
+      aria-label="Danh sách giá trị cốt lõi"
+      data-reveal-group
+    >
+      {
+        values.map((v, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`core-value-tab-${i}`}
+            aria-controls={`core-value-panel-${i}`}
+            aria-selected={i === 0 ? "true" : "false"}
+            tabindex={i === 0 ? 0 : -1}
+            class="flex items-center gap-3 rounded-panel border-s-(length:--width-marker-active) border-transparent bg-surface px-4 py-3.5 text-start text-ink-muted transition-colors duration-(--duration-fast) hover:bg-surface-alt aria-selected:border-primary aria-selected:bg-surface-alt aria-selected:text-primary"
+          >
+            <Icon name={v.icon} class="size-(--size-icon-chip) flex-none" aria-hidden="true" />
+            <span class="text-label font-bold tracking-(--tracking-eyebrow) uppercase">
+              {v.title}
+            </span>
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      values.map((v, i) => (
+        <div
+          role="tabpanel"
+          id={`core-value-panel-${i}`}
+          aria-labelledby={`core-value-tab-${i}`}
+          tabindex="0"
+          hidden={i !== 0}
+          class="relative flex min-h-(--min-height-values-panel) flex-col gap-4 overflow-hidden rounded-panel bg-surface-alt p-8 md:p-10 lg:col-start-2 lg:row-start-1"
+        >
+          <Icon
+            name={v.icon}
+            class="pointer-events-none absolute -top-6 -end-6 size-(--size-icon-watermark) text-primary opacity-(--opacity-watermark)"
+            aria-hidden="true"
+          />
+          <span class="flex size-(--size-icon-panel-box) items-center justify-center rounded-panel bg-surface text-primary">
+            <Icon name={v.icon} class="size-(--size-icon-panel)" aria-hidden="true" />
+          </span>
+          <h3 class="font-display text-(length:--text-section-mobile) font-extrabold uppercase">
+            {v.title}
+          </h3>
+          {v.tagline && (
+            <p class="text-(length:--text-card-title) font-bold text-primary italic">{v.tagline}</p>
+          )}
+          <p class="leading-relaxed text-ink-muted">{v.desc}</p>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  // Kích hoạt TỰ ĐỘNG (chọn ngay khi tab nhận focus, không cần Enter) — đúng
+  // khuyến nghị của APG cho tablist mà panel chỉ là chữ, đổi tab không tốn gì.
+  document.querySelectorAll<HTMLElement>("[data-core-values]").forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+    if (tabs.length !== panels.length) return;
+
+    const select = (next: number, moveFocus: boolean) => {
+      tabs.forEach((tab, i) => {
+        const on = i === next;
+        tab.setAttribute("aria-selected", String(on));
+        // Roving tabindex: chỉ tab đang chọn còn nằm trong luồng Tab.
+        tab.tabIndex = on ? 0 : -1;
+        panels[i].hidden = !on;
+      });
+      if (moveFocus) tabs[next].focus();
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener("click", () => select(i, false));
+      tab.addEventListener("keydown", (e) => {
+        // Cả ↑↓ lẫn ←→: danh sách xếp dọc ở desktop nhưng người dùng vẫn hay
+        // thử phím ngang khi thấy đây là "tab".
+        const step =
+          e.key === "ArrowDown" || e.key === "ArrowRight"
+            ? 1
+            : e.key === "ArrowUp" || e.key === "ArrowLeft"
+              ? -1
+              : 0;
+        if (step) {
+          e.preventDefault();
+          select((i + step + tabs.length) % tabs.length, true);
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          select(0, true);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          select(tabs.length - 1, true);
+        }
+      });
+    });
+  });
+</script>

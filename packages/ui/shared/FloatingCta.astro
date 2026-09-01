@@ -16,7 +16,9 @@ const b = BRANDS[brand];
 
 {/* Nhỏ lại ở mobile: hai nút 56px xếp dọc chiếm một mảng đáng kể của màn hẹp
     và đè lên nội dung/CTA trong Footer khi cuộn tới cuối trang. */}
-<div class="fixed right-3 bottom-4 z-50 flex flex-col gap-2.5 print:hidden md:right-4 md:bottom-5 md:gap-3">
+<div
+  class="fixed right-3 bottom-4 z-(--z-floating) flex flex-col gap-2.5 print:hidden md:right-4 md:bottom-5 md:gap-3"
+>
   <a
     href={`https://zalo.me/${b.zalo}`}
     target="_blank"

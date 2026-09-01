@@ -1,0 +1,91 @@
+---
+/**
+ * Khối "Sản phẩm liên quan" ở trang chi tiết sản phẩm — track cuộn ngang
+ * (CSS `scroll-snap`, không thư viện ngoài, cùng triết lý vanilla JS với
+ * `FactoryReels.astro`) chứa các `ProductCard` có sẵn, hai nút mũi tên tròn
+ * nổi hai bên điều khiển bằng `scrollBy()`.
+ *
+ * Card cố định bề ngang `--width-carousel-card` (khác lưới catalog co giãn
+ * theo cột) để track có thể cuộn — một lưới `grid` co giãn hết bề ngang thì
+ * không còn gì để trượt.
+ *
+ * Nút ẩn khi track không cuộn được nữa (đầu/cuối danh sách) thay vì disable
+ * mờ — rõ ràng hơn cho cả chuột lẫn touch, và tránh nút bấm vô tác dụng.
+ */
+import SectionHeader from "@ui/primitives/SectionHeader.astro";
+import ProductCard, { type ProductCardData } from "@ui/primitives/ProductCard.astro";
+import type { AssetMap } from "../lib/images";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  assets: AssetMap;
+  title: string;
+  products: ProductCardData[];
+}
+
+const { assets, title, products } = Astro.props;
+---
+
+{
+  products.length > 0 && (
+    <section data-reveal>
+      <SectionHeader title={title} />
+      <div class="relative" data-carousel>
+        <div
+          class="flex snap-x snap-mandatory gap-(--space-carousel-gap) overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          data-carousel-track
+        >
+          {products.map((p, i) => (
+            <div class="w-(--width-carousel-card) shrink-0 snap-start">
+              <ProductCard assets={assets} {...p} variant={i + 1} />
+            </div>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          data-carousel-prev
+          aria-label="Xem sản phẩm trước"
+          hidden
+          class="absolute top-1/2 left-0 hidden -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-line bg-surface text-ink shadow-header transition-colors hover:bg-surface-alt md:grid size-(--size-carousel-nav)"
+        >
+          <Icon name="lucide:chevron-left" class="size-4" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          data-carousel-next
+          aria-label="Xem sản phẩm tiếp theo"
+          class="absolute top-1/2 right-0 hidden -translate-y-1/2 translate-x-1/2 place-items-center rounded-full border border-line bg-surface text-ink shadow-header transition-colors hover:bg-surface-alt md:grid size-(--size-carousel-nav)"
+        >
+          <Icon name="lucide:chevron-right" class="size-4" aria-hidden="true" />
+        </button>
+      </div>
+    </section>
+  )
+}
+
+<script>
+  // Track cuộn bằng CSS scroll-snap; JS chỉ lo hai nút mũi tên + ẩn/hiện theo
+  // vị trí cuộn. Vanilla, không thư viện — cùng cách FactoryReels đang làm.
+  document.querySelectorAll<HTMLElement>("[data-carousel]").forEach((root) => {
+    const track = root.querySelector<HTMLElement>("[data-carousel-track]");
+    const prev = root.querySelector<HTMLButtonElement>("[data-carousel-prev]");
+    const next = root.querySelector<HTMLButtonElement>("[data-carousel-next]");
+    if (!track || !prev || !next) return;
+
+    const step = () => track.clientWidth * 0.9;
+
+    const updateButtons = () => {
+      const max = track.scrollWidth - track.clientWidth;
+      const canScroll = max > 4;
+      prev.hidden = !canScroll || track.scrollLeft <= 4;
+      next.hidden = !canScroll || track.scrollLeft >= max - 4;
+    };
+
+    prev.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: "smooth" }));
+    next.addEventListener("click", () => track.scrollBy({ left: step(), behavior: "smooth" }));
+    track.addEventListener("scroll", updateButtons, { passive: true });
+    window.addEventListener("resize", updateButtons);
+    updateButtons();
+  });
+</script>

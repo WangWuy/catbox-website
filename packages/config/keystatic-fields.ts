@@ -33,6 +33,7 @@ export function productFields(imageDir: string) {
       itemLabel: (props) => props.value || "(chưa đặt tên)",
     }),
     moq: fields.text({ label: "Số lượng tối thiểu (MOQ)", validation: { isRequired: false } }),
+    sku: fields.text({ label: "Mã sản phẩm (SKU)", validation: { isRequired: false } }),
     badge: fields.text({ label: "Badge", validation: { isRequired: false } }),
     excerpt: fields.text({
       label: "Mô tả ngắn",

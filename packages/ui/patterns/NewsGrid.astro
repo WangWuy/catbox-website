@@ -1,14 +1,10 @@
 ---
 /**
- * TIN TỨC — lưới 4 bài trên trang chủ, dựng bằng `PostCard` (card dùng chung
+ * TIN TỨC — lưới 4 cột trên trang chủ, dựng bằng `PostCard` (card dùng chung
  * với /blog, /blog/tag và khối bài liên quan).
  *
- * Card không có khung nền nên ảnh dán thẳng lên nền hoạ tiết của trang chủ,
- * đúng concept CFC.
- *
- * Bật `dense` vì lưới 4 cột cho card chỉ ~293px — hẹp hơn max-width mặc định
- * của tiêu đề/mô tả, nên nếu không đổi sang token `*-dense` thì chữ tràn sát
- * mép ảnh và mất dáng tháp (khác hẳn cùng card ở /blog, lưới 3 cột rộng hơn).
+ * Bật `dense` vì ở 4 cột, card hẹp hơn ngưỡng mặc định của tiêu đề/mô tả
+ * trong `PostCard` — xem comment prop `dense` ở đó.
  */
 import type { AssetMap } from "../lib/images";
 import SectionHeader from "@ui/primitives/SectionHeader.astro";
@@ -35,9 +31,7 @@ const { assets, title = "Tin tức", action, items } = Astro.props;
 <section class="site-container" aria-labelledby="news-heading" data-reveal>
   <SectionHeader {title} {action} />
 
-  {/* Thêm nấc md: trước đây nhảy thẳng 2 → 4 cột nên ở 1024–1200px bốn card
-      chỉ còn ~283px, hẹp hơn cả ngưỡng mà token `-dense` được tính cho. */}
-  <div class="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" data-reveal-group>
+  <div class="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4" data-reveal-group>
     {
       items.map((a, i) => (
         <PostCard
@@ -48,7 +42,6 @@ const { assets, title = "Tin tức", action, items } = Astro.props;
           cover={a.cover}
           description={a.description}
           variant={i + 1}
-          width={480}
           dense
         />
       ))

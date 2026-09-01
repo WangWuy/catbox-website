@@ -55,11 +55,27 @@
   --color-surface-input:  #FFFFFF;  /* Ô search CFC nền trắng (theo mockup) */
   --color-surface-hover:  #F4F4F4;  /* Trạng thái hover/active nền xám trung tính — CategoryNav mega menu */
 
+  /* Nền panel nổi (drawer nav mobile...) — trắng thuần, khác `surface` beige
+   * dùng cho nền trang. Tetta dùng cùng token nhưng giá trị trùng `surface`
+   * vì nền trang Tetta đã trắng sẵn. */
+  --color-surface-drawer: #FFFFFF;
+
+  /* Nền thẻ nổi trên nền trang (StrategicGoals...) — trắng thuần + viền
+   * `line`, theo mockup. Tách khỏi `surface-drawer` (panel che toàn màn) và
+   * khỏi `surface`: ở CFC nền trang là beige kèm ảnh nền nên thẻ dùng
+   * `bg-surface` gần như tàng hình, chỉ còn mỗi đường viền đánh dấu. */
+  --color-surface-card: #FFFFFF;
+
   /* Màu thanh trình duyệt (<meta name="theme-color">) */
   --color-theme:         #E67E22;
 
   --font-display: "Roboto", ui-sans-serif, system-ui, sans-serif;
   --font-body:    "Roboto", ui-sans-serif, system-ui, sans-serif;
+
+  /* Bo góc nhẹ riêng cho ảnh minh họa (vd. cặp ảnh "Tổng quan về công ty" ở
+   * about-us) — tách khỏi `--radius-panel` (0px, cố ý thẳng góc cho card/section
+   * của brand CFC) vì đây là khối ảnh độc lập, không phải panel/card. */
+  --radius-image-soft: 12px;
 }
 
 :root {

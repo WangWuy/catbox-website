@@ -1,0 +1,76 @@
+---
+/**
+ * Card lật 3D quanh trục ngang (trên/dưới) — mặt trước là icon + tiêu đề +
+ * gợi ý thao tác, mặt sau lộ ra nội dung chi tiết khi hover.
+ *
+ * Desktop: lật bằng CSS thuần (`:hover`/`:focus-within`), 0 JS.
+ * Touch (không có hover): script nhỏ toggle class `is-flipped` khi tap, tap
+ * lần nữa để lật về — bắt buộc phải có JS ở đây vì CSS không có cách nào
+ * phát hiện "đã tap" so với "chưa tap" trên thiết bị cảm ứng.
+ *
+ * `perspective` đặt trên khối bọc ngoài (không phải chính card) để mặt lật
+ * có chiều sâu 3D thay vì bẹt như xoay 2D thường.
+ */
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  icon: string;
+  title: string;
+  /** Nội dung mặt sau — có thể chứa HTML đơn giản qua slot thay vì prop này nếu cần */
+  body: string;
+  /** Gợi ý thao tác ở mặt trước, vd. "Chạm để xem chi tiết" */
+  hint?: string;
+  /**
+   * Góc xuất phát của điểm sáng gradient mặt trước. Khi đặt nhiều FlipCard
+   * cạnh nhau, đổi hướng theo từng ô để hai điểm sáng "nhìn vào nhau" ở giữa
+   * hàng thay vì cùng chiếu về một góc — vd. card trái dùng "top-right", card
+   * phải dùng "top-left".
+   */
+  glowFrom?: "top-left" | "top-right";
+}
+
+const { icon, title, body, hint = "Chạm để xem chi tiết", glowFrom = "top-left" } = Astro.props;
+
+const gradientClass =
+  glowFrom === "top-right" ? "bg-gradient-to-bl from-primary to-primary-deep" : "bg-gradient-to-br from-primary to-primary-deep";
+---
+
+<div class="group h-(--height-flip-card) [perspective:var(--perspective-flip-card)]" data-flip-card>
+  <button
+    type="button"
+    class="relative size-full text-left transition-transform duration-(--duration-slow) ease-(--ease-out-soft) [transform-style:preserve-3d] group-hover:[transform:rotateX(180deg)] group-focus-within:[transform:rotateX(180deg)] group-data-[flipped=true]:[transform:rotateX(180deg)]"
+    aria-expanded="false"
+    data-flip-trigger
+  >
+    <span
+      class={`absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-image-soft ${gradientClass} p-8 text-center text-white [backface-visibility:hidden]`}
+    >
+      <Icon name={icon} class="size-(--size-icon-panel)" aria-hidden="true" />
+      <span class="font-display text-2xl font-bold uppercase">{title}</span>
+      <span class="text-meta text-white/70 italic">{hint}</span>
+    </span>
+
+    <span
+      class="absolute inset-0 flex flex-col items-center justify-center rounded-image-soft bg-surface-alt p-8 text-center [backface-visibility:hidden] [transform:rotateX(180deg)]"
+    >
+      <span class="leading-relaxed text-ink-muted">{body}</span>
+    </span>
+  </button>
+</div>
+
+<script>
+  // Chỉ cần trên thiết bị không có hover thật (touch) — desktop đã lật qua
+  // CSS `:hover`/`:focus-within` ở trên, không đụng tới đoạn này.
+  const cards = document.querySelectorAll<HTMLElement>("[data-flip-card]");
+  cards.forEach((card) => {
+    const trigger = card.querySelector<HTMLButtonElement>("[data-flip-trigger]");
+    if (!trigger) return;
+    trigger.addEventListener("click", (e) => {
+      if (!matchMedia("(hover: none)").matches) return;
+      e.preventDefault();
+      const flipped = card.dataset.flipped === "true";
+      card.dataset.flipped = String(!flipped);
+      trigger.setAttribute("aria-expanded", String(!flipped));
+    });
+  });
+</script>

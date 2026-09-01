@@ -6,83 +6,42 @@
  * 3. Footer menu: Lối tắt xem tất cả sản phẩm
  *
  * Chạy bằng <details> kết hợp script chuyển tab tức thì trên hover (0 KB dependencies).
+ *
+ * CHỈ hiện từ `md` trở lên. Dưới md, toàn bộ menu nằm trong drawer của
+ * `MobileNav` — nút mở drawer đã chuyển lên `MainHeader`, nên thanh này không
+ * còn gì để hiển thị trên điện thoại (menu ngang và pill khuyến mãi vốn đã ẩn).
+ *
+ * `items` do `BaseLayout` dựng sẵn qua `buildNavEntries` rồi truyền xuống —
+ * không tự dựng ở đây nữa, vì `MainHeader` cũng cần đúng danh sách này cho
+ * drawer và hai nơi dựng bằng hai logic khác nhau thì nội dung sẽ lệch.
  */
 import { Icon } from "astro-icon/components";
-import { NAV, type NavItem, type NavEntry } from "@config/nav";
-import {
-  buildMegaMenuTree,
-  type CategoryEntryLike,
-  type ProductEntryLike,
-  type MegaMenuParent,
-} from "@config/categories";
+import type { NavEntry } from "@config/nav";
 import { BRANDS, type FnbBrandId } from "@config/brands";
-import MobileNav from "@ui/brand/fnb/MobileNav.astro";
 
 interface Props {
   brand: FnbBrandId;
   /** Pathname hiện tại để tô mục đang xem */
   current?: string;
-  /**
-   * Toàn bộ collection `categories` của site.
-   */
-  categories?: CategoryEntryLike[];
-  /**
-   * Toàn bộ collection `products` của site.
-   */
-  products?: ProductEntryLike[];
+  /** Menu đã dựng sẵn ở BaseLayout (`buildNavEntries`) */
+  items?: NavEntry[];
 }
 
-const { brand, current = "/", categories, products = [] } = Astro.props;
+const { brand, current = "/", items = [] } = Astro.props;
 const b = BRANDS[brand];
-
-const megaParents: MegaMenuParent[] =
-  categories && categories.length > 0
-    ? buildMegaMenuTree(categories, products)
-    : [];
-
-/** Fallback cho site chưa có collection categories */
-const fromNav = (nav: NavItem[]): NavEntry[] =>
-  nav.map((item) => ({
-    label: item.label,
-    href: item.href,
-    icon: item.icon,
-    fallbackGroups: item.children?.length
-      ? [{ items: item.children }]
-      : [],
-  }));
-
-const items: NavEntry[] =
-  categories && categories.length > 0
-    ? [
-        { label: "Trang chủ", href: "/", icon: b.icon },
-        {
-          label: "Sản phẩm",
-          href: "/products",
-          icon: "lucide:package",
-          isMega: true,
-          megaParents,
-        },
-        {
-          label: "Năng lực sản xuất",
-          href: "/nang-luc-san-xuat",
-          icon: "lucide:factory",
-        },
-        { label: "Tin tức", href: "/blog", icon: "lucide:newspaper" },
-        { label: "Liên hệ", href: "/contact", icon: "lucide:phone" },
-      ]
-    : fromNav(NAV[brand]);
 
 const isActive = (href: string) =>
   href === "/" ? current === "/" : current.startsWith(href);
 ---
 
-<nav aria-label="Danh mục chính" class="relative z-30 border-b border-line bg-surface">
+<nav
+  aria-label="Danh mục chính"
+  class="relative z-(--z-catnav) hidden border-b border-line bg-surface md:block"
+>
   <div
-    class="site-container flex h-(--height-catnav-mobile) items-center justify-between gap-6 md:h-(--height-catnav)"
+    class="site-container flex h-(--height-catnav) items-center justify-between gap-6"
   >
-    <MobileNav {items} {current} class="md:hidden" />
-
-    <ul class="hidden items-center gap-4 md:flex lg:gap-6">
+    <ul class="flex items-center gap-4 lg:gap-6">
       {
         items.map((item) => (
           <li class="flex-none">
@@ -103,10 +62,11 @@ const isActive = (href: string) =>
                 </summary>
 
                 {/* Dropdown Mega Menu */}
-                <div class="mega-menu-wrapper absolute top-full left-0 z-40 w-full">
+                <div class="mega-menu-wrapper absolute top-full left-0 z-(--z-catnav) w-full">
                   <div class="site-container py-4">
-                    {/* Bố cục 2 cột. Chỉ tồn tại từ md trở lên — cả <ul> bọc
-                        ngoài đã `hidden md:flex`; dưới md là MobileNav lo. */}
+                    {/* Bố cục 2 cột. Chỉ tồn tại từ md trở lên — cả thẻ <nav>
+                        bọc ngoài đã `hidden md:block`; dưới md là drawer của
+                        MobileNav (mở từ nút trên MainHeader) lo. */}
                     <div class="mega-menu-card flex rounded-2xl border border-line bg-surface-input shadow-lg overflow-hidden min-h-(--height-mega-min)">
 
                       {/* CỘT TRÁI: Danh mục cha (Parent Categories Sidebar) */}
@@ -209,7 +169,7 @@ const isActive = (href: string) =>
                     aria-hidden="true"
                   />
                 </summary>
-                <div class="absolute top-full left-0 z-30 w-full border-y border-line bg-surface shadow-lg">
+                <div class="absolute top-full left-0 z-(--z-catnav) w-full border-y border-line bg-surface shadow-lg">
                   <div class="site-container grid gap-x-6 gap-y-4 py-5 sm:grid-cols-2 lg:grid-cols-4">
                     {item.fallbackGroups.map((g) => (
                       <div class="min-w-0">

@@ -1,21 +1,33 @@
 ---
 /**
- * Khối video trước Footer — MỘT cửa sổ video chạy hết bề ngang site-container
- * (1280px trừ padding = 1232px), không tiêu đề, không mô tả, không CTA.
+ * Khối video trước Footer — MỘT cửa sổ video dạng viên thuốc (pill), khung
+ * 1000 × 399.2 bo tròn hai đầu, canh giữa trong site-container; không tiêu đề,
+ * không mô tả, không CTA.
  *
- * Ở bề ngang này `aspect-video` cho ra khung cao 693px nên giữ được tỉ lệ 16:9
- * thật, không phải chốt chiều cao cứng — khác với phương án full-bleed, nơi
- * 16:9 trên màn 1920 sẽ thành 1080px.
+ * Khai `--aspect-reel-pill` chứ không chốt chiều cao 399.2px: dưới 1000px khung
+ * co theo bề ngang màn hình và vẫn giữ đúng dáng viên thuốc.
  *
  * Không nền riêng và không đệm phía TRÊN — khối dính liền khối bên trên. Chỉ
  * chừa đệm phía DƯỚI để khung video (`primary-ink`) không dán vào Footer
  * (`primary-deep`), vì hai màu nâu đậm này sát nhau sẽ mất ranh giới.
  *
- * Video hiện tại là reel quay DỌC 9:16 lấy từ fanpage nên nằm giữa khung với
- * viền tối hai bên — `object-contain` giữ nguyên khung hình chứ không cắt.
- * Khi có video ngang thật, thay file là khung tự lấp đầy, không sửa layout.
+ * Video hiện tại là reel quay DỌC 9:16 lấy từ fanpage: trong khung ngang dẹt
+ * này `object-cover` sẽ cắt mất gần hết khung hình, nên vẫn dùng
+ * `object-contain` — video nằm giữa với hai mảng `primary-ink` hai bên, đúng
+ * dáng viên thuốc. Khi có video ngang thật, thay file là khung tự lấp đầy.
  *
- * `preload="none"` + poster: chưa bấm play thì không tải byte video nào.
+ * `controls` bị bỏ: thanh điều khiển mặc định của trình duyệt là một dải chữ
+ * nhật chạy sát đáy khung, hai đầu của nó bị chính đường bo tròn cắt cụt. Video
+ * đã `muted` + `loop` + tự phát theo khung nhìn nên không còn nút nào cần bấm.
+ *
+ * Tự phát khi cuộn tới, dừng khi cuộn qua — IntersectionObserver thuần, theo
+ * đúng cách `data-reveal` đang làm ở BaseLayout (xem chú thích ở đó): `muted`
+ * là điều kiện bắt buộc để trình duyệt cho `play()` chạy không cần thao tác
+ * người dùng, `loop` để video ngắn không dừng khựng giữa lúc đang xem.
+ * `preload="metadata"` thay vì `"none"`: cần biết kích thước khung hình ngay
+ * và phải có đủ dữ liệu để bắt đầu phát ngay khi vào khung nhìn, nhưng vẫn
+ * không tải cả file lúc trang chưa cuộn tới.
+ *
  * Chưa có video thì rơi về ảnh tĩnh — KHÔNG vẽ nút play giả, vì một nút bấm
  * không ra gì tệ hơn là không có nút.
  */
@@ -26,7 +38,7 @@ interface Props {
   assets: AssetMap;
   /** Tên gọi cho trình đọc màn hình — không hiển thị trên trang */
   label: string;
-  /** Video trong public/ — khung 16:9, video dọc sẽ có viền tối hai bên */
+  /** Video trong public/ — khung pill dẹt, video dọc sẽ có viền tối hai bên */
   video?: string;
   /** Ảnh hiển thị trước khi bấm play (public/) */
   poster?: string;
@@ -42,12 +54,14 @@ const { assets, label, video, poster, image } = Astro.props;
     {
       video ? (
         <video
-          controls
-          preload="none"
+          preload="metadata"
           playsinline
+          muted
+          loop
           poster={poster}
-          class="aspect-video w-full bg-primary-ink object-contain"
+          class="mx-auto aspect-(--aspect-reel-pill) w-full max-w-(--width-reel-pill) rounded-(--radius-reel-pill) bg-primary-ink object-contain"
           aria-label={label}
+          data-factory-reel
         >
           <source src={video} type="video/mp4" />
           Trình duyệt của bạn không phát được video này.
@@ -57,13 +71,45 @@ const { assets, label, video, poster, image } = Astro.props;
           {assets}
           src={image}
           alt={label}
-          width={1232}
-          height={693}
+          width={1000}
+          height={399}
           ratio="16x9"
           variant={4}
-          class="aspect-video w-full bg-primary-ink object-cover"
+          class="mx-auto aspect-(--aspect-reel-pill) w-full max-w-(--width-reel-pill) rounded-(--radius-reel-pill) bg-primary-ink object-cover"
         />
       )
     }
   </div>
 </section>
+
+{
+  video && (
+    <script>
+      // Tự phát/dừng theo khung nhìn — cùng cách `data-reveal` đang làm ở
+      // BaseLayout (IntersectionObserver thuần, không thư viện). Dừng thay vì
+      // để chạy ngầm khi cuộn qua: video ngoài khung nhìn vẫn tốn CPU giải mã
+      // nếu không pause, và người dùng bấm "controls" tạm dừng thủ công cũng
+      // không nên bị observer tự bấm play lại lần sau nó lọt vào khung nhìn.
+      (() => {
+        const videos = document.querySelectorAll<HTMLVideoElement>("[data-factory-reel]");
+        if (!videos.length || !("IntersectionObserver" in window)) return;
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const el = entry.target as HTMLVideoElement;
+              if (entry.isIntersecting) {
+                el.play().catch(() => {});
+              } else {
+                el.pause();
+              }
+            });
+          },
+          { threshold: 0.5 },
+        );
+
+        videos.forEach((el) => io.observe(el));
+      })();
+    </script>
+  )
+}
