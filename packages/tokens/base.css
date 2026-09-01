@@ -186,6 +186,40 @@
   /* Khung tròn nền nhạt bọc ngoài --size-icon-panel */
   --size-icon-panel-box: 52px;
 
+  /* --- Trang Liên hệ (contact) ------------------------------------------- *
+   * Bố cục theo mockup Thái Dương: hàng trên là 2 thẻ địa điểm (ảnh tròn +
+   * khối chữ nằm cạnh nhau), hàng dưới là 2 cột form | FAQ, cuối trang là khối
+   * nội dung công ty gập lại sau nút "Xem thêm". */
+
+  /* Ảnh tròn đứng đầu mỗi thẻ địa điểm (Nhà máy / Văn phòng).
+   * Khung vuông (cùng bề ngang/cao) + `rounded-full` mới ra hình tròn, đổi
+   * lệch hai chiều là thành bầu dục.
+   * Ở container 1280px chia 2 thẻ thì mỗi thẻ rộng ~620px, ảnh 290px chiếm
+   * gần nửa nên khối chữ bên cạnh chỉ còn ~305px — địa chỉ dài sẽ ngắt 2 dòng.
+   * Đây là cỡ khách chốt, không tự hạ. */
+  --size-contact-place-image: 290px;
+  /* Ảnh thu nhỏ ở mobile: dưới sm thẻ xếp dọc, giữ nguyên 290px sẽ chiếm gần
+   * hết bề ngang màn hẹp và đẩy khối chữ xuống quá thấp. */
+  --size-contact-place-image-sm: 200px;
+  /* Cỡ tiêu đề thẻ địa điểm ("Nhà máy", "Văn phòng") — nằm giữa
+   * --text-card-title (17px) và --text-section (38px). Phải đủ to để cân với
+   * hình tròn 132px đứng cạnh: ở 22px tiêu đề bị khối ảnh lấn át, trông như
+   * dòng phụ chứ không phải nhãn của thẻ. */
+  --text-contact-place-title: 1.625rem; /* 26px */
+  /* Tỉ lệ 2 cột hàng dưới: form hẹp hơn FAQ vì các trường nhập chỉ cần đủ rộng
+   * để đọc, còn câu hỏi FAQ là chữ chạy dài cần nhiều bề ngang hơn. */
+  --cols-contact-main: 1fr 1.15fr;
+  /* Chiều cao tối đa của khối nội dung công ty khi đang gập (trước khi bấm
+   * "Xem thêm") — cắt ngang chừng đoạn đầu để lộ ra là còn nội dung bên dưới,
+   * không phải cắt cụt hẳn ở ranh giới một khối. */
+  --height-contact-collapsed: 190px;
+  /* Dải mờ phủ lên mép dưới khối đang gập, nối vào màu nền trang. */
+  --height-contact-fade: 88px;
+  /* Câu trả lời FAQ trượt xuống từ vị trí này khi mở. Giữ NHỎ (vài px): đây là
+   * hiệu ứng "hé mở" đi kèm phần cao dần, trượt xa hơn thì chữ bay vào như
+   * banner quảng cáo và mắt phải đuổi theo mới đọc được. */
+  --offset-faq-slide: 6px;
+
   /* --- Mục tiêu chiến lược (StrategicGoals) ------------------------------ *
    * Số thứ tự lớn trong khung tròn nền nhạt, đứng thay icon ở mỗi thẻ. Khung
    * to hơn hẳn --size-icon-panel-box (52px — khung bọc icon dẫn đầu đoạn chữ)
@@ -464,6 +498,41 @@
   -webkit-line-clamp: var(--lines-post-card-excerpt);
   line-clamp: var(--lines-post-card-excerpt);
   overflow: hidden;
+}
+
+/* Mở/đóng mượt cho <details> (accordion FAQ trang Liên hệ).
+ *
+ * `<details>` không tự transition được vì nội dung nhảy từ 0 sang `height:auto`
+ * — trình duyệt không nội suy được `auto`. Hai mảnh mới của CSS lo việc đó:
+ *   - `interpolate-size: allow-keywords` cho phép nội suy TỚI từ khoá `auto`
+ *   - `::details-content` là hộp nội dung mà trước đây không chọn được
+ * Cần thêm `content-visibility` trong danh sách transition (kèm
+ * `transition-behavior: allow-discrete`), nếu không trình duyệt vẫn ẩn nội dung
+ * ngay lập tức và phần cao dần chạy trên một hộp rỗng.
+ *
+ * Trình duyệt chưa hỗ trợ thì bỏ qua toàn bộ khối này: accordion vẫn mở/đóng
+ * bình thường, chỉ không có hiệu ứng — không cần fallback riêng.
+ */
+@utility details-slide {
+  interpolate-size: allow-keywords;
+
+  &::details-content {
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    translate: 0 calc(var(--offset-faq-slide) * -1);
+    transition:
+      height var(--duration-base) var(--ease-out-soft),
+      opacity var(--duration-base) var(--ease-out-soft),
+      translate var(--duration-base) var(--ease-out-soft),
+      content-visibility var(--duration-base) allow-discrete;
+  }
+
+  &[open]::details-content {
+    height: auto;
+    opacity: 1;
+    translate: 0 0;
+  }
 }
 
 /* Kiểu chữ cho nội dung MDX (mô tả sản phẩm, bài blog, chính sách).

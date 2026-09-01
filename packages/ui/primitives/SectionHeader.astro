@@ -31,6 +31,8 @@ interface Props {
   accent?: string | string[];
   /** Gạch chân ngắn dưới tiêu đề (--width-rule-accent), như concept CFC */
   rule?: boolean;
+  /** Gạch dưới động dạng nét cọ (hand-drawn brush underline) cho từ khóa accent */
+  brushUnderline?: boolean;
   /**
    * Gõ từng chữ phần `accent` + con trỏ nháy khi tiêu đề cuộn vào khung nhìn,
    * giữ `--duration-type-hold` rồi xoá đi gõ tiếp (luân phiên nếu `accent` là
@@ -60,6 +62,7 @@ const {
   title,
   accent,
   rule = false,
+  brushUnderline = false,
   typing = false,
   id,
   subtitle,
@@ -90,13 +93,41 @@ const accentText = accents[0];
           <>
             {" "}
             <span
-              class="text-primary"
+              class="relative inline-block text-primary"
               data-typing={typing ? "" : undefined}
               data-typing-words={
                 typing ? JSON.stringify(accents) : undefined
               }
             >
               {accentText}
+              {
+                brushUnderline && (
+                  <svg
+                    class="pointer-events-none absolute -bottom-2 left-0 w-full overflow-visible text-cta"
+                    height="12"
+                    viewBox="0 0 160 14"
+                    fill="none"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                    data-brush-stroke
+                  >
+                    <path
+                      d="M 2 8 C 38 4, 110 3, 156 7"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      class="brush-path-1"
+                    />
+                    <path
+                      d="M 12 12 C 55 9, 125 7, 150 11"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      class="brush-path-2"
+                    />
+                  </svg>
+                )
+              }
             </span>
           </>
         )
@@ -127,6 +158,30 @@ const accentText = accents[0];
     }
   </div>
 </div>
+
+<style>
+  [data-brush-stroke] .brush-path-1 {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) 0.2s;
+  }
+  [data-brush-stroke] .brush-path-2 {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    transition: stroke-dashoffset 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.45s;
+  }
+  [data-brush-stroke].in .brush-path-1,
+  [data-brush-stroke].in .brush-path-2 {
+    stroke-dashoffset: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-brush-stroke] .brush-path-1,
+    [data-brush-stroke] .brush-path-2 {
+      stroke-dashoffset: 0 !important;
+      transition: none !important;
+    }
+  }
+</style>
 
 <script>
   // Gõ chữ phần `accent` khi tiêu đề cuộn tới khung nhìn (prop `typing`), giữ
@@ -210,5 +265,23 @@ const accentText = accents[0];
       { threshold: 0.6 },
     );
     io.observe(el);
+  });
+
+  document.querySelectorAll<SVGElement>("[data-brush-stroke]").forEach((svg) => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      svg.classList.add("in");
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          io.disconnect();
+          svg.classList.add("in");
+        }
+      },
+      { threshold: 0.2 },
+    );
+    io.observe(svg);
   });
 </script>

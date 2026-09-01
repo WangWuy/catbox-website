@@ -1,33 +1,20 @@
 ---
 /**
- * GIÁ TRỊ CỐT LÕI — danh sách chọn bên trái + panel chi tiết bên phải, dùng
- * cho trang About us.
+ * GIÁ TRỊ CỐT LÕI (Core Values) — Hỗ trợ 2 biến thể:
+ * 1. `orbital` (Mặc định): Sơ đồ quỹ đạo tròn tương tác 5 nút vệ tinh (ngũ giác đều)
+ *    với animation xoay & phóng to mượt mà khi vào trang, trung tâm hiển thị
+ *    chi tiết giá trị đang chọn.
+ * 2. `tabs`: Danh sách chọn dọc bên trái + panel chi tiết bên phải.
  *
- * Vì sao không phải lưới card như trước: N giá trị × một đoạn mô tả = một bức
- * tường chữ, và với N = 5 thì lưới 3 cột còn thừa ra hàng lẻ 2 ô. Ở đây mỗi
- * giá trị chỉ là một dòng chọn ngắn, phần chữ dài nằm gọn trong MỘT panel duy
- * nhất — mắt luôn chỉ có một chỗ để đọc, và thêm/bớt giá trị không phá bố cục.
- *
- * Ngữ nghĩa là tablist thật (`role="tab"`/`role="tabpanel"`), không phải div
- * bấm được: bàn phím đi bằng ↑↓ + Home/End và trình đọc màn hình đọc đúng
- * "tab 2/5". Kèm roving tabindex — cả nhóm tab chỉ tốn MỘT nhịp Tab, không bắt
- * người dùng phím bấm Tab 5 lần mới qua được khối này.
- *
- * Dưới `lg`: gập 1 cột — danh sách trên, panel dưới. Cố ý KHÔNG làm accordion
- * (panel chèn ngay dưới mục vừa chọn) vì kiểu đó buộc panel phải nằm xen giữa
- * các tab trong DOM, phá mất quan hệ tablist → tab của ARIA.
- *
- * LƯU Ý khi sửa chú thích này: KHÔNG viết dấu `<` dính liền chữ (`<lg`, `<h2>`)
- * trong khối frontmatter. Astro dịch frontmatter sang TSX nên đọc đó là mở thẻ
- * JSX, hỏng luôn suy luận kiểu của `Astro.props` — `values` thành `any`, mọi
- * chỗ gọi component mất kiểm tra kiểu mà build vẫn chạy bình thường. Lỗi im
- * lặng, chỉ `astro check` trong `packages/ui` mới bắt được.
+ * Tiêu đề tích hợp `brushUnderline` tạo nét vẽ cọ gạch dưới chữ "Cốt lõi".
+ * Đầy đủ chuẩn ARIA tablist/tabpanel, roving tabindex, phím mũi tên & hỗ trợ
+ * prefers-reduced-motion.
  */
 import { Icon } from "astro-icon/components";
 import SectionHeader from "@ui/primitives/SectionHeader.astro";
 
 export interface CoreValue {
-  icon: string;
+  icon?: string;
   title: string;
   /** Câu chốt ngắn in nghiêng đứng trên đoạn mô tả — vd. "Nền móng của mọi hành động" */
   tagline?: string;
@@ -38,81 +25,381 @@ interface Props {
   title?: string;
   /** Phần đuôi tiêu đề tô màu primary — xem `accent` của SectionHeader */
   accent?: string;
+  /** Gạch dưới động dạng nét cọ (hand-drawn brush underline) */
+  brushUnderline?: boolean;
+  /** Kiểu layout: 'orbital' (sơ đồ tròn động) hoặc 'tabs' (cột truyền thống) */
+  variant?: "orbital" | "tabs";
+  /** Đường dẫn file logo thương hiệu làm watermark ở tâm hub (mặc định '/logo.png') */
+  logo?: string;
   values: CoreValue[];
 }
 
-const { title = "Giá trị", accent = "cốt lõi", values } = Astro.props;
+const {
+  title = "Giá trị",
+  accent = "cốt lõi",
+  brushUnderline = true,
+  variant = "orbital",
+  logo = "/logo.png",
+  values,
+} = Astro.props;
+
+// Toạ độ 5 góc ngũ giác đều cho variant="orbital" (R = 43% từ tâm)
+const orbitalCoords = [
+  { left: "50%", top: "7%" },   // Node 0: Đỉnh (0°)
+  { left: "91%", top: "37%" },  // Node 1: Trên phải (72°)
+  { left: "75%", top: "85%" },  // Node 2: Dưới phải (144°)
+  { left: "25%", top: "85%" },  // Node 3: Dưới trái (216°)
+  { left: "9%", top: "37%" },   // Node 4: Trên trái (288°)
+];
 ---
 
 <section class="site-container" aria-labelledby="core-values-heading" data-reveal>
-  <SectionHeader id="core-values-heading" {title} {accent} rule />
+  <SectionHeader id="core-values-heading" {title} {accent} {brushUnderline} spacing="none" />
 
-  <div
-    class="grid gap-4 lg:grid-cols-[var(--width-values-list)_1fr] lg:gap-6"
-    data-core-values
-  >
-    <div
-      class="flex flex-col gap-2"
-      role="tablist"
-      aria-orientation="vertical"
-      aria-label="Danh sách giá trị cốt lõi"
-      data-reveal-group
-    >
-      {
-        values.map((v, i) => (
-          <button
-            type="button"
-            role="tab"
-            id={`core-value-tab-${i}`}
-            aria-controls={`core-value-panel-${i}`}
-            aria-selected={i === 0 ? "true" : "false"}
-            tabindex={i === 0 ? 0 : -1}
-            class="flex items-center gap-3 rounded-panel border-s-(length:--width-marker-active) border-transparent bg-surface px-4 py-3.5 text-start text-ink-muted transition-colors duration-(--duration-fast) hover:bg-surface-alt aria-selected:border-primary aria-selected:bg-surface-alt aria-selected:text-primary"
+  {
+    variant === "orbital" ? (
+      <div class="mt-8 flex flex-col items-center" data-core-values-orbital>
+        {/* Khung chứa sơ đồ tròn */}
+        <div class="relative mx-auto aspect-square w-full max-w-[350px] sm:max-w-[480px] md:max-w-[580px] lg:max-w-[640px]">
+          {/* Quỹ đạo tròn xoay (Entrance animation) */}
+          <div
+            class="orbital-track absolute inset-0 size-full"
+            data-orbital-track
+            role="tablist"
+            aria-orientation="horizontal"
+            aria-label="Danh sách giá trị cốt lõi"
           >
-            <Icon name={v.icon} class="size-(--size-icon-chip) flex-none" aria-hidden="true" />
-            <span class="text-label font-bold tracking-(--tracking-eyebrow) uppercase">
-              {v.title}
-            </span>
-          </button>
-        ))
-      }
-    </div>
+            {/* Vòng viền quỹ đạo mảnh */}
+            <div class="absolute inset-[7%] rounded-full border-2 border-dashed border-primary/25 md:border-primary/35" />
+            <div class="absolute inset-[7%] rounded-full border border-primary/15" />
 
-    {
-      values.map((v, i) => (
-        <div
-          role="tabpanel"
-          id={`core-value-panel-${i}`}
-          aria-labelledby={`core-value-tab-${i}`}
-          tabindex="0"
-          hidden={i !== 0}
-          class="relative flex min-h-(--min-height-values-panel) flex-col gap-4 overflow-hidden rounded-panel bg-surface-alt p-8 md:p-10 lg:col-start-2 lg:row-start-1"
-        >
-          <Icon
-            name={v.icon}
-            class="pointer-events-none absolute -top-6 -end-6 size-(--size-icon-watermark) text-primary opacity-(--opacity-watermark)"
-            aria-hidden="true"
-          />
-          <span class="flex size-(--size-icon-panel-box) items-center justify-center rounded-panel bg-surface text-primary">
-            <Icon name={v.icon} class="size-(--size-icon-panel)" aria-hidden="true" />
-          </span>
-          <h3 class="font-display text-(length:--text-section-mobile) font-extrabold uppercase">
-            {v.title}
-          </h3>
-          {v.tagline && (
-            <p class="text-(length:--text-card-title) font-bold text-primary italic">{v.tagline}</p>
-          )}
-          <p class="leading-relaxed text-ink-muted">{v.desc}</p>
+            {/* 5 Nút vệ tinh xoay quanh quỹ đạo */}
+            {values.map((v, i) => {
+              const pos = orbitalCoords[i] ?? { left: "50%", top: "50%" };
+              return (
+                <button
+                  type="button"
+                  role="tab"
+                  id={`orbital-tab-${i}`}
+                  aria-controls={`orbital-panel-${i}`}
+                  aria-selected={i === 0 ? "true" : "false"}
+                  tabindex={i === 0 ? 0 : -1}
+                  data-orbital-index={i}
+                  style={`left: ${pos.left}; top: ${pos.top};`}
+                  class="orbital-node group absolute -translate-x-1/2 -translate-y-1/2 rounded-full cursor-pointer transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/50"
+                >
+                  {/* Counter-rotation wrapper giữ chữ luôn thẳng đứng */}
+                  <div class="orbital-node-inner flex size-18 items-center justify-center rounded-full border-4 border-surface bg-gradient-to-br from-primary to-primary-hover text-white shadow-lg transition-transform duration-300 group-hover:scale-105 group-aria-selected:scale-115 group-aria-selected:border-surface-alt group-aria-selected:shadow-2xl group-aria-selected:ring-4 group-aria-selected:ring-primary/40 sm:size-24 md:size-28 lg:size-32">
+                    <span class="px-2 text-center font-display text-[10px] font-black tracking-wider uppercase select-none sm:text-xs md:text-label lg:text-sm leading-tight">
+                      {v.title}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Vùng trung tâm (Hub chứa nội dung đang chọn) */}
+          <div
+            class="orbital-hub pointer-events-none absolute inset-0 m-auto z-10 flex aspect-square w-[60%] items-center justify-center rounded-full border border-primary/25 bg-surface-tint/90 p-4 text-center shadow-lg backdrop-blur-xs sm:p-6 md:p-8 overflow-hidden"
+            data-orbital-hub
+          >
+            {/* Vòng nền phát sáng mờ */}
+            <div class="pointer-events-none absolute inset-0 rounded-full bg-radial from-primary/10 to-transparent" />
+
+            {/* Logo thương hiệu làm watermark ở chính giữa trung tâm */}
+            {logo && (
+              <img
+                src={logo}
+                alt="Brand Logo"
+                width="400"
+                height="225"
+                class="pointer-events-none absolute inset-0 m-auto max-h-[50%] max-w-[70%] object-contain opacity-15 select-none"
+                aria-hidden="true"
+              />
+            )}
+
+            {/* Các tabpanel nội dung (chồng lên nhau ở tâm) */}
+            {values.map((v, i) => (
+              <div
+                role="tabpanel"
+                id={`orbital-panel-${i}`}
+                aria-labelledby={`orbital-tab-${i}`}
+                tabindex="0"
+                aria-hidden={i !== 0 ? "true" : "false"}
+                class={`orbital-panel pointer-events-auto absolute inset-0 flex flex-col items-center justify-center p-3 text-center transition-all duration-300 sm:p-5 md:p-6 ${
+                  i === 0 ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+                }`}
+              >
+                <h3 class="font-display text-xs font-black uppercase tracking-wider text-ink sm:text-base md:text-lg">
+                  {v.title}
+                </h3>
+                {v.tagline && (
+                  <p class="mt-0.5 text-[11px] font-bold text-primary italic sm:text-xs md:text-sm">
+                    {v.tagline}
+                  </p>
+                )}
+                <p class="mt-1 line-clamp-3 text-[10px] leading-relaxed text-ink-muted sm:mt-2 sm:line-clamp-4 sm:text-xs md:line-clamp-none md:text-meta">
+                  {v.desc}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
-      ))
-    }
-  </div>
+
+        {/* Khung mô tả chi tiết dự phòng cho Mobile màn hình rất nhỏ */}
+        <div class="mt-4 block w-full rounded-panel bg-surface-alt/70 p-4 text-center sm:hidden" data-mobile-detail>
+          <h4 class="font-display text-label font-bold text-ink uppercase" data-mobile-title>
+            {values[0]?.title}
+          </h4>
+          {values[0]?.tagline && (
+            <p class="text-tiny font-bold text-primary italic" data-mobile-tagline>
+              {values[0]?.tagline}
+            </p>
+          )}
+          <p class="mt-1 text-meta leading-relaxed text-ink-muted" data-mobile-desc>
+            {values[0]?.desc}
+          </p>
+        </div>
+      </div>
+    ) : (
+      <div
+        class="mt-8 grid gap-4 lg:grid-cols-[var(--width-values-list)_1fr] lg:gap-6"
+        data-core-values-tabs
+      >
+        <div
+          class="flex flex-col gap-2"
+          role="tablist"
+          aria-orientation="vertical"
+          aria-label="Danh sách giá trị cốt lõi"
+          data-reveal-group
+        >
+          {values.map((v, i) => (
+            <button
+              type="button"
+              role="tab"
+              id={`core-value-tab-${i}`}
+              aria-controls={`core-value-panel-${i}`}
+              aria-selected={i === 0 ? "true" : "false"}
+              tabindex={i === 0 ? 0 : -1}
+              class="flex items-center gap-3 rounded-panel border-s-(length:--width-marker-active) border-transparent bg-surface px-4 py-3.5 text-start text-ink-muted transition-colors duration-(--duration-fast) hover:bg-surface-alt aria-selected:border-primary aria-selected:bg-surface-alt aria-selected:text-primary"
+            >
+              {v.icon && <Icon name={v.icon} class="size-(--size-icon-chip) flex-none" aria-hidden="true" />}
+              <span class="text-label font-bold tracking-(--tracking-eyebrow) uppercase">
+                {v.title}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {values.map((v, i) => (
+          <div
+            role="tabpanel"
+            id={`core-value-panel-${i}`}
+            aria-labelledby={`core-value-tab-${i}`}
+            tabindex="0"
+            hidden={i !== 0}
+            class="relative flex min-h-(--min-height-values-panel) flex-col gap-4 overflow-hidden rounded-panel bg-surface-alt p-8 md:p-10 lg:col-start-2 lg:row-start-1"
+          >
+            {v.icon && (
+              <>
+                <Icon
+                  name={v.icon}
+                  class="pointer-events-none absolute -top-6 -end-6 size-(--size-icon-watermark) text-primary opacity-(--opacity-watermark)"
+                  aria-hidden="true"
+                />
+                <span class="flex size-(--size-icon-panel-box) items-center justify-center rounded-panel bg-surface text-primary">
+                  <Icon name={v.icon} class="size-(--size-icon-panel)" aria-hidden="true" />
+                </span>
+              </>
+            )}
+            <h3 class="font-display text-(length:--text-section-mobile) font-extrabold uppercase">
+              {v.title}
+            </h3>
+            {v.tagline && (
+              <p class="text-(length:--text-card-title) font-bold text-primary italic">{v.tagline}</p>
+            )}
+            <p class="leading-relaxed text-ink-muted">{v.desc}</p>
+          </div>
+        ))}
+      </div>
+    )
+  }
 </section>
 
+<style>
+  /* Entrance Animation cho Orbital Diagram */
+  .orbital-track {
+    opacity: 0;
+    transform: scale(0.65) rotate(-90deg);
+    transition:
+      opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: center center;
+  }
+
+  .orbital-node-inner {
+    transform: rotate(90deg);
+    transition:
+      transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .orbital-hub {
+    opacity: 0;
+    transform: scale(0.85);
+    transition:
+      opacity 0.8s ease-out 0.3s,
+      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+  }
+
+  /* Khi IntersectionObserver kích hoạt class 'in' */
+  [data-core-values-orbital].in .orbital-track {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  [data-core-values-orbital].in .orbital-node-inner {
+    transform: rotate(0deg);
+  }
+
+  [data-core-values-orbital].in .orbital-hub {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Hỗ trợ prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    .orbital-track,
+    .orbital-node-inner,
+    .orbital-hub {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+</style>
+
 <script>
-  // Kích hoạt TỰ ĐỘNG (chọn ngay khi tab nhận focus, không cần Enter) — đúng
-  // khuyến nghị của APG cho tablist mà panel chỉ là chữ, đổi tab không tốn gì.
-  document.querySelectorAll<HTMLElement>("[data-core-values]").forEach((root) => {
+  // Xử lý tương tác cho Orbital Diagram
+  document.querySelectorAll<HTMLElement>("[data-core-values-orbital]").forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+    const mobileTitle = root.querySelector<HTMLElement>("[data-mobile-title]");
+    const mobileTagline = root.querySelector<HTMLElement>("[data-mobile-tagline]");
+    const mobileDesc = root.querySelector<HTMLElement>("[data-mobile-desc]");
+
+    let currentIndex = 0;
+    let autoPlayTimer: ReturnType<typeof setInterval> | null = null;
+
+    const select = (next: number, moveFocus: boolean) => {
+      currentIndex = next;
+      tabs.forEach((tab, i) => {
+        const on = i === next;
+        tab.setAttribute("aria-selected", String(on));
+        tab.tabIndex = on ? 0 : -1;
+      });
+
+      panels.forEach((panel, i) => {
+        const on = i === next;
+        panel.setAttribute("aria-hidden", String(!on));
+        if (on) {
+          panel.classList.remove("opacity-0", "scale-95", "pointer-events-none");
+          panel.classList.add("opacity-100", "scale-100");
+          // Cập nhật card chi tiết mobile
+          const h3 = panel.querySelector("h3");
+          const tagline = panel.querySelector("p.italic");
+          const desc = panel.querySelectorAll("p")[tagline ? 1 : 0];
+          if (mobileTitle && h3) mobileTitle.textContent = h3.textContent;
+          if (mobileTagline) {
+            mobileTagline.textContent = tagline?.textContent ?? "";
+            mobileTagline.style.display = tagline ? "block" : "none";
+          }
+          if (mobileDesc && desc) mobileDesc.textContent = desc.textContent;
+        } else {
+          panel.classList.remove("opacity-100", "scale-100");
+          panel.classList.add("opacity-0", "scale-95", "pointer-events-none");
+        }
+      });
+
+      if (moveFocus) tabs[next].focus();
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener("click", () => {
+        select(i, false);
+        stopAutoPlay();
+      });
+      tab.addEventListener("mouseenter", () => {
+        select(i, false);
+        stopAutoPlay();
+      });
+      tab.addEventListener("keydown", (e) => {
+        const step =
+          e.key === "ArrowDown" || e.key === "ArrowRight"
+            ? 1
+            : e.key === "ArrowUp" || e.key === "ArrowLeft"
+              ? -1
+              : 0;
+        if (step) {
+          e.preventDefault();
+          select((i + step + tabs.length) % tabs.length, true);
+          stopAutoPlay();
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          select(0, true);
+          stopAutoPlay();
+        } else if (e.key === "End") {
+          e.preventDefault();
+          select(tabs.length - 1, true);
+          stopAutoPlay();
+        }
+      });
+    });
+
+    // Auto-play chu kỳ 4.5s
+    const startAutoPlay = () => {
+      if (autoPlayTimer) clearInterval(autoPlayTimer);
+      autoPlayTimer = setInterval(() => {
+        const next = (currentIndex + 1) % tabs.length;
+        select(next, false);
+      }, 4500);
+    };
+
+    const stopAutoPlay = () => {
+      if (autoPlayTimer) {
+        clearInterval(autoPlayTimer);
+        autoPlayTimer = null;
+      }
+    };
+
+    root.addEventListener("mouseenter", stopAutoPlay);
+    root.addEventListener("mouseleave", () => {
+      if (root.classList.contains("in")) startAutoPlay();
+    });
+
+    // IntersectionObserver kích hoạt hiệu ứng xoay entrance
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      root.classList.add("in");
+    } else {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            io.disconnect();
+            root.classList.add("in");
+            startAutoPlay();
+          }
+        },
+        { threshold: 0.25 }
+      );
+      io.observe(root);
+    }
+  });
+
+  // Xử lý cho biến thể tabs truyền thống nếu có
+  document.querySelectorAll<HTMLElement>("[data-core-values-tabs]").forEach((root) => {
     const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
     const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
     if (tabs.length !== panels.length) return;
@@ -121,7 +408,6 @@ const { title = "Giá trị", accent = "cốt lõi", values } = Astro.props;
       tabs.forEach((tab, i) => {
         const on = i === next;
         tab.setAttribute("aria-selected", String(on));
-        // Roving tabindex: chỉ tab đang chọn còn nằm trong luồng Tab.
         tab.tabIndex = on ? 0 : -1;
         panels[i].hidden = !on;
       });
@@ -131,8 +417,6 @@ const { title = "Giá trị", accent = "cốt lõi", values } = Astro.props;
     tabs.forEach((tab, i) => {
       tab.addEventListener("click", () => select(i, false));
       tab.addEventListener("keydown", (e) => {
-        // Cả ↑↓ lẫn ←→: danh sách xếp dọc ở desktop nhưng người dùng vẫn hay
-        // thử phím ngang khi thấy đây là "tab".
         const step =
           e.key === "ArrowDown" || e.key === "ArrowRight"
             ? 1
@@ -153,3 +437,4 @@ const { title = "Giá trị", accent = "cốt lõi", values } = Astro.props;
     });
   });
 </script>
+

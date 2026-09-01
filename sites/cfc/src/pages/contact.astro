@@ -1,10 +1,22 @@
 ---
+/**
+ * Trang Liên hệ — dựng theo bố cục mockup Thái Dương (lygiaythaiduong.com/lien-he):
+ *
+ *   1. PageHero (banner nâu kraft + tiêu đề + breadcrumb) — dùng chung với
+ *      /blog và /about-us để 3 trang trong cùng một dáng đầu trang
+ *   2. Hàng 2 thẻ địa điểm (Nhà máy | Văn phòng): ảnh vuông + khối chữ bên cạnh
+ *   3. Hàng 2 cột: form "LIÊN HỆ" | accordion "Một số câu hỏi thường gặp"
+ *   4. Khối nội dung công ty gập lại, mở bằng nút "Xem thêm"
+ *
+ * Khác với bản trước (TrustPanel + QuoteForm + sidebar): TD đặt thông tin địa
+ * điểm lên đầu và ghép form với FAQ thành một hàng, nên bỏ sidebar và
+ * TrustPanel ở trang này.
+ */
 import type { ImageMetadata } from "astro";
 import { Icon } from "astro-icon/components";
 import Layout from "../layouts/Layout.astro";
-import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
-import QuoteForm from "@ui/shared/QuoteForm.astro";
-import TrustPanel from "@ui/shared/TrustPanel.astro";
+import PageHero from "@ui/patterns/PageHero.astro";
+import SmartImage from "@ui/primitives/SmartImage.astro";
 import { BRANDS } from "@config/brands";
 
 const assets = import.meta.glob<{ default: ImageMetadata }>(
@@ -15,39 +27,93 @@ const assets = import.meta.glob<{ default: ImageMetadata }>(
 const b = BRANDS.cfc;
 
 /**
- * Lời cam kết trước form (concept: "Hình ảnh và lời cam kết trước form cần tư vấn").
- * TODO(nội dung): ảnh đội ngũ thật chưa có, tạm dùng hero-banner — thay bằng
- * ảnh xưởng/đội ngũ trước khi lên production.
+ * Hai địa điểm, mỗi nơi có giờ làm việc + đầu mối liên hệ riêng — theo mockup
+ * TD tách "Nhà Máy" và "VPĐD" thành 2 thẻ thay vì gộp một danh sách.
+ *
+ * TODO(nội dung): ảnh xưởng/văn phòng thật chưa có, tạm dùng hero-banner.
+ * TODO(nội dung): hotline trong `BRANDS.cfc` còn là placeholder `0909.xxx.xxx`.
  */
-const trust = {
-  heading: `${b.name} — Giải pháp bao bì giấy an toàn cho chuỗi F&B`,
-  body: [
-    "10+ năm kinh nghiệm trong lĩnh vực in ấn và sản xuất bao bì giấy tiếp xúc thực phẩm, là đối tác tin cậy của hàng nghìn quán ăn, chuỗi cà phê và nhà hàng trên toàn quốc.",
-    "Sở hữu dây chuyền in offset và bế hộp đồng bộ, quy trình kiểm soát chất lượng khép kín từ chọn giấy tới thành phẩm — chủ động rút ngắn thời gian giao hàng kể cả với đơn số lượng lớn.",
-  ],
-  cta: { label: `Trò chuyện với ${b.short}`, href: `https://zalo.me/${b.zalo}` },
-};
+const places = [
+  {
+    title: "Nhà máy",
+    image: "brand/hero-banner.png",
+    address: "KCN Đồng Văn, Duy Tiên, Hà Nam",
+    hours: { days: "Thứ 2 - Thứ 7", time: "08:00 - 17:30" },
+    email: b.email,
+    lines: [{ label: "Hotline", value: b.hotline, href: `tel:${b.hotline.replace(/[^0-9+]/g, "")}` }],
+  },
+  {
+    title: "Văn phòng",
+    image: "brand/hero-banner.png",
+    address: "Số 12 Nguyễn Trãi, Hà Đông, Hà Nội",
+    hours: { days: "Thứ 2 - Thứ 7", time: "08:00 - 17:30" },
+    email: b.email,
+    // Phân đầu mối theo tệp khách như mockup TD ("Khách lẻ ... / Khách sỉ ...").
+    lines: b.salesReps.slice(0, 2).map((r, i) => ({
+      label: i === 0 ? "Khách lẻ" : "Khách sỉ",
+      value: `${r.phone} (${r.name})`,
+      href: `tel:${r.phone.replace(/[^0-9+]/g, "")}`,
+    })),
+  },
+];
 
-const segments = [
+const faq = [
   {
-    value: "chuoi",
-    label: "Chuỗi / Quán",
-    hint: "Đặt định kỳ hàng tháng, cần giá bậc số lượng và giao đúng lịch.",
+    q: "Công ty có chính sách đại lý không?",
+    a: ["Có! Nếu khách hàng muốn trở thành đại lý, xưởng có chính sách giá tốt, hỗ trợ marketing và tư vấn bán hàng."],
   },
   {
-    value: "le",
-    label: "Mua lẻ / Mẫu thử",
-    hint: "Số lượng nhỏ, muốn xem mẫu thật trước khi đặt in số lượng lớn.",
+    q: "Công ty có hỗ trợ vận chuyển không?",
+    a: ["Có! Xưởng hỗ trợ vận chuyển tận nơi với phí ship hợp lý, miễn phí vận chuyển cho đơn hàng lớn."],
   },
   {
-    value: "dai-ly",
-    label: "Đại lý / Phân phối",
-    hint: "Nhập sỉ để bán lại, cần chiết khấu và chính sách công nợ.",
+    q: "Thời gian sản xuất bao bì có lâu không?",
+    a: ["Đơn hàng có sẵn: giao ngay trong 1-3 ngày.", "Đơn hàng in logo: sản xuất khoảng 7-15 ngày, tùy số lượng."],
+  },
+  {
+    q: "Bao bì giấy có an toàn với thực phẩm nóng không?",
+    a: [
+      "Có! Toàn bộ giấy và mực in đều đạt tiêu chuẩn tiếp xúc thực phẩm.",
+      "Xưởng có sẵn các loại tráng PE / PLA phù hợp với đồ nóng và đồ có dầu mỡ.",
+    ],
+  },
+  {
+    q: "Công ty có in logo thương hiệu lên bao bì không?",
+    a: [
+      "Có! Xưởng nhận thiết kế và in logo thương hiệu theo yêu cầu.",
+      "Công nghệ in offset chất lượng cao, màu sắc sắc nét, không phai.",
+    ],
+  },
+  {
+    q: "Số lượng tối thiểu để in logo là bao nhiêu?",
+    a: ["Tùy loại sản phẩm, số lượng tối thiểu khoảng 5.000 - 10.000 sản phẩm cho một mẫu in."],
+  },
+];
+
+const companyBlocks = [
+  {
+    title: "Mục tiêu chất lượng",
+    body: [
+      "Hướng đến sự hoàn hảo trong từng sản phẩm, đảm bảo đáp ứng mọi yêu cầu về chất lượng và an toàn.",
+      "Không ngừng cải tiến quy trình sản xuất để mang đến những sản phẩm tốt nhất với chi phí hợp lý.",
+    ],
+  },
+  {
+    title: "Cam kết chất lượng",
+    body: [
+      "Sử dụng nguồn nguyên liệu được kiểm soát chặt chẽ, đạt tiêu chuẩn an toàn vệ sinh thực phẩm.",
+      "Sản phẩm đa dạng về chủng loại và kích thước, đáp ứng nhu cầu đa dạng của khách hàng.",
+      "Dịch vụ hỗ trợ chuyên nghiệp, nhanh chóng và tận tình.",
+    ],
+  },
+  {
+    title: "Giá trị thương hiệu",
+    body: ["Chất lượng, uy tín, tận tâm và hướng đến sự hài lòng của khách hàng."],
   },
 ];
 
 const description =
-  "Liên hệ xưởng CFC để nhận báo giá bao bì giấy F&B trong 30 phút. Nhà máy KCN Đồng Văn, Hà Nam — văn phòng Hà Đông, Hà Nội.";
+  "Liên hệ xưởng CFC để nhận báo giá bao bì giấy F&B. Nhà máy KCN Đồng Văn, Hà Nam — văn phòng Hà Đông, Hà Nội.";
 
 const jsonLd = [
   {
@@ -71,93 +137,294 @@ const jsonLd = [
       closes: "17:30",
     },
   },
+  {
+    "@type": "FAQPage",
+    mainEntity: faq.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a.join(" ") },
+    })),
+  },
 ];
+
+const fieldClass =
+  "h-12 w-full rounded-chip border border-line bg-(--color-surface-input) px-4 text-nav outline-none focus-visible:border-primary";
 ---
 
-<Layout title="Liên hệ & Báo giá" {description} {jsonLd}>
-  <Breadcrumb items={[{ label: "Liên hệ" }]} />
+<Layout title="Liên hệ" {description} {jsonLd}>
+  <PageHero
+    title="Liên hệ"
+    crumbs={[{ label: "Liên hệ" }]}
+    {assets}
+    image="products/hop-giay-kraft.png"
+    imageAlt="Bao bì giấy CFC"
+  />
 
-  <div class="pb-12">
-    <TrustPanel
-      brand="cfc"
-      {assets}
-      image="brand/hero-banner.png"
-      heading={trust.heading}
-      body={trust.body}
-      cta={trust.cta}
-    />
-  </div>
+  {/* --- 2 thẻ địa điểm: ảnh vuông bên trái, khối chữ bên phải ------------ */}
+  <section class="site-container mt-16 grid gap-8 sm:grid-cols-2 sm:gap-10">
+    {
+      places.map((p) => (
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
+          {/* Khung vuông (size- đặt cùng bề ngang/cao) + rounded-full → hình
+              tròn. Ảnh bên trong object-cover nên cắt theo tâm, không méo.
+              Hàng dùng `items-center`: khối chữ thấp hơn hình tròn nên neo
+              đỉnh (items-start) sẽ trông lệch lên. */}
+          <div class="size-(--size-contact-place-image-sm) flex-none overflow-hidden rounded-full bg-surface-tint sm:size-(--size-contact-place-image)">
+            <SmartImage
+              {assets}
+              src={p.image}
+              alt={`${b.name} — ${p.title}`}
+              width={580}
+              height={580}
+              ratio="1x1"
+              class="aspect-square size-full object-cover"
+            />
+          </div>
 
-  <div class="site-container grid gap-10 pb-16 lg:grid-cols-[1fr_360px]">
-    <div class="flex flex-col gap-6">
-      <header class="flex flex-col gap-3">
-        <h1 class="text-(length:--text-section-mobile) font-extrabold tracking-tight uppercase md:text-section">
-          Nhận báo giá
-        </h1>
-        <p class="max-w-2xl leading-relaxed text-ink-muted">
-          Cho xưởng biết bạn thuộc nhóm nào để báo giá đúng ngay lần đầu, không phải hỏi qua lại.
-        </p>
-      </header>
+          <div class="flex flex-col gap-3">
+            <h2 class="text-(length:--text-contact-place-title) leading-snug font-extrabold">
+              {p.title}
+            </h2>
 
-      <QuoteForm brand="cfc" {segments} />
-    </div>
+            <p class="text-body leading-relaxed text-ink-muted">{p.address}</p>
 
-    <aside class="flex flex-col gap-4">
-      <div class="flex flex-col gap-4 rounded-panel border border-line bg-surface-alt p-6">
-        <h2 class="text-meta font-bold tracking-wide uppercase">Liên hệ trực tiếp</h2>
+            <p class="text-body leading-relaxed text-ink-muted">
+              <strong class="font-bold text-ink">{p.hours.days}</strong>
+              <br />
+              {p.hours.time}
+            </p>
+
+            <p class="flex flex-col gap-1 text-body leading-relaxed text-ink-muted">
+              <a
+                href={`mailto:${p.email}`}
+                class="font-bold text-ink transition-colors hover:text-primary"
+              >
+                {p.email}
+              </a>
+              {p.lines.map((l) => (
+                <a
+                  href={l.href}
+                  data-analytics="click_hotline"
+                  class="transition-colors hover:text-primary"
+                >
+                  {l.label} {l.value}
+                </a>
+              ))}
+            </p>
+          </div>
+        </div>
+      ))
+    }
+  </section>
+
+  {/* --- Hàng dưới: form | FAQ ------------------------------------------- */}
+  <div class="site-container mt-14 grid gap-10 lg:grid-cols-(--cols-contact-main) lg:gap-12">
+    <section class="flex flex-col gap-5">
+      <h2 class="text-(length:--text-contact-place-title) font-extrabold tracking-tight uppercase">
+        Liên hệ
+      </h2>
+
+      {/* Form 4 trường theo mockup TD, giữ lại honeypot + gửi bằng fetch của
+          QuoteForm cũ để không reload trang và chặn bot. */}
+      <form
+        method="post"
+        action="/api/quote"
+        data-contact-form
+        class="flex flex-col gap-4"
+      >
+        <input type="hidden" name="brand" value="cfc" />
+        <input type="hidden" name="kind" value="contact" />
+        {/* Bẫy bot: người thật không bao giờ điền */}
+        <input
+          type="text"
+          name="company_website"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+          class="absolute -left-(--offset-offscreen) size-px"
+        />
+
+        <label class="flex flex-col gap-1.5">
+          <span class="text-meta font-semibold">Tên</span>
+          <input type="text" name="name" placeholder="Tên" autocomplete="name" class={fieldClass} />
+        </label>
+
+        <label class="flex flex-col gap-1.5">
+          <span class="text-meta font-semibold">Số điện thoại</span>
+          <input
+            type="tel"
+            name="phone"
+            placeholder="Số điện thoại"
+            inputmode="tel"
+            autocomplete="tel"
+            pattern="[0-9+\s().-]{9,}"
+            class={fieldClass}
+          />
+        </label>
+
+        <label class="flex flex-col gap-1.5">
+          <span class="text-meta font-semibold">Email</span>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            required
+            autocomplete="email"
+            class={fieldClass}
+          />
+        </label>
+
+        <label class="flex flex-col gap-1.5">
+          <span class="text-meta font-semibold">Nội dung</span>
+          <textarea
+            name="message"
+            rows="5"
+            placeholder="Nội dung"
+            class="w-full rounded-chip border border-line bg-(--color-surface-input) p-4 text-nav outline-none focus-visible:border-primary"
+          ></textarea>
+        </label>
+
+        <div class="flex flex-wrap items-center gap-4">
+          <button
+            type="submit"
+            data-analytics="submit_quote"
+            class="pill h-12 justify-center bg-cta px-8 text-body text-white transition-colors hover:bg-cta-hover disabled:opacity-60"
+          >
+            Gửi
+          </button>
+          <p data-form-msg role="status" class="text-sm text-ink-muted"></p>
+        </div>
+      </form>
+    </section>
+
+    <section class="flex flex-col gap-5">
+      <h2 class="text-(length:--text-contact-place-title) font-extrabold tracking-tight">
+        Một số câu hỏi thường gặp
+      </h2>
+
+      {/* Accordion bằng <details> như trang chi tiết sản phẩm — 0 KB JS. */}
+      <div class="flex flex-col">
         {
-          b.contacts.map((c) => (
-            <div class="flex items-start gap-3">
-              <span class="grid size-9 flex-none place-items-center rounded-chip bg-surface text-primary">
-                {/* `c.icon` là tên icon Lucide — phải render qua astro-icon,
-                    trước đây in thẳng ra chữ "lucide:mail" trên trang. */}
-                <Icon name={c.icon} class="size-(--size-icon-inline)" aria-hidden="true" />
-              </span>
-              <div class="flex flex-col gap-0.5">
-                <span class="text-tiny font-semibold tracking-wide text-ink-faint uppercase">
-                  {c.label}
-                </span>
-                {c.href ? (
-                  <a
-                    href={c.href}
-                    data-analytics={c.label === "Hotline" ? "click_hotline" : undefined}
-                    class="text-nav leading-snug font-semibold transition-colors hover:text-primary"
-                  >
-                    {c.value}
-                  </a>
-                ) : (
-                  <span class="text-nav leading-snug font-semibold">{c.value}</span>
-                )}
+          faq.map((f) => (
+            <details class="group details-slide border-b border-line [&[open]_.chev]:rotate-180">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-semibold">
+                {f.q}
+                <Icon
+                  name="lucide:chevron-down"
+                  class="chev size-(--size-icon-inline) flex-none text-ink-faint transition-transform"
+                  aria-hidden="true"
+                />
+              </summary>
+              <div class="flex flex-col gap-2 pb-4">
+                {f.a.map((line) => (
+                  <p class="text-meta leading-relaxed text-ink-muted">{line}</p>
+                ))}
               </div>
-            </div>
+            </details>
           ))
         }
-        <a
-          href={`https://zalo.me/${b.zalo}`}
-          target="_blank"
-          rel="noopener"
-          data-analytics="click_zalo"
-          class="pill mt-1 h-11 justify-center bg-zalo text-white transition-opacity hover:opacity-90"
-        >
-          Chat Zalo
-        </a>
       </div>
-
-      <div class="rounded-panel border border-line p-6">
-        <h2 class="mb-2 text-meta font-bold tracking-wide uppercase">Giờ làm việc</h2>
-        <p class="text-sm leading-relaxed text-ink-muted">
-          Thứ 2 – Thứ 7: 8:00 – 17:30<br />
-          Chủ nhật: nghỉ (Zalo vẫn nhận tin)
-        </p>
-      </div>
-
-      <div class="rounded-panel border border-line p-6">
-        <h2 class="mb-2 text-meta font-bold tracking-wide uppercase">Thanh toán</h2>
-        <p class="text-sm leading-relaxed text-ink-muted">
-          KV Hà Nội / Hà Nam: thanh toán khi nhận hàng.<br />
-          Ngoài KV: thanh toán trước khi giao.
-        </p>
-      </div>
-    </aside>
+    </section>
   </div>
+
+  {/* --- Nội dung công ty, gập lại sau nút "Xem thêm" --------------------- */}
+  <section class="site-container mt-14 pb-16">
+    <div data-collapsible class="flex flex-col gap-4">
+      {/* Khối bị cắt chiều cao khi đang gập; mở ra thì bỏ giới hạn. Dải mờ ở
+          mép dưới chỉ hiện lúc đang gập, để lộ ra là còn nội dung bên dưới. */}
+      <div
+        data-collapsible-body
+        class="relative max-h-(--height-contact-collapsed) overflow-hidden"
+      >
+        <div class="flex flex-col gap-6">
+          {
+            companyBlocks.map((c) => (
+              <div class="flex flex-col gap-2">
+                <h3 class="text-card-title font-bold">{c.title}</h3>
+                {c.body.map((p) => (
+                  <p class="text-meta leading-relaxed text-ink-muted">{p}</p>
+                ))}
+              </div>
+            ))
+          }
+        </div>
+
+        <span
+          data-collapsible-fade
+          class="pointer-events-none absolute inset-x-0 bottom-0 h-(--height-contact-fade) bg-gradient-to-b from-transparent to-surface"
+          aria-hidden="true"></span>
+      </div>
+
+      <button
+        type="button"
+        data-collapsible-toggle
+        aria-expanded="false"
+        class="flex w-fit cursor-pointer items-center gap-2 text-label font-semibold text-primary transition-colors hover:text-primary-hover"
+      >
+        <span data-collapsible-label>Xem thêm</span>
+        <Icon
+          name="lucide:chevron-down"
+          class="chev size-(--size-icon-inline) transition-transform"
+          aria-hidden="true"
+        />
+      </button>
+    </div>
+  </section>
 </Layout>
+
+<script>
+  // Gửi form không reload trang; tắt JS thì form vẫn POST bình thường.
+  document.querySelectorAll<HTMLFormElement>("[data-contact-form]").forEach((form) => {
+    const msg = form.querySelector<HTMLElement>("[data-form-msg]");
+    form.addEventListener("submit", async (e) => {
+      if (!form.checkValidity()) return; // để trình duyệt hiện lỗi gốc
+      e.preventDefault();
+      const btn = form.querySelector("button[type=submit]") as HTMLButtonElement;
+      btn.disabled = true;
+      if (msg) msg.textContent = "Đang gửi…";
+      try {
+        const body = new FormData(form);
+        body.set("page", location.pathname);
+        const res = await fetch(form.action, {
+          method: "POST",
+          body,
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        if (msg) msg.textContent = "Đã nhận yêu cầu. Xưởng sẽ liên hệ trong 30 phút.";
+        form.reset();
+      } catch {
+        if (msg) msg.textContent = "Gửi chưa được — bạn gọi hotline giúp mình nhé.";
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+
+  // Khối nội dung công ty gập/mở.
+  document.querySelectorAll<HTMLElement>("[data-collapsible]").forEach((root) => {
+    const body = root.querySelector<HTMLElement>("[data-collapsible-body]");
+    const fade = root.querySelector<HTMLElement>("[data-collapsible-fade]");
+    const btn = root.querySelector<HTMLButtonElement>("[data-collapsible-toggle]");
+    const label = root.querySelector<HTMLElement>("[data-collapsible-label]");
+    const chev = btn?.querySelector<HTMLElement>(".chev");
+    if (!body || !btn) return;
+
+    // Nội dung ngắn hơn mức cắt thì không cần nút — bỏ luôn cả nút lẫn dải mờ.
+    if (body.scrollHeight <= body.clientHeight + 1) {
+      btn.hidden = true;
+      if (fade) fade.hidden = true;
+      body.style.maxHeight = "none";
+      return;
+    }
+
+    btn.addEventListener("click", () => {
+      const open = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", String(!open));
+      body.style.maxHeight = open ? "" : "none";
+      if (fade) fade.hidden = !open;
+      if (label) label.textContent = open ? "Xem thêm" : "Thu gọn";
+      if (chev) chev.style.transform = open ? "" : "rotate(180deg)";
+    });
+  });
+</script>
