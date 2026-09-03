@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 /**
  * Trang Liên hệ — dựng theo bố cục mockup Thái Dương (lygiaythaiduong.com/lien-he):
  *
@@ -14,10 +16,13 @@
  */
 import type { ImageMetadata } from "astro";
 import { Icon } from "astro-icon/components";
+import { parseContact } from "@config/pages";
 import Layout from "../layouts/Layout.astro";
+import contactData from "../content/pages-data/contact.json";
 import PageHero from "@ui/patterns/PageHero.astro";
 import SmartImage from "@ui/primitives/SmartImage.astro";
 import { BRANDS } from "@config/brands";
+import { formatAddress, formatHours } from "@config/settings";
 
 const assets = import.meta.glob<{ default: ImageMetadata }>(
   "/src/assets/**/*.{png,jpg,jpeg,webp,avif}",
@@ -25,95 +30,39 @@ const assets = import.meta.glob<{ default: ImageMetadata }>(
 );
 
 const b = BRANDS.cfc;
+const page = parseContact(contactData);
+
+const tel = (phone: string) => `tel:${phone.replace(/[^0-9+]/g, "")}`;
 
 /**
  * Hai địa điểm, mỗi nơi có giờ làm việc + đầu mối liên hệ riêng — theo mockup
  * TD tách "Nhà Máy" và "VPĐD" thành 2 thẻ thay vì gộp một danh sách.
  *
- * TODO(nội dung): ảnh xưởng/văn phòng thật chưa có, tạm dùng hero-banner.
- * TODO(nội dung): hotline trong `BRANDS.cfc` còn là placeholder `0909.xxx.xxx`.
+ * Địa chỉ / giờ / ảnh lấy từ "Cài đặt" (`b.locations`), KHÔNG khai lại ở đây —
+ * cùng bộ dữ liệu mà Footer và JSON-LD đang dùng, nên ba nơi không thể nói
+ * khác nhau nữa (trước đây địa chỉ chép tay ở cả ba).
+ *
+ * Quy ước đầu mối liên hệ: cơ sở ĐẦU TIÊN là nơi nhận cuộc gọi chung nên hiện
+ * hotline; các cơ sở sau hiện nhân viên sale, phân theo tệp khách như mockup TD
+ * ("Khách lẻ ... / Khách sỉ ..."). Nhãn của cả hai nằm trong CMS.
  */
-const places = [
-  {
-    title: "Nhà máy",
-    image: "brand/hero-banner.png",
-    address: "KCN Đồng Văn, Duy Tiên, Hà Nam",
-    hours: { days: "Thứ 2 - Thứ 7", time: "08:00 - 17:30" },
-    email: b.email,
-    lines: [{ label: "Hotline", value: b.hotline, href: `tel:${b.hotline.replace(/[^0-9+]/g, "")}` }],
-  },
-  {
-    title: "Văn phòng",
-    image: "brand/hero-banner.png",
-    address: "Số 12 Nguyễn Trãi, Hà Đông, Hà Nội",
-    hours: { days: "Thứ 2 - Thứ 7", time: "08:00 - 17:30" },
-    email: b.email,
-    // Phân đầu mối theo tệp khách như mockup TD ("Khách lẻ ... / Khách sỉ ...").
-    lines: b.salesReps.slice(0, 2).map((r, i) => ({
-      label: i === 0 ? "Khách lẻ" : "Khách sỉ",
-      value: `${r.phone} (${r.name})`,
-      href: `tel:${r.phone.replace(/[^0-9+]/g, "")}`,
-    })),
-  },
-];
+const places = b.locations.map((l, i) => ({
+  title: l.label,
+  image: l.image,
+  address: formatAddress(l),
+  hours: { days: l.hours?.days, time: formatHours(l) },
+  email: b.email,
+  lines:
+    i === 0
+      ? [{ label: page.places.hotlineLabel, value: b.hotline, href: b.hotlineHref }]
+      : b.salesReps.slice(0, page.places.salesLabels.length).map((r, j) => ({
+          label: page.places.salesLabels[j],
+          value: `${r.phone} (${r.name})`,
+          href: tel(r.phone),
+        })),
+}));
 
-const faq = [
-  {
-    q: "Công ty có chính sách đại lý không?",
-    a: ["Có! Nếu khách hàng muốn trở thành đại lý, xưởng có chính sách giá tốt, hỗ trợ marketing và tư vấn bán hàng."],
-  },
-  {
-    q: "Công ty có hỗ trợ vận chuyển không?",
-    a: ["Có! Xưởng hỗ trợ vận chuyển tận nơi với phí ship hợp lý, miễn phí vận chuyển cho đơn hàng lớn."],
-  },
-  {
-    q: "Thời gian sản xuất bao bì có lâu không?",
-    a: ["Đơn hàng có sẵn: giao ngay trong 1-3 ngày.", "Đơn hàng in logo: sản xuất khoảng 7-15 ngày, tùy số lượng."],
-  },
-  {
-    q: "Bao bì giấy có an toàn với thực phẩm nóng không?",
-    a: [
-      "Có! Toàn bộ giấy và mực in đều đạt tiêu chuẩn tiếp xúc thực phẩm.",
-      "Xưởng có sẵn các loại tráng PE / PLA phù hợp với đồ nóng và đồ có dầu mỡ.",
-    ],
-  },
-  {
-    q: "Công ty có in logo thương hiệu lên bao bì không?",
-    a: [
-      "Có! Xưởng nhận thiết kế và in logo thương hiệu theo yêu cầu.",
-      "Công nghệ in offset chất lượng cao, màu sắc sắc nét, không phai.",
-    ],
-  },
-  {
-    q: "Số lượng tối thiểu để in logo là bao nhiêu?",
-    a: ["Tùy loại sản phẩm, số lượng tối thiểu khoảng 5.000 - 10.000 sản phẩm cho một mẫu in."],
-  },
-];
-
-const companyBlocks = [
-  {
-    title: "Mục tiêu chất lượng",
-    body: [
-      "Hướng đến sự hoàn hảo trong từng sản phẩm, đảm bảo đáp ứng mọi yêu cầu về chất lượng và an toàn.",
-      "Không ngừng cải tiến quy trình sản xuất để mang đến những sản phẩm tốt nhất với chi phí hợp lý.",
-    ],
-  },
-  {
-    title: "Cam kết chất lượng",
-    body: [
-      "Sử dụng nguồn nguyên liệu được kiểm soát chặt chẽ, đạt tiêu chuẩn an toàn vệ sinh thực phẩm.",
-      "Sản phẩm đa dạng về chủng loại và kích thước, đáp ứng nhu cầu đa dạng của khách hàng.",
-      "Dịch vụ hỗ trợ chuyên nghiệp, nhanh chóng và tận tình.",
-    ],
-  },
-  {
-    title: "Giá trị thương hiệu",
-    body: ["Chất lượng, uy tín, tận tâm và hướng đến sự hài lòng của khách hàng."],
-  },
-];
-
-const description =
-  "Liên hệ xưởng CFC để nhận báo giá bao bì giấy F&B. Nhà máy KCN Đồng Văn, Hà Nam — văn phòng Hà Đông, Hà Nội.";
+const description = page.seo.description;
 
 const jsonLd = [
   {
@@ -123,23 +72,26 @@ const jsonLd = [
     url: b.site,
     telephone: b.hotline,
     email: b.email,
-    priceRange: "$$",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "KCN Đồng Văn, Duy Tiên",
-      addressLocality: "Hà Nam",
-      addressCountry: "VN",
-    },
-    openingHoursSpecification: {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-      opens: "08:00",
-      closes: "17:30",
-    },
+    priceRange: page.business.priceRange,
+    // Cùng cơ sở đầu tiên mà thẻ địa điểm phía trên đang hiển thị.
+    ...(b.locations[0] && {
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: b.locations[0].streetAddress,
+        addressLocality: b.locations[0].locality,
+        addressCountry: b.locations[0].country,
+      },
+      openingHoursSpecification: {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: page.business.openingDays,
+        opens: b.locations[0].hours?.opens,
+        closes: b.locations[0].hours?.closes,
+      },
+    }),
   },
   {
     "@type": "FAQPage",
-    mainEntity: faq.map((f) => ({
+    mainEntity: page.faq.items.map((f) => ({
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a.join(" ") },
@@ -151,13 +103,13 @@ const fieldClass =
   "h-12 w-full rounded-chip border border-line bg-(--color-surface-input) px-4 text-nav outline-none focus-visible:border-primary";
 ---
 
-<Layout title="Liên hệ" {description} {jsonLd}>
+<Layout title={page.seo.title} {description} {jsonLd}>
   <PageHero
-    title="Liên hệ"
-    crumbs={[{ label: "Liên hệ" }]}
+    title={page.hero.title}
+    crumbs={[{ label: page.hero.title }]}
     {assets}
-    image="products/hop-giay-kraft.png"
-    imageAlt="Bao bì giấy CFC"
+    image={page.hero.image}
+    imageAlt={page.hero.imageAlt}
   />
 
   {/* --- 2 thẻ địa điểm: ảnh vuông bên trái, khối chữ bên phải ------------ */}
@@ -221,7 +173,7 @@ const fieldClass =
   <div class="site-container mt-14 grid gap-10 lg:grid-cols-(--cols-contact-main) lg:gap-12">
     <section class="flex flex-col gap-5">
       <h2 class="text-(length:--text-contact-place-title) font-extrabold tracking-tight uppercase">
-        Liên hệ
+        {page.form.title}
       </h2>
 
       {/* Form 4 trường theo mockup TD, giữ lại honeypot + gửi bằng fetch của
@@ -299,13 +251,13 @@ const fieldClass =
 
     <section class="flex flex-col gap-5">
       <h2 class="text-(length:--text-contact-place-title) font-extrabold tracking-tight">
-        Một số câu hỏi thường gặp
+        {page.faq.title}
       </h2>
 
       {/* Accordion bằng <details> như trang chi tiết sản phẩm — 0 KB JS. */}
       <div class="flex flex-col">
         {
-          faq.map((f) => (
+          page.faq.items.map((f) => (
             <details class="group details-slide border-b border-line [&[open]_.chev]:rotate-180">
               <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-semibold">
                 {f.q}
@@ -338,7 +290,7 @@ const fieldClass =
       >
         <div class="flex flex-col gap-6">
           {
-            companyBlocks.map((c) => (
+            page.company.blocks.map((c) => (
               <div class="flex flex-col gap-2">
                 <h3 class="text-card-title font-bold">{c.title}</h3>
                 {c.body.map((p) => (

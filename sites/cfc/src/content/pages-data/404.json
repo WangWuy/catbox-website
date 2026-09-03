@@ -1,0 +1,13 @@
+{
+  "seo": {
+    "title": "Không tìm thấy trang",
+    "description": "Trang bạn tìm không tồn tại."
+  },
+  "code": "404",
+  "title": "Không tìm thấy trang này",
+  "body": "Trang có thể đã đổi đường dẫn hoặc chưa được tạo. Bạn thử tìm lại hoặc quay về trang chủ.",
+  "actions": [
+    { "label": "Về trang chủ", "href": "/" },
+    { "label": "Liên hệ báo giá", "href": "/contact" }
+  ]
+}

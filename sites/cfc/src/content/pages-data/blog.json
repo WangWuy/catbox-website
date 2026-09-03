@@ -1,0 +1,19 @@
+{
+  "seo": {
+    "title": "Tin tức & Cẩm nang",
+    "description": "Cẩm nang bao bì giấy cho chuỗi F&B: so sánh chất liệu, kích thước chuẩn, kinh nghiệm đặt in và bảng giá tham khảo."
+  },
+  "heroTitle": "Tin tức & Cẩm nang",
+  "heroImage": "products/hop-giay-kraft.png",
+  "crumbLabel": "Tin tức",
+  "tagTitleTemplate": "Tin tức về {tag}",
+  "tagDescriptionTemplate": "{count} bài viết về “{tag}” — cẩm nang bao bì giấy cho chuỗi F&B.",
+  "backToAll": "← Xem tất cả tin tức",
+  "relatedTitle": "Bài viết liên quan",
+  "postCta": {
+    "title": "Cần báo giá cho chuỗi của bạn?",
+    "body": "Gửi số lượng và chất liệu mong muốn, xưởng báo giá trong 30 phút.",
+    "action": { "label": "Nhận báo giá", "href": "/contact" }
+  },
+  "rssTitleSuffix": "Tin tức & Cẩm nang"
+}

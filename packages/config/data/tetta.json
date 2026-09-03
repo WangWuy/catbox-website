@@ -1,0 +1,149 @@
+{
+  "name": "TETTA Luxury Packaging",
+  "tagline": "Hộp quà Tết",
+  "legalName": "Công ty TNHH Đầu tư và Thương mại 2T",
+  "memberOf": "A Member of Catbox Packaging Ecosystem",
+  "hotline": "0988.xxx.xxx",
+  "hotlineHref": "tel:+84988000000",
+  "zalo": "0988xxxxxx",
+  "email": "tetta@2tprint.vn",
+  "searchPlaceholder": "Tìm kiếm mẫu hộp quà Tết, ép kim...",
+  "promoPill": "Miễn phí thiết kế đơn VIP",
+  "headerCta": {
+    "label": "Nhận báo giá",
+    "href": "/contact"
+  },
+  "topbarCta": {
+    "label": "Liên hệ",
+    "href": "/contact"
+  },
+  "certifications": [
+    "FSC",
+    "ISO 9001"
+  ],
+  "stats": [],
+  "locations": [
+    {
+      "icon": "lucide:factory",
+      "label": "Nhà máy",
+      "streetAddress": "KCN Đồng Văn, Duy Tiên",
+      "locality": "Hà Nam",
+      "country": "VN",
+      "hours": {
+        "days": "Thứ 2 - Thứ 7",
+        "opens": "08:00",
+        "closes": "17:30"
+      }
+    },
+    {
+      "icon": "lucide:building-2",
+      "label": "Văn phòng",
+      "streetAddress": "Số 12 Nguyễn Trãi, Hà Đông",
+      "locality": "Hà Nội",
+      "country": "VN",
+      "hours": {
+        "days": "Thứ 2 - Thứ 7",
+        "opens": "08:00",
+        "closes": "17:30"
+      }
+    }
+  ],
+  "salesReps": [
+    {
+      "name": "Tấn Thành",
+      "phone": "0986.83.9983"
+    },
+    {
+      "name": "Hải Yến",
+      "phone": "0915.02.9983"
+    },
+    {
+      "name": "Nguyễn Mai",
+      "phone": "0902.03.9983"
+    },
+    {
+      "name": "Hà Đại",
+      "phone": "0565.28.9983"
+    },
+    {
+      "name": "Anh Tuấn",
+      "phone": "0948.82.9983"
+    },
+    {
+      "name": "Mai Thanh",
+      "phone": "0915.82.9983"
+    }
+  ],
+  "serviceHotlines": [
+    "0901 52 52 62",
+    "08 9983 9983",
+    "0911 86 2879"
+  ],
+  "social": [
+    {
+      "label": "f",
+      "href": "#"
+    },
+    {
+      "label": "in",
+      "href": "#"
+    },
+    {
+      "label": "YT",
+      "href": "#"
+    },
+    {
+      "label": "TT",
+      "href": "#"
+    }
+  ],
+  "nav": {
+    "topbarLinks": [
+      {
+        "label": "Về chúng tôi",
+        "href": "/about-us"
+      },
+      {
+        "label": "Bộ sưu tập Tết",
+        "href": "/bo-suu-tap/hop-qua-tet"
+      }
+    ],
+    "entries": [
+      {
+        "label": "Trang chủ",
+        "href": "/",
+        "icon": "lucide:gift",
+        "isMega": false
+      },
+      {
+        "label": "Sản phẩm",
+        "href": "/products",
+        "icon": "lucide:package",
+        "isMega": true
+      },
+      {
+        "label": "Về chúng tôi",
+        "href": "/about-us",
+        "icon": "lucide:factory",
+        "isMega": false
+      },
+      {
+        "label": "Tin tức",
+        "href": "/blog",
+        "icon": "lucide:newspaper",
+        "isMega": false
+      },
+      {
+        "label": "Liên hệ",
+        "href": "/contact",
+        "icon": "lucide:phone",
+        "isMega": false
+      }
+    ]
+  },
+  "footer": {
+    "newsletterTitle": "Đăng ký nhận catalogue Tết",
+    "newsletterDesc": "Bộ sưu tập hộp quà theo mùa và bảng giá cập nhật.",
+    "terms": "KV Hà Nội / Hà Nam: thanh toán khi nhận hàng · Ngoài KV: thanh toán trước khi giao"
+  }
+}

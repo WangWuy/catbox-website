@@ -1,0 +1,41 @@
+{
+  "headline": "Xưởng sản xuất bao bì giấy F&B",
+  "summary": "Xưởng in trực tiếp túi giấy, giấy gói và hộp đựng thực phẩm cho chuỗi bánh mì, quán ăn nhanh và thương hiệu F&B tại Việt Nam. Thành viên hệ sinh thái Catbox Packaging. Bán sỉ tận xưởng, không qua trung gian.",
+  "sections": {
+    "capacity": "Năng lực sản xuất",
+    "products": "Nhóm sản phẩm",
+    "ordering": "Quy trình đặt hàng",
+    "policies": "Chính sách",
+    "ecosystem": "Hệ sinh thái Catbox Packaging",
+    "links": "Liên kết"
+  },
+  "capacity": [
+    "In flexo cuộn + gấp dán túi tự động",
+    "Giấy Kraft và MG đạt chuẩn tiếp xúc trực tiếp thực phẩm nóng"
+  ],
+  "ordering": [
+    "**Mua mẫu có sẵn** — đặt trên Shopee / TikTok Shop, giao trong 48h",
+    "**Chưa có thiết kế** — chọn mẫu có sẵn kèm sửa miễn phí, hoặc thiết kế riêng 200.000đ/design",
+    "**Đã có thiết kế** — gửi file, xưởng in thẳng, không phí thiết kế"
+  ],
+  "policies": [
+    "Miễn phí giao hàng cho đơn từ 2.000 túi",
+    "Khu vực Hà Nội / Hà Nam: thanh toán khi nhận hàng",
+    "Ngoài khu vực: thanh toán trước khi giao",
+    "Hỗ trợ đơn tháng / quý với giá ưu đãi cho chuỗi"
+  ],
+  "links": [
+    {
+      "label": "Danh mục sản phẩm",
+      "href": "/products"
+    },
+    {
+      "label": "Về chúng tôi",
+      "href": "/about-us"
+    },
+    {
+      "label": "Liên hệ & báo giá",
+      "href": "/contact"
+    }
+  ]
+}

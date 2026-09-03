@@ -39,6 +39,8 @@ interface Props {
    * từng nhóm danh mục con.
    */
   products?: ProductEntryLike[];
+  /** Link cột chính sách ở Footer — xem `footerLinks` của Footer.astro */
+  footerLinks?: { label: string; href: string }[];
 }
 
 const {
@@ -52,6 +54,7 @@ const {
   fonts,
   categories,
   products,
+  footerLinks,
 } = Astro.props;
 
 const b = BRANDS[brand];
@@ -106,7 +109,7 @@ const navEntries = buildNavEntries(brand, categories, products);
       <slot />
     </main>
 
-    <Footer {brand} />
+    <Footer {brand} {footerLinks} />
     <FloatingCta {brand} />
 
     <script is:inline define:vars={{ hotline: b.hotline }}>

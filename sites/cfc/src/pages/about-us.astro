@@ -1,7 +1,19 @@
 ---
+export const prerender = true;
+
+/**
+ * Trang "Về chúng tôi".
+ *
+ * Toàn bộ chữ đọc từ singleton "Trang giới thiệu" trong Keystatic
+ * (`src/content/pages-data/about.json`). Ba khối trước đây mang chú thích
+ * TODO(nội dung) — tổng quan, tầm nhìn/sứ mệnh, giá trị cốt lõi + mục tiêu
+ * chiến lược — giờ khách tự điền, không phải nhờ dev thay chuỗi trong code nữa.
+ */
 import type { ImageMetadata } from "astro";
 import { Icon } from "astro-icon/components";
+import { parseAbout } from "@config/pages";
 import Layout from "../layouts/Layout.astro";
+import aboutData from "../content/pages-data/about.json";
 import PageHero from "@ui/patterns/PageHero.astro";
 import SectionHeader from "@ui/primitives/SectionHeader.astro";
 import SmartImage from "@ui/primitives/SmartImage.astro";
@@ -9,158 +21,67 @@ import CoreValues from "@ui/patterns/CoreValues.astro";
 import FlipCard from "@ui/patterns/FlipCard.astro";
 import StrategicGoals from "@ui/patterns/StrategicGoals.astro";
 import FactoryReels from "@ui/patterns/FactoryReels.astro";
-import { BRANDS } from "@config/brands";
 
 const assets = import.meta.glob<{ default: ImageMetadata }>(
   "/src/assets/**/*.{png,jpg,jpeg,webp,avif}",
   { eager: true },
 );
 
-const b = BRANDS.cfc;
-
-/**
- * TODO(nội dung): đoạn giới thiệu tổng quan soạn tạm từ dữ liệu đã có trong
- * brands.ts (pháp nhân, chứng nhận, thành viên hệ sinh thái) — cần khách
- * duyệt lại câu chữ chính thức trước khi lên production.
- */
-const overview = `${b.legalName} — thương hiệu ${b.name} — là xưởng sản xuất bao bì giấy F&B, vận hành nhà máy riêng tại KCN Đồng Văn, Duy Tiên, Hà Nam. CFC phục vụ chuỗi bánh mì, quán ăn nhanh và thương hiệu F&B cần bao bì giấy in thương hiệu với số lượng lớn, đạt chuẩn ${b.certifications.join(" và ")}, là thành viên hệ sinh thái Catbox Packaging.`;
-
-/**
- * TODO(nội dung): hai đoạn dưới soạn tạm dựa trên định vị hiện có của CFC
- * (xưởng trực tiếp, không qua trung gian) — cần khách cung cấp câu tầm nhìn /
- * sứ mệnh chính thức trước khi lên production.
- */
-const purpose = [
-  {
-    icon: "lucide:eye",
-    title: "Tầm nhìn",
-    body: "Trở thành xưởng sản xuất bao bì giấy F&B được các chuỗi bánh mì, quán ăn nhanh tin chọn hàng đầu tại miền Bắc, nhờ sản xuất trực tiếp không qua trung gian.",
-  },
-  {
-    icon: "lucide:target",
-    title: "Sứ mệnh",
-    body: "Cung cấp bao bì giấy đạt chuẩn an toàn thực phẩm với giá xưởng, giao đúng lịch và đồng hành cùng khách hàng xây dựng thương hiệu qua từng sản phẩm in ấn.",
-  },
-];
-
-/**
- * TODO(nội dung): CFC chưa có bộ giá trị cốt lõi / mục tiêu chiến lược chính
- * thức — 5 + 3 dòng dưới đây chỉ là khung chờ giữ đúng số lượng mục theo
- * tham khảo, thay bằng nội dung thật của khách trước khi lên production.
- * Khi có nội dung, mỗi giá trị nhận thêm `tagline` (câu chốt ngắn in nghiêng
- * đứng trên đoạn mô tả, vd. "Nền móng của mọi hành động") — xem `CoreValue`.
- */
-const coreValues = [
-  {
-    title: "Đạo đức",
-    tagline: "Nền móng của mọi hành động",
-    desc: "Chúng tôi tin rằng sự tử tế không phải là sự lựa chọn — mà là nguyên tắc sống còn để tồn tại và phát triển bền vững.",
-  },
-  {
-    title: "Trách nhiệm",
-    tagline: "Cam kết đến cùng trên từng sản phẩm",
-    desc: "Chịu trách nhiệm trọn vẹn với chất lượng bao bì xuất xưởng, tiến độ giao hàng và sự an toàn thực phẩm của người tiêu dùng.",
-  },
-  {
-    title: "Danh dự",
-    tagline: "Giữ trọn chữ tín với đối tác",
-    desc: "Uy tín và danh dự của doanh nghiệp được xây dựng bằng sự tin cậy lâu dài của khách hàng và đối tác trong suốt chặng đường phát triển.",
-  },
-  {
-    title: "Chính trực",
-    tagline: "Minh bạch trong mọi cam kết",
-    desc: "Trung thực về định lượng giấy, xuất xứ nguyên liệu và luôn rõ ràng trong mọi thỏa thuận hợp tác, báo giá và chính sách bán hàng.",
-  },
-  {
-    title: "Đội ngũ",
-    tagline: "Sức mạnh từ sự gắn kết",
-    desc: "Xây dựng môi trường làm việc chuyên nghiệp, đồng lòng, phát huy tối đa năng lực của từng cá nhân vì mục tiêu chung.",
-  },
-];
-
-/* Không đặt `title` cho từng mục: thẻ đã có số thứ tự lớn 01/02/03 nên nhãn
- * "Mục tiêu 1/2/3" là lặp lại — để trống thì cả ba thẻ dùng nhãn chung
- * "Mục tiêu" của `StrategicGoals`. */
-const strategicGoals = [
-  { desc: "— cần khách cung cấp nội dung chính thức —" },
-  { desc: "— cần khách cung cấp nội dung chính thức —" },
-  { desc: "— cần khách cung cấp nội dung chính thức —" },
-];
-
-/** Ba trang con của mục "Về chúng tôi" */
-const sections = [
-  {
-    icon: "lucide:factory",
-    title: "Năng lực sản xuất",
-    desc: "Hai dây chuyền Offset và Flexo đặt tại KCN Đồng Văn, Hà Nam.",
-    href: "/nang-luc-san-xuat",
-  },
-  {
-    icon: "lucide:workflow",
-    title: "Quy trình làm việc",
-    desc: "Mua mẫu có sẵn hay đặt in riêng — kèm chính sách thiết kế.",
-    href: "/quy-trinh",
-  },
-  {
-    icon: "lucide:file-text",
-    title: "Chính sách công ty",
-    desc: "Thanh toán, đổi trả & bảo hành, điều khoản sử dụng.",
-    href: "/chinh-sach",
-  },
-];
-
-const description =
-  "CFC là xưởng sản xuất bao bì giấy F&B trực tiếp tại KCN Đồng Văn, Hà Nam. 10+ năm kinh nghiệm, đạt chuẩn ATVSTP và HACCP, thành viên hệ sinh thái Catbox Packaging.";
+const about = parseAbout(aboutData);
+const description = about.seo.description;
 ---
 
-<Layout title="Về chúng tôi" {description}>
+<Layout title={about.seo.title} {description}>
   <PageHero
-    title="Về chúng tôi"
-    crumbs={[{ label: "Về chúng tôi" }]}
+    title={about.hero.title}
+    crumbs={[{ label: about.hero.title }]}
     {assets}
-    image="brand/hero-banner.png"
-    imageAlt="Xưởng sản xuất bao bì giấy CFC"
+    image={about.hero.image}
+    imageAlt={about.hero.imageAlt}
   />
 
   <div class="flex flex-col gap-16 pt-16 pb-16">
     <section class="site-container grid items-center gap-10 lg:grid-cols-2">
       <div class="grid grid-cols-2 gap-4">
-        <div class="overflow-hidden rounded-image-soft bg-surface-tint">
-          <SmartImage
-            {assets}
-            src="brand/hero-banner.png"
-            alt="Xưởng sản xuất bao bì giấy CFC"
-            width={800}
-            height={600}
-            ratio="4x3"
-            priority
-            class="aspect-4/3 w-full object-cover"
-          />
-        </div>
-        <div class="overflow-hidden rounded-image-soft bg-surface-tint">
-          <SmartImage
-            {assets}
-            src="products/tui-giay.png"
-            alt="Túi giấy in thương hiệu CFC"
-            width={800}
-            height={600}
-            ratio="4x3"
-            class="aspect-4/3 w-full object-cover"
-          />
-        </div>
+        {
+          about.overview.images.map((img, i) => (
+            <div class="overflow-hidden rounded-image-soft bg-surface-tint">
+              <SmartImage
+                {assets}
+                src={img.src}
+                alt={img.alt}
+                width={800}
+                height={600}
+                ratio="4x3"
+                priority={i === 0}
+                class="aspect-4/3 w-full object-cover"
+              />
+            </div>
+          ))
+        }
       </div>
 
       <div class="flex flex-col gap-5">
-        <SectionHeader title="Tổng quan về" accent="công ty" rule spacing="none" />
-        <p class="leading-relaxed text-ink-muted">{overview}</p>
+        <SectionHeader
+          title={about.overview.title}
+          accent={about.overview.accent}
+          rule
+          spacing="none"
+        />
+        <p class="leading-relaxed text-ink-muted">{about.overview.body}</p>
       </div>
     </section>
 
     <section class="site-container flex flex-col gap-7" aria-label="Tầm nhìn và sứ mệnh" data-reveal>
-      <SectionHeader title="Văn hóa" accent={b.name} rule spacing="none" />
+      <SectionHeader
+        title={about.purpose.title}
+        accent={about.purpose.accent}
+        rule
+        spacing="none"
+      />
       <div class="grid gap-6 md:grid-cols-2">
         {
-          purpose.map((p, i) => (
+          about.purpose.items.map((p, i) => (
             <FlipCard
               icon={p.icon}
               title={p.title}
@@ -172,31 +93,45 @@ const description =
       </div>
     </section>
 
-    <CoreValues values={coreValues} />
+    <CoreValues
+      title={about.coreValues.title}
+      accent={about.coreValues.accent}
+      values={about.coreValues.items}
+    />
 
-    <StrategicGoals goals={strategicGoals} accent={["chiến lược", "phát triển", "bền vững"]} />
+    <StrategicGoals
+      title={about.strategicGoals.title}
+      accent={about.strategicGoals.accent}
+      label={about.strategicGoals.label}
+      goals={about.strategicGoals.items}
+    />
 
     <div class="flex flex-col gap-7">
       <SectionHeader
-        title="Giới thiệu về"
-        accent="công ty"
+        title={about.video.title}
+        accent={about.video.accent}
         rule
         spacing="none"
         class="site-container"
       />
       <FactoryReels
         {assets}
-        label="Giới thiệu về công ty CFC"
-        video="/video/tui-banh-mi-in-mau.mp4"
-        poster="/video/tui-banh-mi-in-mau-poster.jpg"
+        label={about.video.reels.label}
+        video={about.video.reels.video}
+        poster={about.video.reels.poster}
       />
     </div>
 
     <section class="site-container flex flex-col gap-7" data-reveal>
-      <SectionHeader title="Tìm hiểu" accent="thêm" rule spacing="none" />
+      <SectionHeader
+        title={about.sections.title}
+        accent={about.sections.accent}
+        rule
+        spacing="none"
+      />
       <div class="grid gap-4 md:grid-cols-3" data-reveal-group>
         {
-          sections.map((s) => (
+          about.sections.items.map((s) => (
             <a
               href={s.href}
               class="group flex flex-col gap-3 rounded-panel border border-line bg-surface p-6 transition-colors hover:border-primary"

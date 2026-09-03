@@ -1,10 +1,7 @@
 ---
 /**
- * TIN TỨC — lưới 4 cột trên trang chủ, dựng bằng `PostCard` (card dùng chung
+ * TIN TỨC — lưới 3 cột trên trang chủ, dựng bằng `PostCard` (card dùng chung
  * với /blog, /blog/tag và khối bài liên quan).
- *
- * Bật `dense` vì ở 4 cột, card hẹp hơn ngưỡng mặc định của tiêu đề/mô tả
- * trong `PostCard` — xem comment prop `dense` ở đó.
  */
 import type { AssetMap } from "../lib/images";
 import SectionHeader from "@ui/primitives/SectionHeader.astro";
@@ -31,7 +28,7 @@ const { assets, title = "Tin tức", action, items } = Astro.props;
 <section class="site-container" aria-labelledby="news-heading" data-reveal>
   <SectionHeader {title} {action} />
 
-  <div class="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4" data-reveal-group>
+  <div class="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group>
     {
       items.map((a, i) => (
         <PostCard
@@ -42,7 +39,6 @@ const { assets, title = "Tin tức", action, items } = Astro.props;
           cover={a.cover}
           description={a.description}
           variant={i + 1}
-          dense
         />
       ))
     }

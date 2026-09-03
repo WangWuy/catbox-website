@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 /**
  * Trang lọc bài theo thẻ — /blog/tag/<slug>
  *
@@ -12,6 +14,8 @@ import Layout from "../../../layouts/Layout.astro";
 import PageHero from "@ui/patterns/PageHero.astro";
 import PostCard from "@ui/primitives/PostCard.astro";
 import { collectTags, postsByTag } from "@config/blog";
+import { fillTemplate, parseBlogPage } from "@config/pages";
+import blogData from "../../../content/pages-data/blog.json";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
@@ -28,15 +32,19 @@ const assets = import.meta.glob<{ default: ImageMetadata }>(
 
 const { tag, posts } = Astro.props;
 
-const description = `${posts.length} bài viết về “${tag.label}” — cẩm nang bao bì giấy cho chuỗi F&B.`;
+const page = parseBlogPage(blogData);
+const description = fillTemplate(page.tagDescriptionTemplate, {
+  tag: tag.label,
+  count: posts.length,
+});
 ---
 
-<Layout title={`Tin tức về ${tag.label}`} {description}>
+<Layout title={fillTemplate(page.tagTitleTemplate, { tag: tag.label })} {description}>
   <PageHero
     title={tag.label}
-    crumbs={[{ label: "Tin tức", href: "/blog" }, { label: tag.label }]}
+    crumbs={[{ label: page.crumbLabel, href: "/blog" }, { label: tag.label }]}
     {assets}
-    image="products/hop-giay-kraft.png"
+    image={page.heroImage}
   />
 
   <div class="site-container pt-10 pb-16">
@@ -61,7 +69,7 @@ const description = `${posts.length} bài viết về “${tag.label}” — c�
       href="/blog"
       class="mt-10 inline-flex text-meta font-bold text-primary-hover transition-colors hover:text-primary"
     >
-      ← Xem tất cả tin tức
+      {page.backToAll}
     </a>
   </div>
 </Layout>

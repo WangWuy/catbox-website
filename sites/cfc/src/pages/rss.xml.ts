@@ -1,3 +1,5 @@
+export const prerender = true;
+
 /**
  * RSS feed cho mục Tin tức — /rss.xml
  *
@@ -9,17 +11,20 @@ import type { APIContext } from "astro";
 import { getCollection } from "astro:content";
 import { BRANDS } from "@config/brands";
 import { blogHref } from "@config/blog";
+import { parseBlogPage } from "@config/pages";
+import blogData from "../content/pages-data/blog.json";
 
 export async function GET(context: APIContext) {
   const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
     (a, z) => z.data.date.getTime() - a.data.date.getTime(),
   );
   const b = BRANDS.cfc;
+  // Cùng nguồn với trang /blog — trước đây mô tả chép tay ở cả hai file.
+  const page = parseBlogPage(blogData);
 
   return rss({
-    title: `${b.name} — Tin tức & Cẩm nang`,
-    description:
-      "Cẩm nang bao bì giấy cho chuỗi F&B: so sánh chất liệu, kích thước chuẩn, kinh nghiệm đặt in và bảng giá tham khảo.",
+    title: `${b.name} — ${page.rssTitleSuffix}`,
+    description: page.seo.description,
     // `context.site` là `site` trong astro.config; ép kiểu vì Astro khai báo optional
     site: context.site!,
     items: posts.map((p) => ({

@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 /**
  * Trang chi tiết sản phẩm — chứng minh pipeline content chạy đủ:
  * MDX → Zod → route động → JSON-LD Product + FAQPage → Breadcrumb.
@@ -12,6 +14,8 @@ import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 import ProductCarousel from "@ui/patterns/ProductCarousel.astro";
+import { getImage } from "astro:assets";
+import { isRawSrc, placeholder, resolveImage } from "@ui/lib/images";
 import { BRANDS } from "@config/brands";
 import { categoryTitle, categoryTrail } from "@config/categories";
 
@@ -39,8 +43,33 @@ const { Content } = await render(product);
 const b = BRANDS.cfc;
 
 const image = data.image ?? "/placeholders/1x1-1.svg";
-/** Ảnh chính luôn là ảnh đầu gallery — tránh trùng lặp khi khách đã điền cả hai. */
-const galleryImages = [image, ...data.gallery.filter((g) => g !== image)];
+/** Ảnh chính luôn là ảnh đầu gallery — tránh trùng lặp khi khách đã điền cả hai. Bao gồm cả ảnh từ swatches nếu có. */
+const galleryImages = [
+  image,
+  ...data.gallery.filter((g) => g !== image),
+  ...data.swatches
+    .map((s) => s.image)
+    .filter((img): img is string => !!img && img !== image && !data.gallery.includes(img)),
+];
+
+/**
+ * `data.image`/`data.gallery`/`swatch.image` là chuỗi thô từ MDX (xem
+ * packages/ui/lib/images.ts) — có thể trỏ vào src/assets (cần astro:assets
+ * để tối ưu) hoặc public/ (dùng thẳng). Resolve về URL cuối cùng ở đây vì
+ * script phía dưới gán trực tiếp vào img.src, không tự resolve được.
+ */
+async function toDisplaySrc(ref: string | undefined): Promise<string> {
+  const asset = resolveImage(assets, ref);
+  if (asset) return (await getImage({ src: asset })).src;
+  if (isRawSrc(ref)) return ref;
+  return placeholder("1x1");
+}
+
+const displayImage = await toDisplaySrc(image);
+const displayGalleryImages = await Promise.all(galleryImages.map(toDisplaySrc));
+const displaySwatches = await Promise.all(
+  data.swatches.map(async (s) => ({ ...s, src: await toDisplaySrc(s.image ?? image) })),
+);
 
 const categories = await getCollection("categories");
 const allProducts = await getCollection("products", ({ data: d }) => !d.draft);
@@ -89,36 +118,70 @@ if (data.faq.length) {
 
   <article class="site-container grid gap-12 pb-16 lg:grid-cols-2">
     <div class="flex flex-col gap-4">
-      <div class="relative overflow-hidden rounded-panel bg-surface-tint">
-        <img
-          src={image}
-          alt={data.title}
-          width="1200"
-          height="1200"
-          class="aspect-square w-full object-cover"
-          data-product-image
-        />
+      <div class="group/carousel relative overflow-hidden rounded-card-soft bg-surface-card aspect-square touch-pan-y" data-carousel>
+        <div
+          class="flex size-full gap-(--space-gallery-slide-gap) transition-transform duration-(--duration-slow) ease-out-soft will-change-transform"
+          data-product-track
+          style="transform: translateX(0px);"
+        >
+          {displayGalleryImages.map((g, i) => (
+            <div class="size-full shrink-0 select-none">
+              <img
+                src={g}
+                alt={i === 0 ? data.title : `${data.title} - ảnh ${i + 1}`}
+                width="1200"
+                height="1200"
+                class="size-full object-contain pointer-events-none"
+                loading={i === 0 ? "eager" : "lazy"}
+                decoding={i === 0 ? "sync" : "async"}
+              />
+            </div>
+          ))}
+        </div>
         {
           data.badge && (
-            <span class="pill absolute bottom-4 left-4 bg-kraft px-3.5 py-2 text-[11px] text-white">
+            <span class="pill pointer-events-none absolute bottom-4 left-4 z-10 bg-kraft px-3.5 py-2 text-[11px] text-white shadow-sm">
               {data.badge}
             </span>
+          )
+        }
+        {
+          displayGalleryImages.length > 1 && (
+            <>
+              <button
+                type="button"
+                aria-label="Ảnh trước"
+                data-carousel-prev
+                class="absolute top-1/2 left-3 z-10 grid size-(--size-carousel-nav) -translate-x-3 -translate-y-1/2 place-items-center rounded-full border border-line bg-surface text-ink opacity-0 shadow-header transition-[opacity,transform,background-color] duration-(--duration-fast) ease-out-soft group-hover/carousel:translate-x-0 group-hover/carousel:opacity-100 group-hover/carousel:disabled:opacity-disabled hover:bg-surface-alt disabled:pointer-events-none cursor-pointer"
+              >
+                <Icon name="lucide:chevron-left" class="size-4" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                aria-label="Ảnh sau"
+                data-carousel-next
+                class="absolute top-1/2 right-3 z-10 grid size-(--size-carousel-nav) translate-x-3 -translate-y-1/2 place-items-center rounded-full border border-line bg-surface text-ink opacity-0 shadow-header transition-[opacity,transform,background-color] duration-(--duration-fast) ease-out-soft group-hover/carousel:translate-x-0 group-hover/carousel:opacity-100 group-hover/carousel:disabled:opacity-disabled hover:bg-surface-alt disabled:pointer-events-none cursor-pointer"
+              >
+                <Icon name="lucide:chevron-right" class="size-4" aria-hidden="true" />
+              </button>
+            </>
           )
         }
       </div>
 
       {
-        galleryImages.length > 1 && (
+        displayGalleryImages.length > 1 && (
           <div class="flex flex-wrap gap-3" data-gallery>
-            {galleryImages.map((g, i) => (
+            {displayGalleryImages.map((g, i) => (
               <button
                 type="button"
                 data-gallery-thumb
                 data-image={g}
+                data-index={i}
                 aria-pressed={i === 0}
-                class="size-(--size-thumb-gallery) shrink-0 overflow-hidden rounded-panel border border-line outline-offset-2 aria-pressed:outline-2 aria-pressed:outline-ink"
+                class="size-(--size-thumb-gallery) shrink-0 overflow-hidden rounded-card-soft transition-opacity duration-(--duration-fast) aria-pressed:opacity-thumb-active cursor-pointer hover:opacity-90"
               >
-                <img src={g} alt="" width="72" height="72" class="size-full object-cover" />
+                <img src={g} alt="" width="72" height="72" class="size-full object-contain pointer-events-none select-none" />
               </button>
             ))}
           </div>
@@ -129,14 +192,14 @@ if (data.faq.length) {
         data.swatches.length > 0 && (
           <div class="flex items-center gap-3" data-swatches>
             <span class="text-[13px] font-semibold text-ink-muted">Chất liệu:</span>
-            {data.swatches.map((s, i) => (
+            {displaySwatches.map((s, i) => (
               <button
                 type="button"
                 data-swatch
-                data-image={s.image ?? image}
+                data-image={s.src}
                 data-label={s.label}
                 aria-pressed={i === 0}
-                class="size-7 rounded-sm border border-line outline-offset-2 aria-pressed:outline-2 aria-pressed:outline-ink"
+                class="size-7 rounded-sm border border-line outline-offset-2 aria-pressed:outline-2 aria-pressed:outline-ink cursor-pointer"
                 style={`background:${s.color}`}
               >
                 <span class="sr-only">{s.label}</span>
@@ -179,7 +242,7 @@ if (data.faq.length) {
         <a
           href={`tel:${b.hotline.replace(/\D/g, "")}`}
           data-analytics="click_hotline"
-          class="pill flex h-12 items-center gap-2 border border-line px-7 text-ink transition-colors hover:bg-surface-alt"
+          class="pill flex h-12 items-center gap-2 bg-(--color-surface-pill) px-7 text-ink transition-colors hover:bg-(--color-surface-pill-hover)"
         >
           <Icon name="lucide:phone" class="size-4" aria-hidden="true" /> {b.hotline}
         </a>
@@ -187,7 +250,7 @@ if (data.faq.length) {
 
       {
         data.specs.length > 0 && (
-          <div class="overflow-hidden rounded-panel border border-line">
+          <div class="overflow-hidden rounded-panel border border-line bg-(--color-surface-card)">
             <h2 class="border-b border-line bg-surface-alt px-5 py-3 text-[13px] font-bold tracking-wide uppercase">
               Thông số kỹ thuật
             </h2>
@@ -250,35 +313,189 @@ if (data.faq.length) {
 </Layout>
 
 <script>
-  // Island #4 — Swatches: đổi ảnh + nhãn. Vanilla, ~1 KB.
-  const group = document.querySelector<HTMLElement>("[data-swatches]");
-  if (group) {
-    const img = document.querySelector<HTMLImageElement>("[data-product-image]");
-    const label = group.querySelector<HTMLElement>("[data-swatch-label]");
-    group.querySelectorAll<HTMLButtonElement>("[data-swatch]").forEach((btn) => {
+  const carousel = document.querySelector<HTMLElement>("[data-carousel]");
+  const track = carousel?.querySelector<HTMLElement>("[data-product-track]");
+  const gallery = document.querySelector<HTMLElement>("[data-gallery]");
+  const swatchGroup = document.querySelector<HTMLElement>("[data-swatches]");
+
+  if (carousel && track) {
+    const carouselEl = carousel;
+    const trackEl = track;
+    const thumbs = gallery ? Array.from(gallery.querySelectorAll<HTMLButtonElement>("[data-gallery-thumb]")) : [];
+    const totalSlides = trackEl.children.length;
+    let currentIndex = 0;
+
+    const prevBtn = carouselEl.querySelector<HTMLButtonElement>("[data-carousel-prev]");
+    const nextBtn = carouselEl.querySelector<HTMLButtonElement>("[data-carousel-next]");
+
+    function updateNavState() {
+      if (prevBtn) prevBtn.disabled = currentIndex === 0;
+      if (nextBtn) nextBtn.disabled = currentIndex === totalSlides - 1;
+    }
+
+    // Track dùng flex gap (--space-gallery-slide-gap) để 2 ảnh không dính liền
+    // lúc trượt, nên bước nhảy giữa các slide không còn tròn 100% — phải cộng
+    // thêm phần gap mới ra đúng khoảng cách theo pixel thực tế.
+    function slideStep() {
+      const gap = parseFloat(getComputedStyle(trackEl).columnGap || "0");
+      return carouselEl.clientWidth + gap;
+    }
+
+    function goToSlide(index: number) {
+      if (totalSlides <= 0) return;
+      currentIndex = Math.min(Math.max(index, 0), totalSlides - 1);
+      trackEl.style.transform = `translateX(-${currentIndex * slideStep()}px)`;
+      updateNavState();
+
+      // Cập nhật thumbnail đang chọn
+      thumbs.forEach((thumb, i) => {
+        thumb.setAttribute("aria-pressed", i === currentIndex ? "true" : "false");
+      });
+      thumbs[currentIndex]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+
+      // Cập nhật swatch tương ứng (nếu có)
+      if (swatchGroup) {
+        const currentSrc = thumbs[currentIndex]?.dataset.image;
+        if (currentSrc) {
+          const matchingSwatch = swatchGroup.querySelector<HTMLButtonElement>(`[data-swatch][data-image="${currentSrc}"]`);
+          if (matchingSwatch) {
+            swatchGroup.querySelectorAll("[data-swatch]").forEach((b) => b.setAttribute("aria-pressed", "false"));
+            matchingSwatch.setAttribute("aria-pressed", "true");
+            const label = swatchGroup.querySelector<HTMLElement>("[data-swatch-label]");
+            if (label && matchingSwatch.dataset.label) label.textContent = matchingSwatch.dataset.label;
+          }
+        }
+      }
+    }
+
+    updateNavState();
+
+    // Nút mũi tên prev / next
+    prevBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      goToSlide(currentIndex - 1);
+    });
+
+    nextBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      goToSlide(currentIndex + 1);
+    });
+
+    // Click thumbnail
+    thumbs.forEach((btn, i) => {
       btn.addEventListener("click", () => {
-        group
-          .querySelectorAll("[data-swatch]")
-          .forEach((b) => b.setAttribute("aria-pressed", "false"));
-        btn.setAttribute("aria-pressed", "true");
-        if (img && btn.dataset.image) img.src = btn.dataset.image;
-        if (label && btn.dataset.label) label.textContent = btn.dataset.label;
+        goToSlide(i);
       });
     });
-  }
 
-  // Island #5 — Gallery: click thumbnail đổi ảnh chính.
-  const gallery = document.querySelector<HTMLElement>("[data-gallery]");
-  if (gallery) {
-    const img = document.querySelector<HTMLImageElement>("[data-product-image]");
-    gallery.querySelectorAll<HTMLButtonElement>("[data-gallery-thumb]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        gallery
-          .querySelectorAll("[data-gallery-thumb]")
-          .forEach((b) => b.setAttribute("aria-pressed", "false"));
-        btn.setAttribute("aria-pressed", "true");
-        if (img && btn.dataset.image) img.src = btn.dataset.image;
+    // Swatches: đổi chất liệu/màu và trượt tới ảnh tương ứng
+    if (swatchGroup) {
+      const label = swatchGroup.querySelector<HTMLElement>("[data-swatch-label]");
+      swatchGroup.querySelectorAll<HTMLButtonElement>("[data-swatch]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          swatchGroup.querySelectorAll("[data-swatch]").forEach((b) => b.setAttribute("aria-pressed", "false"));
+          btn.setAttribute("aria-pressed", "true");
+          if (label && btn.dataset.label) label.textContent = btn.dataset.label;
+          const targetSrc = btn.dataset.image;
+          if (targetSrc) {
+            const targetIdx = thumbs.findIndex((t) => t.dataset.image === targetSrc);
+            if (targetIdx !== -1) {
+              goToSlide(targetIdx);
+            }
+          }
+        });
       });
+    }
+
+    // Touch & Swipe vuốt trượt ngang trên mobile
+    const EDGE_RESISTANCE = 0.25;
+    // Vuốt nhanh (dù quãng đường ngắn) vẫn chuyển slide, giống cảm giác
+    // carousel native — không bắt buộc kéo đủ xa mới nhận thao tác.
+    const FLICK_VELOCITY = 0.5; // px/ms
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+    let touchDeltaX = 0;
+    let isSwiping = false;
+    let isScrollingY: boolean | null = null;
+
+    carouselEl.addEventListener(
+      "touchstart",
+      (e) => {
+        if (totalSlides <= 1) return;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchStartTime = e.timeStamp;
+        touchDeltaX = 0;
+        isSwiping = false;
+        isScrollingY = null;
+        trackEl.style.transition = "none";
+      },
+      { passive: true },
+    );
+
+    carouselEl.addEventListener(
+      "touchmove",
+      (e) => {
+        if (totalSlides <= 1 || isScrollingY === true) return;
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        touchDeltaX = currentX - touchStartX;
+        const deltaY = currentY - touchStartY;
+
+        if (isScrollingY === null) {
+          if (Math.abs(deltaY) > Math.abs(touchDeltaX) && Math.abs(deltaY) > 6) {
+            isScrollingY = true;
+            return;
+          } else if (Math.abs(touchDeltaX) > 6) {
+            isScrollingY = false;
+            isSwiping = true;
+          }
+        }
+
+        if (isSwiping) {
+          const atFirstSlide = currentIndex === 0;
+          const atLastSlide = currentIndex === totalSlides - 1;
+          // Ở biên đầu/cuối, kéo thêm về phía ngoài chỉ trôi nhẹ theo hệ số cản
+          // EDGE_RESISTANCE thay vì trượt tự do như giữa dải ảnh — báo cho
+          // ngón tay biết đã hết ảnh mà không khoá cứng thao tác.
+          const resisted =
+            (atFirstSlide && touchDeltaX > 0) || (atLastSlide && touchDeltaX < 0)
+              ? touchDeltaX * EDGE_RESISTANCE
+              : touchDeltaX;
+          trackEl.style.transform = `translateX(${-currentIndex * slideStep() + resisted}px)`;
+        }
+      },
+      { passive: true },
+    );
+
+    carouselEl.addEventListener("touchend", (e) => {
+      if (totalSlides <= 1 || !isSwiping) {
+        trackEl.style.transition = "";
+        return;
+      }
+      trackEl.style.transition = "";
+      const elapsed = Math.max(e.timeStamp - touchStartTime, 1);
+      const velocity = Math.abs(touchDeltaX) / elapsed;
+      const threshold = velocity > FLICK_VELOCITY ? 15 : slideStep() * 0.2;
+      if (touchDeltaX < -threshold) {
+        goToSlide(currentIndex + 1);
+      } else if (touchDeltaX > threshold) {
+        goToSlide(currentIndex - 1);
+      } else {
+        goToSlide(currentIndex);
+      }
+      isSwiping = false;
+      isScrollingY = null;
+    });
+
+    // Bề ngang khung ảnh đổi theo viewport (resize/xoay màn hình) — vị trí
+    // trượt tính bằng px nên phải tính lại, khác với % vốn tự co giãn theo.
+    window.addEventListener("resize", () => {
+      trackEl.style.transition = "none";
+      trackEl.style.transform = `translateX(-${currentIndex * slideStep()}px)`;
+      trackEl.offsetHeight;
+      trackEl.style.transition = "";
     });
   }
 </script>

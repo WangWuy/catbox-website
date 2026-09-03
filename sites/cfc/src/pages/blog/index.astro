@@ -1,7 +1,11 @@
 ---
+export const prerender = true;
+
 import type { ImageMetadata } from "astro";
 import { getCollection } from "astro:content";
+import { parseBlogPage } from "@config/pages";
 import Layout from "../../layouts/Layout.astro";
+import blogData from "../../content/pages-data/blog.json";
 import PageHero from "@ui/patterns/PageHero.astro";
 import PostCard from "@ui/primitives/PostCard.astro";
 
@@ -14,17 +18,18 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, z) => z.data.date.getTime() - a.data.date.getTime(),
 );
 
+const page = parseBlogPage(blogData);
+
 // Chỉ còn dùng cho <meta name="description"> ở Layout — banner không hiện mô tả.
-const description =
-  "Cẩm nang bao bì giấy cho chuỗi F&B: so sánh chất liệu, kích thước chuẩn, kinh nghiệm đặt in và bảng giá tham khảo.";
+const description = page.seo.description;
 ---
 
-<Layout title="Tin tức & Cẩm nang" {description}>
+<Layout title={page.seo.title} {description}>
   <PageHero
-    title="Tin tức & Cẩm nang"
-    crumbs={[{ label: "Tin tức" }]}
+    title={page.heroTitle}
+    crumbs={[{ label: page.crumbLabel }]}
     {assets}
-    image="products/hop-giay-kraft.png"
+    image={page.heroImage}
   />
 
   <div class="site-container pt-10 pb-16">

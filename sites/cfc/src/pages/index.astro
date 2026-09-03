@@ -1,19 +1,34 @@
 ---
+export const prerender = true;
+
 /**
  * Trang chủ CFC — theo sitemap chính thức.
  *
  * Thứ tự khối: Header → Hero (banner + stats nhỏ) → Bán chạy/Sản phẩm các
  * loại (tabs) → Tin tức/Blog → Video mẫu túi in → Footer.
+ *
+ * Toàn bộ chữ và số trên trang này đọc từ singleton "Trang chủ" trong Keystatic
+ * (`src/content/pages-data/home.json`) — file này chỉ còn lo việc lấy dữ liệu
+ * từ content collection và lắp vào component. Muốn đổi tiêu đề khối, số liệu
+ * hero hay video thì sửa trong CMS, không sửa ở đây.
  */
 import type { ImageMetadata } from "astro";
 import { getCollection } from "astro:content";
 import { categoryTitle } from "@config/categories";
+import { parseCatalog, parseHomepage } from "@config/pages";
 import Layout from "../layouts/Layout.astro";
+import catalogData from "../content/pages-data/catalog.json";
+import homeData from "../content/pages-data/home.json";
 
 import HeroBanner from "@ui/patterns/HeroBanner.astro";
 import BestsellerGrid from "@ui/patterns/BestsellerGrid.astro";
 import NewsGrid from "@ui/patterns/NewsGrid.astro";
 import FactoryReels from "@ui/patterns/FactoryReels.astro";
+
+const home = parseHomepage(homeData);
+// Chỉ lấy `swatchNote` — thẻ sản phẩm ở đây phải chú thích giống hệt thẻ trên
+// /products và /danh-muc, nên dùng chung một nguồn.
+const catalog = parseCatalog(catalogData);
 
 // Bản đồ ảnh cho SmartImage — glob phải nằm ở site vì đường dẫn tương đối
 // với chính project này (xem packages/ui/lib/images.ts).
@@ -33,7 +48,7 @@ const label = (slug: string) => categoryTitle(categories, slug);
 
 const posts = (await getCollection("blog", ({ data }) => !data.draft))
   .sort((a, z) => z.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 4);
+  .slice(0, home.news.limit);
 
 const toCard = (p: (typeof products)[number]) => ({
   title: p.data.title,
@@ -42,46 +57,40 @@ const toCard = (p: (typeof products)[number]) => ({
   image: p.data.image,
   badge: p.data.badge,
   swatches: p.data.swatches,
-  swatchNote: "Kraft / MG",
+  swatchNote: catalog.swatchNote,
 });
 
-const bestsellers = products.filter((p) => p.data.bestseller).map(toCard);
-const tabs = [...new Set(products.map((p) => label(p.data.category)))];
-
-const description =
-  "Xưởng sản xuất túi giấy, giấy gói và hộp đựng thực phẩm cho chuỗi bánh mì và quán F&B. In theo yêu cầu từ 2.000 túi, giao toàn quốc, đạt chuẩn ATVSTP và HACCP.";
+const bestsellers = products
+  .filter((p) => p.data.bestseller)
+  .slice(0, home.bestsellers.limit)
+  .map(toCard);
+const tabs = [...new Set(bestsellers.map((p) => p.category))];
 ---
 
-<Layout title="Trang chủ" {description}>
+<Layout title={home.seo.title} description={home.seo.description}>
   <div class="flex flex-col gap-(--space-section-gap) pb-(--space-section-gap) md:gap-(--space-section-gap-lg) md:pb-(--space-section-gap-lg)">
     <HeroBanner
       {assets}
-      image="brand/hero-banner.png"
-      eyebrow="Xưởng sản xuất trực tiếp"
-      title="Bao bì giấy F&B tận xưởng cùng"
-      titleAccent="CFC"
-      subtitle="Túi giấy, giấy gói và hộp đựng thực phẩm in theo yêu cầu. Không qua trung gian, báo giá trong 30 phút."
-      hashtag="ưu đãi cho chuỗi"
-      stats={[
-        { icon: "lucide:package", num: "4.400.000", label: "Chiếc/năm" },
-        { icon: "lucide:folder-open", num: "88.000.000", label: "Chiếc/năm" },
-        { icon: "lucide:shopping-bag", num: "990.000", label: "Chiếc/năm" },
-        { icon: "lucide:gift", num: "6.600.000", label: "Chiếc/năm" },
-        { icon: "lucide:droplet", num: "33.000", label: "Cuộn/năm" },
-      ]}
+      image={home.hero.image}
+      eyebrow={home.hero.eyebrow}
+      title={home.hero.title}
+      titleAccent={home.hero.titleAccent}
+      subtitle={home.hero.subtitle}
+      hashtag={home.hero.hashtag}
+      stats={home.hero.stats}
     />
 
     <BestsellerGrid
       {assets}
       {tabs}
-      title="Bán chạy"
+      title={home.bestsellers.title}
       items={bestsellers}
     />
 
     <NewsGrid
       {assets}
-      title="Tin Tức"
-      action={{ label: "Xem thêm tin →", href: "/blog" }}
+      title={home.news.title}
+      action={home.news.action}
       items={posts.map((p) => ({
         title: p.data.title,
         href: `/blog/${p.id}`,
@@ -97,8 +106,8 @@ const description =
        khối video không lấy khoảng cách chung của trang, dán thẳng vào Footer. -->
   <FactoryReels
     {assets}
-    label="Mẫu túi bánh mì que in 4 màu theo yêu cầu"
-    video="/video/tui-banh-mi-in-mau.mp4"
-    poster="/video/tui-banh-mi-in-mau-poster.jpg"
+    label={home.reels.label}
+    video={home.reels.video}
+    poster={home.reels.poster}
   />
 </Layout>

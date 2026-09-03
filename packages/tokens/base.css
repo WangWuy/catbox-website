@@ -9,11 +9,11 @@
   --container-site: 1280px;
 
   /* Khoảng cách dọc giữa các section của trang chủ (Hero → Bán chạy → Tin
-   * tức...). Mobile hẹp hơn desktop: 96px giữa các khối trên màn nhỏ đẩy nội
+   * tức...). Mobile hẹp hơn desktop: khoảng trắng lớn trên màn nhỏ đẩy nội
    * dung liên quan ra quá xa nhau, trong khi ở desktop khoảng trắng đó lại vừa
    * mắt vì section rộng hơn. */
-  --space-section-gap: 3.5rem;    /* 56px — mobile */
-  --space-section-gap-lg: 6rem;   /* 96px — md trở lên */
+  --space-section-gap: 1.75rem;   /* 28px — mobile */
+  --space-section-gap-lg: 2.75rem; /* 44px — md trở lên */
 
   /* Radius — DNA chung, cả 3 site giống nhau */
   --radius-pill: 999px;
@@ -219,6 +219,9 @@
    * hiệu ứng "hé mở" đi kèm phần cao dần, trượt xa hơn thì chữ bay vào như
    * banner quảng cáo và mắt phải đuổi theo mới đọc được. */
   --offset-faq-slide: 6px;
+  /* Nút mũi tên carousel sản phẩm trượt vào/ra từ mép ảnh khi hover container,
+   * dùng ở sites/cfc/src/pages/products/[...slug].astro. */
+  --offset-carousel-nav: 6px;
 
   /* --- Mục tiêu chiến lược (StrategicGoals) ------------------------------ *
    * Số thứ tự lớn trong khung tròn nền nhạt, đứng thay icon ở mỗi thẻ. Khung
@@ -290,6 +293,12 @@
    * dưới. Nhẹ hơn hẳn --shadow-page-hero-image: bóng trải suốt bề ngang màn
    * hình nên đậm một chút là thành vệt xám rõ mồn một dưới header. */
   --shadow-header: 0 2px 12px rgb(0 0 0 / 0.08);
+  /* Độ mờ đánh dấu thumbnail gallery đang active — thay cho viền outline
+   * cứng, ảnh đang chọn tự phủ mờ nhẹ thay vì đóng khung. */
+  --opacity-thumb-active: 0.55;
+  /* Độ mờ nút điều hướng khi không còn dùng được (ví dụ nút next ở ảnh cuối
+   * gallery) — vẫn thấy nút, chỉ báo hiệu bằng độ mờ thay vì ẩn hẳn. */
+  --opacity-disabled: 0.35;
   /* Khoảng cách từ mép phải khối nội dung tới ảnh — giữ ảnh không đè lên chữ
    * ở màn hình hẹp vừa (lg), nơi hai bên gần chạm nhau nhất. */
   --offset-page-hero-image-right: 2rem;
@@ -414,6 +423,10 @@
    * gợi ý còn nội dung để cuộn thay vì lấp đầy đúng viewport. */
   --width-carousel-card: 260px;
   --space-carousel-gap: 1.25rem;
+  /* Khoảng hở giữa 2 ảnh khi trượt gallery ảnh chính ở trang chi tiết sản
+   * phẩm — nhỏ hơn hẳn --space-carousel-gap vì đây là khung ảnh full-bleed,
+   * chỉ cần đủ để 2 ảnh không dính liền lúc đang trượt. */
+  --space-gallery-slide-gap: 8px;
 
   /* --- Chuyển động ------------------------------------------------------ *
    * Trước đây duration rải rác dạng `duration-500` (ProductCard, PostCard,
@@ -539,7 +552,6 @@
  * Tự viết thay vì kéo @tailwindcss/typography — chỉ cần chừng này và tránh
  * thêm 30 KB CSS phải override lại cho 3 theme. */
 @utility prose-catbox {
-  max-width: 68ch;
   line-height: 1.75;
   color: var(--color-ink-muted);
 

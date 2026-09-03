@@ -16,17 +16,21 @@
  * khác nhau rồi lệch nội dung.
  */
 import { Icon } from "astro-icon/components";
+import { BRANDS, type FnbBrandId } from "@config/brands";
 import type { NavEntry } from "@config/nav";
 import SearchBox from "@ui/primitives/SearchBox.astro";
 
 interface Props {
+  /** Cần `brand` chỉ để lấy gợi ý ô tìm kiếm — xem chỗ dùng bên dưới */
+  brand: FnbBrandId;
   items: NavEntry[];
   /** Pathname hiện tại để tô mục đang xem */
   current?: string;
   class?: string;
 }
 
-const { items, current = "/", class: className } = Astro.props;
+const { brand, items, current = "/", class: className } = Astro.props;
+const b = BRANDS[brand];
 
 const isActive = (href: string) =>
   href === "/" ? current === "/" : current.startsWith(href);
@@ -68,7 +72,9 @@ const isActive = (href: string) =>
           chỉ còn qua backdrop, Esc, hoặc chọn một mục — xem phần script bên
           dưới, `data-drawer-close` đã bỏ nên không còn phần tử nào trỏ tới nó. */}
       <div class="flex-none border-b border-line px-4 py-3">
-        <SearchBox placeholder="Tìm kiếm" class="border-0 px-0" />
+        {/* Cùng gợi ý với ô tìm kiếm trên desktop (MainHeader) — trước đây chỗ
+            này ghi cứng "Tìm kiếm" nên khách mobile mất phần gợi ý sản phẩm. */}
+        <SearchBox placeholder={b.searchPlaceholder} class="border-0 px-0" />
       </div>
 
       <nav class="flex-1 overflow-y-auto overscroll-contain px-4">

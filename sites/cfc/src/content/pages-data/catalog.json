@@ -1,0 +1,23 @@
+{
+  "seo": {
+    "title": "Danh mục sản phẩm",
+    "description": "Danh mục túi giấy, giấy gói và hộp đựng thực phẩm của xưởng CFC. Lọc theo chất liệu Kraft / MG và kiểu dáng."
+  },
+  "heroTitle": "Sản phẩm",
+  "heroImage": "products/tui-giay.png",
+  "categoryFallbackImage": "products/hop-giay-kraft.png",
+  "collectionName": "Danh mục sản phẩm CFC",
+  "materialLabel": "Chất liệu",
+  "materials": [
+    { "value": "kraft", "label": "Giấy Kraft" },
+    { "value": "mg-trang", "label": "Giấy MG trắng" }
+  ],
+  "shapeLabel": "Kiểu dáng",
+  "shapes": [
+    { "value": "tui-det", "label": "Túi dẹt" },
+    { "value": "tui-quai", "label": "Túi có quai" },
+    { "value": "hop", "label": "Hộp giấy" },
+    { "value": "giay-goi", "label": "Giấy gói" }
+  ],
+  "swatchNote": "Kraft / MG"
+}

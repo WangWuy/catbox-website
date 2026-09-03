@@ -23,9 +23,9 @@ enabled = true
 # KV lưu session của Astro — adapter tự khai báo binding SESSION, nhưng
 # namespace thì phải tạo một lần rồi điền id vào đây:
 #   pnpm --filter @catbox/site-cfc exec wrangler kv namespace create SESSION
-# [[kv_namespaces]]
-# binding = "SESSION"
-# id = "<điền id wrangler in ra>"
+[[kv_namespaces]]
+binding = "SESSION"
+id = "a99cc4eb68934116897a2df9a8af882f"
 
 # Secret — KHÔNG commit. Storage 'cloud' hiện tại không cần, nhưng nếu sau này
 # đổi sang GitHub mode thì đặt bằng:

@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 /**
  * Danh mục sản phẩm — lưới đầy đủ + bộ lọc island (chất liệu / kiểu dáng / giá).
  *
@@ -8,11 +10,15 @@
 import type { ImageMetadata } from "astro";
 import { getCollection } from "astro:content";
 import { categoryTitle } from "@config/categories";
+import { labelMap, parseCatalog } from "@config/pages";
 import Layout from "../../layouts/Layout.astro";
+import catalogData from "../../content/pages-data/catalog.json";
 import PageHero from "@ui/patterns/PageHero.astro";
 import CatalogLayout from "@ui/patterns/CatalogLayout.astro";
 import ProductCard from "@ui/primitives/ProductCard.astro";
 import { type FilterGroup } from "@ui/primitives/ProductFilter.astro";
+
+const catalog = parseCatalog(catalogData);
 
 const assets = import.meta.glob<{ default: ImageMetadata }>(
   "/src/assets/**/*.{png,jpg,jpeg,webp,avif}",
@@ -27,16 +33,9 @@ const products = (await getCollection("products", ({ data }) => !data.draft)).so
 const categories = await getCollection("categories");
 const label = (slug: string) => categoryTitle(categories, slug);
 
-const MATERIAL_LABEL: Record<string, string> = {
-  kraft: "Giấy Kraft",
-  "mg-trang": "Giấy MG trắng",
-};
-const SHAPE_LABEL: Record<string, string> = {
-  "tui-det": "Túi dẹt",
-  "tui-quai": "Túi có quai",
-  hop: "Hộp giấy",
-  "giay-goi": "Giấy gói",
-};
+// Từ vựng bộ lọc dùng chung với /danh-muc và trang chủ — xem `catalogSchema`.
+const MATERIAL_LABEL = labelMap(catalog.materials);
+const SHAPE_LABEL = labelMap(catalog.shapes);
 
 /** Đếm số sản phẩm cho từng lựa chọn — người dùng biết trước lọc ra bao nhiêu */
 const countBy = (field: "material" | "shape", value: string) =>
@@ -45,7 +44,7 @@ const countBy = (field: "material" | "shape", value: string) =>
 const groups: FilterGroup[] = [
   {
     key: "material",
-    label: "Chất liệu",
+    label: catalog.materialLabel,
     options: Object.entries(MATERIAL_LABEL).map(([value, label]) => ({
       value,
       label,
@@ -54,20 +53,19 @@ const groups: FilterGroup[] = [
   },
   {
     key: "shape",
-    label: "Kiểu dáng",
+    label: catalog.shapeLabel,
     options: Object.entries(SHAPE_LABEL)
       .map(([value, label]) => ({ value, label, count: countBy("shape", value) }))
       .filter((o) => o.count > 0),
   },
 ];
 
-const description =
-  "Danh mục túi giấy, giấy gói và hộp đựng thực phẩm của xưởng CFC. Lọc theo chất liệu Kraft / MG và kiểu dáng.";
+const description = catalog.seo.description;
 
 const jsonLd = [
   {
     "@type": "CollectionPage",
-    name: "Danh mục sản phẩm CFC",
+    name: catalog.collectionName,
     description,
     mainEntity: {
       "@type": "ItemList",
@@ -83,12 +81,12 @@ const jsonLd = [
 ];
 ---
 
-<Layout title="Danh mục sản phẩm" {description} {jsonLd}>
+<Layout title={catalog.seo.title} {description} {jsonLd}>
   <PageHero
-    title="Sản phẩm"
-    crumbs={[{ label: "Sản phẩm" }]}
+    title={catalog.heroTitle}
+    crumbs={[{ label: catalog.heroTitle }]}
     {assets}
-    image="products/tui-giay.png"
+    image={catalog.heroImage}
   />
 
   <CatalogLayout {groups} total={products.length} columns={3}>
@@ -102,7 +100,7 @@ const jsonLd = [
           image={p.data.image}
           badge={p.data.badge}
           swatches={p.data.swatches}
-          swatchNote="Kraft / MG"
+          swatchNote={catalog.swatchNote}
           variant={i + 1}
           filterData={{
             material: p.data.material.join(","),

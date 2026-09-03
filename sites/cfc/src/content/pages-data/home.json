@@ -1,0 +1,35 @@
+{
+  "seo": {
+    "title": "Trang chủ",
+    "description": "Xưởng sản xuất túi giấy, giấy gói và hộp đựng thực phẩm cho chuỗi bánh mì và quán F&B. In theo yêu cầu từ 2.000 túi, giao toàn quốc, đạt chuẩn ATVSTP và HACCP."
+  },
+  "hero": {
+    "image": "brand/hero-banner.png",
+    "eyebrow": "Xưởng sản xuất trực tiếp",
+    "title": "Bao bì giấy F&B tận xưởng cùng",
+    "titleAccent": "CFC",
+    "subtitle": "Túi giấy, giấy gói và hộp đựng thực phẩm in theo yêu cầu. Không qua trung gian, báo giá trong 30 phút.",
+    "hashtag": "ưu đãi cho chuỗi",
+    "stats": [
+      { "icon": "lucide:package", "num": "4.400.000", "label": "Chiếc/năm" },
+      { "icon": "lucide:folder-open", "num": "88.000.000", "label": "Chiếc/năm" },
+      { "icon": "lucide:shopping-bag", "num": "990.000", "label": "Chiếc/năm" },
+      { "icon": "lucide:gift", "num": "6.600.000", "label": "Chiếc/năm" },
+      { "icon": "lucide:droplet", "num": "33.000", "label": "Cuộn/năm" }
+    ]
+  },
+  "bestsellers": {
+    "title": "Bán chạy",
+    "limit": 10
+  },
+  "news": {
+    "title": "Tin Tức",
+    "action": { "label": "Xem thêm tin →", "href": "/blog" },
+    "limit": 4
+  },
+  "reels": {
+    "label": "Mẫu túi bánh mì que in 4 màu theo yêu cầu",
+    "video": "/video/tui-banh-mi-in-mau.mp4",
+    "poster": "/video/tui-banh-mi-in-mau-poster.jpg"
+  }
+}

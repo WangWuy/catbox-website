@@ -10,7 +10,10 @@ import "../styles/theme.css";
 const FONTS =
   "https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap";
 
-type BaseProps = Omit<Parameters<typeof BaseLayout>[0], "brand" | "fonts" | "categories" | "products">;
+type BaseProps = Omit<
+  Parameters<typeof BaseLayout>[0],
+  "brand" | "fonts" | "categories" | "products" | "footerLinks"
+>;
 const props = Astro.props as BaseProps;
 
 // Lấy ở đây (không phải trong BaseLayout) vì BaseLayout dùng chung với Tetta —
@@ -18,9 +21,29 @@ const props = Astro.props as BaseProps;
 // menu dựng từ content mà không phải sửa từng file page.
 const categories = await getCollection("categories");
 const products = await getCollection("products", ({ data }) => !data.draft);
+
+/**
+ * Cột chính sách ở chân trang, dựng từ content thay vì danh sách slug viết cứng
+ * (`POLICY_LINKS`): khách đổi tên một chính sách là slug đổi theo, danh sách
+ * cứng sẽ trỏ vào trang 404 mà không ai biết.
+ *
+ * Gộp thêm trang khách tự tạo có tick "hiện ở chân trang", để trang mới lên
+ * được menu mà không cần dev.
+ */
+const policies = (await getCollection("policies", ({ data }) => !data.draft)).sort(
+  (a, z) => a.data.order - z.data.order,
+);
+const navPages = (
+  await getCollection("pages", ({ data }) => !data.draft && data.showInNav)
+).sort((a, z) => a.data.order - z.data.order);
+
+const footerLinks = [
+  ...policies.map((p) => ({ label: p.data.navLabel ?? p.data.title, href: `/policies/${p.id}` })),
+  ...navPages.map((p) => ({ label: p.data.navLabel ?? p.data.title, href: `/${p.id}` })),
+];
 ---
 
-<BaseLayout brand="cfc" fonts={FONTS} {categories} {products} {...props}>
+<BaseLayout brand="cfc" fonts={FONTS} {categories} {products} {footerLinks} {...props}>
   <slot name="head" slot="head" />
   <slot />
 </BaseLayout>

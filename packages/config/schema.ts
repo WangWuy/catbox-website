@@ -149,8 +149,29 @@ export const blogSchema = z.object({
 
 export const policySchema = z.object({
   title: z.string(),
+  /**
+   * Tên ngắn cho cột chính sách ở chân trang. Cùng lý do với
+   * `categorySchema.navLabel`: tiêu đề đầy đủ ("Chính sách đổi trả & bảo hành")
+   * đúng cho đầu trang nhưng dài quá cho một cột link hẹp. Bỏ trống thì dùng
+   * `title`.
+   */
+  navLabel: z.string().optional(),
   updated: z.coerce.date(),
+  /**
+   * Icon trên thẻ ở trang /chinh-sach. Trước đây là một map slug → icon nằm
+   * cứng trong `chinh-sach.astro`: khách đổi tên chính sách là slug đổi theo và
+   * thẻ lặng lẽ rơi về icon mặc định. Để icon đi cùng bản ghi thì đổi tên bao
+   * nhiêu lần cũng không mất.
+   *
+   * Keystatic ghi `""` khi khách chọn "Không có icon" — quy về `undefined` để
+   * component không truyền chuỗi rỗng vào `<Icon name>` (làm hỏng build).
+   */
+  icon: z
+    .string()
+    .optional()
+    .transform((v) => (v ? v : undefined)),
   order: z.number().default(999),
+  draft: z.boolean().default(false),
   ...seoFields,
 });
 
@@ -161,5 +182,27 @@ export const industrySchema = z.object({
   icon: z.string().optional(),
   image: imageField,
   order: z.number().default(999),
+  ...seoFields,
+});
+
+/**
+ * Trang do khách TỰ TẠO qua CMS (Khuyến mãi, Tuyển dụng...), render bởi route
+ * catch-all `/[...slug]`.
+ *
+ * Đây là chỗ duy nhất dùng MDX cho nội dung trang — khác các trang cố định
+ * (dùng singleton JSON, xem `packages/config/pages.ts`). Lý do: trang khách tự
+ * tạo là văn xuôi tự do, không có cấu trúc định trước để dựng form.
+ */
+export const pageSchema = z.object({
+  title: z.string(),
+  /** Đoạn dẫn dưới tiêu đề — cũng là mô tả SEO mặc định */
+  description: z.string().optional(),
+  updated: z.coerce.date().optional(),
+  /** Hiện trong menu chân trang */
+  showInNav: z.boolean().default(false),
+  /** Tên ngắn dùng trên menu; bỏ trống thì lấy `title` */
+  navLabel: z.string().optional(),
+  order: z.number().default(999),
+  draft: z.boolean().default(false),
   ...seoFields,
 });

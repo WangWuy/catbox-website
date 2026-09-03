@@ -1,0 +1,110 @@
+{
+  "seo": {
+    "title": "Về chúng tôi",
+    "description": "CFC là xưởng sản xuất bao bì giấy F&B trực tiếp tại KCN Đồng Văn, Hà Nam. 10+ năm kinh nghiệm, đạt chuẩn ATVSTP và HACCP, thành viên hệ sinh thái Catbox Packaging."
+  },
+  "hero": {
+    "title": "Về chúng tôi",
+    "image": "brand/hero-banner.png",
+    "imageAlt": "Xưởng sản xuất bao bì giấy CFC"
+  },
+  "overview": {
+    "title": "Tổng quan về",
+    "accent": "công ty",
+    "body": "Công ty TNHH Đầu tư và Thương mại 2T — thương hiệu CFC Factory — là xưởng sản xuất bao bì giấy F&B, vận hành nhà máy riêng tại KCN Đồng Văn, Duy Tiên, Hà Nam. CFC phục vụ chuỗi bánh mì, quán ăn nhanh và thương hiệu F&B cần bao bì giấy in thương hiệu với số lượng lớn, đạt chuẩn ATVSTP và HACCP, là thành viên hệ sinh thái Catbox Packaging.",
+    "images": [
+      { "src": "brand/hero-banner.png", "alt": "Xưởng sản xuất bao bì giấy CFC" },
+      { "src": "products/tui-giay.png", "alt": "Túi giấy in thương hiệu CFC" }
+    ]
+  },
+  "purpose": {
+    "title": "Văn hóa",
+    "accent": "CFC Factory",
+    "items": [
+      {
+        "icon": "lucide:eye",
+        "title": "Tầm nhìn",
+        "body": "Trở thành xưởng sản xuất bao bì giấy F&B được các chuỗi bánh mì, quán ăn nhanh tin chọn hàng đầu tại miền Bắc, nhờ sản xuất trực tiếp không qua trung gian."
+      },
+      {
+        "icon": "lucide:target",
+        "title": "Sứ mệnh",
+        "body": "Cung cấp bao bì giấy đạt chuẩn an toàn thực phẩm với giá xưởng, giao đúng lịch và đồng hành cùng khách hàng xây dựng thương hiệu qua từng sản phẩm in ấn."
+      }
+    ]
+  },
+  "coreValues": {
+    "title": "Giá trị",
+    "accent": "cốt lõi",
+    "items": [
+      {
+        "title": "Đạo đức",
+        "tagline": "Nền móng của mọi hành động",
+        "desc": "Chúng tôi tin rằng sự tử tế không phải là sự lựa chọn — mà là nguyên tắc sống còn để tồn tại và phát triển bền vững."
+      },
+      {
+        "title": "Trách nhiệm",
+        "tagline": "Cam kết đến cùng trên từng sản phẩm",
+        "desc": "Chịu trách nhiệm trọn vẹn với chất lượng bao bì xuất xưởng, tiến độ giao hàng và sự an toàn thực phẩm của người tiêu dùng."
+      },
+      {
+        "title": "Danh dự",
+        "tagline": "Giữ trọn chữ tín với đối tác",
+        "desc": "Uy tín và danh dự của doanh nghiệp được xây dựng bằng sự tin cậy lâu dài của khách hàng và đối tác trong suốt chặng đường phát triển."
+      },
+      {
+        "title": "Chính trực",
+        "tagline": "Minh bạch trong mọi cam kết",
+        "desc": "Trung thực về định lượng giấy, xuất xứ nguyên liệu và luôn rõ ràng trong mọi thỏa thuận hợp tác, báo giá và chính sách bán hàng."
+      },
+      {
+        "title": "Đội ngũ",
+        "tagline": "Sức mạnh từ sự gắn kết",
+        "desc": "Xây dựng môi trường làm việc chuyên nghiệp, đồng lòng, phát huy tối đa năng lực của từng cá nhân vì mục tiêu chung."
+      }
+    ]
+  },
+  "strategicGoals": {
+    "title": "Mục tiêu",
+    "accent": ["chiến lược", "phát triển", "bền vững"],
+    "label": "Mục tiêu",
+    "items": [
+      { "desc": "— cần khách cung cấp nội dung chính thức —" },
+      { "desc": "— cần khách cung cấp nội dung chính thức —" },
+      { "desc": "— cần khách cung cấp nội dung chính thức —" }
+    ]
+  },
+  "video": {
+    "title": "Giới thiệu về",
+    "accent": "công ty",
+    "reels": {
+      "label": "Giới thiệu về công ty CFC",
+      "video": "/video/tui-banh-mi-in-mau.mp4",
+      "poster": "/video/tui-banh-mi-in-mau-poster.jpg"
+    }
+  },
+  "sections": {
+    "title": "Tìm hiểu",
+    "accent": "thêm",
+    "items": [
+      {
+        "icon": "lucide:factory",
+        "title": "Năng lực sản xuất",
+        "desc": "Hai dây chuyền Offset và Flexo đặt tại KCN Đồng Văn, Hà Nam.",
+        "href": "/nang-luc-san-xuat"
+      },
+      {
+        "icon": "lucide:workflow",
+        "title": "Quy trình làm việc",
+        "desc": "Mua mẫu có sẵn hay đặt in riêng — kèm chính sách thiết kế.",
+        "href": "/quy-trinh"
+      },
+      {
+        "icon": "lucide:file-text",
+        "title": "Chính sách công ty",
+        "desc": "Thanh toán, đổi trả & bảo hành, điều khoản sử dụng.",
+        "href": "/chinh-sach"
+      }
+    ]
+  }
+}

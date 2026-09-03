@@ -1,0 +1,52 @@
+{
+  "seo": {
+    "title": "Năng lực sản xuất",
+    "description": "Năng lực sản xuất của xưởng bao bì giấy CFC — dây chuyền in Offset và Flexo tại KCN Đồng Văn, Hà Nam."
+  },
+  "parentCrumb": { "label": "Về chúng tôi", "href": "/about-us" },
+  "intro": {
+    "title": "Năng lực sản xuất",
+    "body": "Xưởng vận hành hai dây chuyền in đặt tại KCN Đồng Văn, Duy Tiên, Hà Nam. Tuỳ kết cấu bao bì và số lượng đặt, đơn hàng được xếp lên dây chuyền phù hợp để tối ưu giá thành và thời gian giao."
+  },
+  "linesLabel": "Các dây chuyền in",
+  "suitedLabel": "Phù hợp với",
+  "lines": [
+    {
+      "icon": "lucide:layers",
+      "name": "Dây chuyền Offset",
+      "tagline": "In tờ rời, độ nét cao cho hộp giấy và ấn phẩm nhiều màu",
+      "specs": [
+        { "label": "Khổ máy", "value": "— cần xác nhận —" },
+        { "label": "Số màu", "value": "— cần xác nhận —" },
+        { "label": "Công suất", "value": "— cần xác nhận —" },
+        { "label": "Chất liệu chạy được", "value": "— cần xác nhận —" }
+      ],
+      "suited": [
+        "Hộp giấy đựng thực phẩm",
+        "Hộp cứng, hộp bế gấp",
+        "Ấn phẩm nhiều màu, hình ảnh chi tiết"
+      ]
+    },
+    {
+      "icon": "lucide:repeat",
+      "name": "Dây chuyền Flexo",
+      "tagline": "In cuộn liên tục, mực gốc nước đạt chuẩn tiếp xúc thực phẩm",
+      "specs": [
+        { "label": "Khổ máy", "value": "— cần xác nhận —" },
+        { "label": "Số màu", "value": "1–4 màu" },
+        { "label": "Công suất", "value": "— cần xác nhận —" },
+        { "label": "Chất liệu chạy được", "value": "Giấy Kraft, MG trắng" }
+      ],
+      "suited": [
+        "Túi bánh mì, túi giấy thực phẩm",
+        "Giấy gói chống dầu",
+        "Đơn hàng số lượng lớn, lặp lại"
+      ]
+    }
+  ],
+  "cta": {
+    "title": "Chưa rõ nên chọn dây chuyền nào?",
+    "body": "Gửi kết cấu bao bì và số lượng dự kiến, xưởng tư vấn dây chuyền phù hợp kèm báo giá trong 30 phút.",
+    "action": { "label": "Liên hệ nhận báo giá", "href": "/contact" }
+  }
+}

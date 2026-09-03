@@ -68,6 +68,7 @@ export default defineConfig({
       },
     },
   },
+  devToolbar: { enabled: false },
   image: { responsiveStyles: true },
   build: { inlineStylesheets: 'auto' },
   prefetch: { prefetchAll: true, defaultStrategy: 'viewport' },

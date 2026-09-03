@@ -1,0 +1,99 @@
+{
+  "seo": {
+    "title": "Quy trình làm việc",
+    "description": "Quy trình làm việc tại xưởng bao bì giấy CFC — mua mẫu có sẵn qua sàn thương mại điện tử hoặc đặt in theo yêu cầu, kèm chính sách thiết kế."
+  },
+  "parentCrumb": { "label": "Về chúng tôi", "href": "/about-us" },
+  "intro": {
+    "title": "Quy trình làm việc",
+    "body": "Tuỳ việc khách lấy mẫu có sẵn hay đặt in riêng thương hiệu, xưởng có hai luồng xử lý khác nhau. Chọn đúng luồng ngay từ đầu giúp rút ngắn thời gian từ lúc hỏi tới lúc nhận hàng."
+  },
+  "flowsLabel": "Hai luồng khách hàng",
+  "flows": [
+    {
+      "icon": "lucide:shopping-cart",
+      "title": "Khách mua mẫu có sẵn",
+      "tagline": "Mẫu trơn, không in thương hiệu — đặt là giao ngay",
+      "body": "Các mẫu bao bì tiêu chuẩn của xưởng được bán sẵn trên sàn thương mại điện tử. Khách đặt trực tiếp, không cần chờ duyệt file hay đợi lịch chạy máy.",
+      "channelsLabel": "Đặt nhanh qua",
+      "channels": [
+        { "label": "Shopee", "icon": "lucide:shopping-bag", "href": null },
+        { "label": "TikTok Shop", "icon": "lucide:shopping-bag", "href": null }
+      ],
+      "branches": []
+    },
+    {
+      "icon": "lucide:pen-tool",
+      "title": "Khách đặt hàng theo yêu cầu",
+      "tagline": "In thương hiệu riêng, kích thước và chất liệu theo đơn",
+      "channels": [],
+      "branches": [
+        {
+          "icon": "lucide:file-question",
+          "title": "Khách chưa có design",
+          "items": [
+            {
+              "label": "Chọn mẫu có sẵn của xưởng",
+              "badge": "Edit miễn phí",
+              "badgeTone": "primary",
+              "desc": "Lấy mẫu trong thư viện, xưởng chỉnh tên thương hiệu và thông tin liên hệ theo yêu cầu."
+            },
+            {
+              "label": "Design riêng theo nhu cầu",
+              "badge": "200.000đ / design",
+              "badgeTone": "cta",
+              "desc": "Đội thiết kế dựng mới hoàn toàn theo nhận diện thương hiệu của khách."
+            }
+          ]
+        },
+        {
+          "icon": "lucide:file-check",
+          "title": "Khách đã có design",
+          "body": "Gửi file thiết kế cho xưởng. Xưởng dàn file, canh khuôn bế và tràn lề miễn phí, gửi lại bản duyệt trước khi lên máy.",
+          "items": []
+        }
+      ]
+    }
+  ],
+  "steps": {
+    "title": "Quy trình sản xuất 6 bước",
+    "body": "Sau khi chốt file thiết kế, mọi đơn hàng đều đi qua cùng một quy trình tại xưởng.",
+    "items": [
+      {
+        "num": "01",
+        "title": "Tiếp nhận yêu cầu",
+        "desc": "Ghi nhận loại bao bì, kích thước, chất liệu và số lượng."
+      },
+      {
+        "num": "02",
+        "title": "Báo giá & duyệt mẫu",
+        "desc": "Báo giá trong 30 phút; in mẫu thật nếu khách cần xem trước."
+      },
+      {
+        "num": "03",
+        "title": "Dàn file & canh khuôn",
+        "desc": "Xưởng dàn file, canh khuôn bế và tràn lề — miễn phí."
+      },
+      {
+        "num": "04",
+        "title": "In flexo cuộn",
+        "desc": "In 1–4 màu bằng mực gốc nước đạt chuẩn tiếp xúc thực phẩm."
+      },
+      {
+        "num": "05",
+        "title": "Bế, gấp dán, kiểm tra",
+        "desc": "Gấp dán tự động, kiểm tra ngẫu nhiên theo lô trước khi đóng gói."
+      },
+      {
+        "num": "06",
+        "title": "Đóng gói & giao hàng",
+        "desc": "Giao toàn quốc; khu vực Hà Nội / Hà Nam giao trong 24–48h."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Bắt đầu đơn hàng",
+    "body": "Gửi loại bao bì, kích thước và số lượng dự kiến — xưởng báo giá trong 30 phút.",
+    "action": { "label": "Liên hệ nhận báo giá", "href": "/contact" }
+  }
+}

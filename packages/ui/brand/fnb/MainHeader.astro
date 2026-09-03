@@ -47,7 +47,7 @@ const cta = b.headerCta;
       class="fixed top-0 left-0 right-0 z-(--z-header) -translate-y-full border-b border-line-soft bg-surface shadow-(--shadow-header) transition-transform duration-(--duration-base) ease-(--ease-out-soft)"
     >
       <div class="site-container grid h-(--height-header-mobile-compact) grid-cols-[1fr_auto_1fr] items-center gap-3 md:flex md:h-(--height-header-compact) md:gap-6 lg:gap-10">
-        {items.length > 0 && <MobileNav {items} {current} class="md:hidden" />}
+        {items.length > 0 && <MobileNav {brand} {items} {current} class="md:hidden" />}
 
         <a href="/" class="flex flex-none items-center gap-3 justify-self-center md:justify-self-auto" aria-label={`${b.name} — trang chủ`}>
           <BrandLogo brand={brand} compact />
@@ -69,7 +69,7 @@ const cta = b.headerCta;
   ) : (
     <header class="border-b border-line-soft bg-surface">
       <div class="site-container grid h-(--height-header-mobile) grid-cols-[1fr_auto_1fr] items-center gap-3 md:flex md:h-(--height-header) md:gap-6 lg:gap-10">
-        {items.length > 0 && <MobileNav {items} {current} class="md:hidden" />}
+        {items.length > 0 && <MobileNav {brand} {items} {current} class="md:hidden" />}
 
         <a href="/" class="flex flex-none items-center gap-3 justify-self-center md:justify-self-auto" aria-label={`${b.name} — trang chủ`}>
           <BrandLogo brand={brand} />

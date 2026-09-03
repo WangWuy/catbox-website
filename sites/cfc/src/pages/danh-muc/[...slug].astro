@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 /**
  * Trang danh mục — lọc sẵn sản phẩm theo category, kèm nội dung MDX mô tả nhóm.
  *
@@ -24,6 +26,10 @@ import {
   descendantSlugs,
   normalizeSlug,
 } from "@config/categories";
+import { labelMap, parseCatalog } from "@config/pages";
+import catalogData from "../../content/pages-data/catalog.json";
+
+const catalog = parseCatalog(catalogData);
 
 export async function getStaticPaths() {
   const categories = await getCollection("categories");
@@ -81,16 +87,9 @@ const description = data.seoDescription ?? data.description ?? data.title;
  */
 const childrenHeading = `Loại ${data.navLabel ?? data.title}`;
 
-const MATERIAL_LABEL: Record<string, string> = {
-  kraft: "Giấy Kraft",
-  "mg-trang": "Giấy MG trắng",
-};
-const SHAPE_LABEL: Record<string, string> = {
-  "tui-det": "Túi dẹt",
-  "tui-quai": "Túi có quai",
-  hop: "Hộp giấy",
-  "giay-goi": "Giấy gói",
-};
+// Từ vựng bộ lọc dùng chung với /products và trang chủ — xem `catalogSchema`.
+const MATERIAL_LABEL = labelMap(catalog.materials);
+const SHAPE_LABEL = labelMap(catalog.shapes);
 
 /** Chỉ giữ lựa chọn có hàng trong nhánh này — xem chú thích đầu file. */
 const optionsFor = (
@@ -106,8 +105,8 @@ const optionsFor = (
     .filter((o) => o.count > 0);
 
 const groups: FilterGroup[] = [
-  { key: "material", label: "Chất liệu", options: optionsFor(MATERIAL_LABEL, (p) => p.data.material) },
-  { key: "shape", label: "Kiểu dáng", options: optionsFor(SHAPE_LABEL, (p) => p.data.shape) },
+  { key: "material", label: catalog.materialLabel, options: optionsFor(MATERIAL_LABEL, (p) => p.data.material) },
+  { key: "shape", label: catalog.shapeLabel, options: optionsFor(SHAPE_LABEL, (p) => p.data.shape) },
 ].filter(
   (g) =>
     // Nhóm chỉ còn 1 lựa chọn thì không lọc được gì (bấm vào vẫn ra nguyên lưới).
@@ -149,7 +148,7 @@ const jsonLd = [
       })),
     ]}
     {assets}
-    image={data.image ?? "products/hop-giay-kraft.png"}
+    image={data.image ?? catalog.categoryFallbackImage}
   />
 
   {
@@ -183,7 +182,7 @@ const jsonLd = [
             image={p.data.image}
             badge={p.data.badge}
             swatches={p.data.swatches}
-            swatchNote="Kraft / MG"
+            swatchNote={catalog.swatchNote}
             variant={i + 1}
             filterData={{
               material: p.data.material.join(","),

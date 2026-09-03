@@ -1,0 +1,172 @@
+{
+  "name": "CFC Factory",
+  "tagline": "Bao bì F&B",
+  "legalName": "Công ty TNHH Đầu tư và Thương mại 2T",
+  "memberOf": "A Member of Catbox Packaging Ecosystem",
+  "hotline": "0909.xxx.xxx",
+  "hotlineHref": "tel:+84909000000",
+  "zalo": "0909xxxxxx",
+  "email": "cfc@2tprint.vn",
+  "searchPlaceholder": "Tìm bao bánh mì que, túi Doner, cốc giấy...",
+  "promoPill": "Miễn phí giao hàng từ 2.000 túi",
+  "headerCta": {
+    "label": "Liên hệ tư vấn",
+    "href": "/contact"
+  },
+  "topbarCta": {
+    "label": "Liên Hệ",
+    "href": "/contact"
+  },
+  "certifications": [
+    "ATVSTP",
+    "HACCP"
+  ],
+  "stats": [
+    {
+      "num": "10+",
+      "label": "Năm kinh nghiệm",
+      "highlight": false
+    },
+    {
+      "num": "5.000+",
+      "label": "Khách hàng đối tác",
+      "highlight": false
+    },
+    {
+      "num": "20.000+",
+      "label": "Đơn hàng thành phẩm",
+      "highlight": false
+    },
+    {
+      "num": "100%",
+      "label": "Đảm bảo chất lượng",
+      "highlight": true
+    }
+  ],
+  "locations": [
+    {
+      "icon": "lucide:factory",
+      "label": "Nhà máy",
+      "streetAddress": "KCN Đồng Văn, Duy Tiên",
+      "locality": "Hà Nam",
+      "country": "VN",
+      "hours": {
+        "days": "Thứ 2 - Thứ 7",
+        "opens": "08:00",
+        "closes": "17:30"
+      },
+      "image": "brand/hero-banner.png"
+    },
+    {
+      "icon": "lucide:building-2",
+      "label": "Văn phòng",
+      "streetAddress": "Số 12 Nguyễn Trãi, Hà Đông",
+      "locality": "Hà Nội",
+      "country": "VN",
+      "hours": {
+        "days": "Thứ 2 - Thứ 7",
+        "opens": "08:00",
+        "closes": "17:30"
+      },
+      "image": "brand/hero-banner.png"
+    }
+  ],
+  "salesReps": [
+    {
+      "name": "Tấn Thành",
+      "phone": "0986.83.9983"
+    },
+    {
+      "name": "Hải Yến",
+      "phone": "0915.02.9983"
+    },
+    {
+      "name": "Nguyễn Mai",
+      "phone": "0902.03.9983"
+    },
+    {
+      "name": "Hà Đại",
+      "phone": "0565.28.9983"
+    },
+    {
+      "name": "Anh Tuấn",
+      "phone": "0948.82.9983"
+    },
+    {
+      "name": "Mai Thanh",
+      "phone": "0915.82.9983"
+    }
+  ],
+  "serviceHotlines": [
+    "0901 52 52 62",
+    "08 9983 9983",
+    "0911 86 2879"
+  ],
+  "social": [
+    {
+      "label": "f",
+      "href": "#"
+    },
+    {
+      "label": "in",
+      "href": "#"
+    },
+    {
+      "label": "YT",
+      "href": "#"
+    },
+    {
+      "label": "TT",
+      "href": "#"
+    }
+  ],
+  "nav": {
+    "topbarLinks": [
+      {
+        "label": "Về Chúng Tôi",
+        "href": "/about-us"
+      },
+      {
+        "label": "Quy Trình",
+        "href": "/quy-trinh"
+      }
+    ],
+    "entries": [
+      {
+        "label": "Trang chủ",
+        "href": "/",
+        "icon": "lucide:croissant",
+        "isMega": false
+      },
+      {
+        "label": "Sản phẩm",
+        "href": "/products",
+        "icon": "lucide:package",
+        "isMega": true
+      },
+      {
+        "label": "Về chúng tôi",
+        "href": "/about-us",
+        "icon": "lucide:factory",
+        "isMega": false
+      },
+      {
+        "label": "Tin tức",
+        "href": "/blog",
+        "icon": "lucide:newspaper",
+        "isMega": false
+      },
+      {
+        "label": "Liên hệ",
+        "href": "/contact",
+        "icon": "lucide:phone",
+        "isMega": false
+      }
+    ]
+  },
+  "footer": {
+    "newsletterTitle": "Đăng ký nhận bảng giá sỉ",
+    "newsletterDesc": "Bảng giá cập nhật theo chất liệu Kraft / MG và số lượng đặt.",
+    "terms": "KV Hà Nội / Hà Nam: thanh toán khi nhận hàng · Ngoài KV: thanh toán trước khi giao"
+  }
+}

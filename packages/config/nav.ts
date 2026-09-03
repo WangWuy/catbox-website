@@ -94,20 +94,17 @@ export const NAV: Record<BrandId, NavItem[]> = {
   cfc: [{ label: "Trang chủ", href: "/", icon: "lucide:croissant" }],
 };
 
-/** Link phụ trên Topbar (bên cạnh hotline) */
+/**
+ * Link phụ trên Topbar (bên cạnh hotline).
+ *
+ * Đọc từ "Cài đặt" của từng brand thay vì khai cứng ở đây — khách đổi được
+ * nhãn và đích đến mà không cần dev. Giữ nguyên tên và hình dạng export để
+ * `TopbarSwitcher` không phải sửa.
+ */
 export const TOPBAR_LINKS: Record<BrandId, { label: string; href: string }[]> = {
-  catbox: [
-    { label: "Về chúng tôi", href: "/about-us" },
-    { label: "Năng lực sản xuất", href: "/about-us#nang-luc" },
-  ],
-  tetta: [
-    { label: "Về chúng tôi", href: "/about-us" },
-    { label: "Bộ sưu tập Tết", href: "/bo-suu-tap/hop-qua-tet" },
-  ],
-  cfc: [
-    { label: "Về Chúng Tôi", href: "/about-us" },
-    { label: "Quy Trình", href: "/quy-trinh" },
-  ],
+  catbox: BRANDS.catbox.nav.topbarLinks,
+  tetta: BRANDS.tetta.nav.topbarLinks,
+  cfc: BRANDS.cfc.nav.topbarLinks,
 };
 
 /** Dựng nhóm link phẳng từ `NAV[brand]` cho site chưa CMS-hoá danh mục */
@@ -139,25 +136,23 @@ export function buildNavEntries(
   categories?: CategoryEntryLike[],
   products: ProductEntryLike[] = [],
 ): NavEntry[] {
-  // Chưa có danh mục trong content (site mới clone, hoặc Tetta dùng menu tĩnh)
-  // → quay về `NAV[brand]`.
-  if (!categories || categories.length === 0) return fromNav(NAV[brand]);
+  const entries = BRANDS[brand].nav.entries;
 
-  return [
-    { label: "Trang chủ", href: "/", icon: BRANDS[brand].icon },
-    {
-      label: "Sản phẩm",
-      href: "/products",
-      icon: "lucide:package",
+  // Chưa có danh mục trong content (site mới clone), hoặc khách xoá sạch menu
+  // trong CMS → quay về `NAV[brand]` để trang không bị mất thanh điều hướng.
+  if (!categories || categories.length === 0 || entries.length === 0) {
+    return fromNav(NAV[brand]);
+  }
+
+  // Nhãn/thứ tự/icon của từng mục đến từ CMS; riêng cây danh mục bên trong mega
+  // menu vẫn dựng từ collection `categories` để khách thêm đầu mục là menu tự có.
+  return entries.map((e) => ({
+    label: e.label,
+    href: e.href,
+    icon: e.icon,
+    ...(e.isMega && {
       isMega: true,
       megaParents: buildMegaMenuTree(categories, products),
-    },
-    {
-      label: "Về chúng tôi",
-      href: "/about-us",
-      icon: "lucide:factory",
-    },
-    { label: "Tin tức", href: "/blog", icon: "lucide:newspaper" },
-    { label: "Liên hệ", href: "/contact", icon: "lucide:phone" },
-  ];
+    }),
+  }));
 }

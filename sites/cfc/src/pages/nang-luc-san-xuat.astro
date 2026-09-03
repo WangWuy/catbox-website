@@ -1,64 +1,45 @@
 ---
-import { Icon } from "astro-icon/components";
-import Layout from "../layouts/Layout.astro";
-import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
+export const prerender = true;
 
 /**
  * Năng lực sản xuất — 2 dây chuyền Offset và Flexo.
  *
- * TODO(nội dung): thông số dưới đây là KHUNG CHỜ, chưa phải số thật của xưởng.
- * Cần khách xác nhận: khổ máy, số màu, công suất/ngày, loại giấy chạy được.
- * Không suy đoán — số sai ở trang năng lực là mồi GEO sai (xem StatsBar).
+ * Thông số đọc từ singleton "Trang năng lực sản xuất" trong Keystatic. Nhiều ô
+ * vẫn đang là "— cần xác nhận —": đó là giá trị thật trong CMS chờ khách điền,
+ * KHÔNG được suy đoán hộ — số sai ở trang năng lực là mồi GEO sai (xem
+ * StatsBar). Giờ khách tự sửa được nên không cần dev đụng vào file này nữa.
  */
-const lines = [
-  {
-    icon: "lucide:layers",
-    name: "Dây chuyền Offset",
-    tagline: "In tờ rời, độ nét cao cho hộp giấy và ấn phẩm nhiều màu",
-    specs: [
-      { label: "Khổ máy", value: "— cần xác nhận —" },
-      { label: "Số màu", value: "— cần xác nhận —" },
-      { label: "Công suất", value: "— cần xác nhận —" },
-      { label: "Chất liệu chạy được", value: "— cần xác nhận —" },
-    ],
-    suited: ["Hộp giấy đựng thực phẩm", "Hộp cứng, hộp bế gấp", "Ấn phẩm nhiều màu, hình ảnh chi tiết"],
-  },
-  {
-    icon: "lucide:repeat",
-    name: "Dây chuyền Flexo",
-    tagline: "In cuộn liên tục, mực gốc nước đạt chuẩn tiếp xúc thực phẩm",
-    specs: [
-      { label: "Khổ máy", value: "— cần xác nhận —" },
-      { label: "Số màu", value: "1–4 màu" },
-      { label: "Công suất", value: "— cần xác nhận —" },
-      { label: "Chất liệu chạy được", value: "Giấy Kraft, MG trắng" },
-    ],
-    suited: ["Túi bánh mì, túi giấy thực phẩm", "Giấy gói chống dầu", "Đơn hàng số lượng lớn, lặp lại"],
-  },
-];
+import { Icon } from "astro-icon/components";
+import { parseCapacity } from "@config/pages";
+import Layout from "../layouts/Layout.astro";
+import capacityData from "../content/pages-data/nang-luc-san-xuat.json";
+import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 
-const description =
-  "Năng lực sản xuất của xưởng bao bì giấy CFC — dây chuyền in Offset và Flexo tại KCN Đồng Văn, Hà Nam.";
+const page = parseCapacity(capacityData);
+const description = page.seo.description;
 ---
 
-<Layout title="Năng lực sản xuất" {description}>
-  <Breadcrumb items={[{ label: "Về chúng tôi", href: "/about-us" }, { label: "Năng lực sản xuất" }]} />
+<Layout title={page.seo.title} {description}>
+  <Breadcrumb
+    items={[
+      { label: page.parentCrumb.label, href: page.parentCrumb.href },
+      { label: page.intro.title },
+    ]}
+  />
 
   <div class="site-container flex flex-col gap-12 pb-16">
     <header class="flex max-w-3xl flex-col gap-4">
       <h1 class="text-(length:--text-section-mobile) font-extrabold tracking-tight uppercase md:text-section">
-        Năng lực sản xuất
+        {page.intro.title}
       </h1>
       <p class="leading-relaxed text-ink-muted">
-        Xưởng vận hành hai dây chuyền in đặt tại KCN Đồng Văn, Duy Tiên, Hà Nam. Tuỳ kết cấu bao bì
-        và số lượng đặt, đơn hàng được xếp lên dây chuyền phù hợp để tối ưu giá thành và thời gian
-        giao.
+        {page.intro.body}
       </p>
     </header>
 
-    <section class="grid gap-6 lg:grid-cols-2" aria-label="Các dây chuyền in">
+    <section class="grid gap-6 lg:grid-cols-2" aria-label={page.linesLabel}>
       {
-        lines.map((l) => (
+        page.lines.map((l) => (
           <article class="flex flex-col gap-5 rounded-panel border border-line bg-surface p-6 md:p-8">
             <div class="flex items-center gap-4">
               <span class="flex size-(--size-icon-panel-box) shrink-0 items-center justify-center rounded-panel bg-surface-tint text-primary">
@@ -80,7 +61,9 @@ const description =
             </dl>
 
             <div class="flex flex-col gap-2">
-              <h3 class="text-meta font-bold tracking-wide uppercase text-ink-faint">Phù hợp với</h3>
+              <h3 class="text-meta font-bold tracking-wide uppercase text-ink-faint">
+                {page.suitedLabel}
+              </h3>
               <ul class="flex flex-col gap-1.5">
                 {l.suited.map((s) => (
                   <li class="flex items-start gap-2 text-label leading-relaxed text-ink-muted">
@@ -100,16 +83,15 @@ const description =
     </section>
 
     <section class="flex flex-col gap-4 rounded-panel bg-surface-alt p-8 md:p-10">
-      <h2 class="font-display text-2xl font-bold">Chưa rõ nên chọn dây chuyền nào?</h2>
+      <h2 class="font-display text-2xl font-bold">{page.cta.title}</h2>
       <p class="max-w-2xl leading-relaxed text-ink-muted">
-        Gửi kết cấu bao bì và số lượng dự kiến, xưởng tư vấn dây chuyền phù hợp kèm báo giá trong
-        30 phút.
+        {page.cta.body}
       </p>
       <a
-        href="/contact"
+        href={page.cta.action.href}
         class="pill mt-2 h-12 w-fit bg-cta px-7 text-white transition-colors hover:bg-cta-hover"
       >
-        Liên hệ nhận báo giá
+        {page.cta.action.label}
       </a>
     </section>
   </div>

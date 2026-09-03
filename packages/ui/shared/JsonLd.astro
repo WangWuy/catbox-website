@@ -30,18 +30,22 @@ const organization: Record<string, unknown> = {
   logo: new URL("/og/default.svg", base).href,
   email: b.email,
   telephone: b.hotline,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "KCN Đồng Văn, Duy Tiên",
-    addressLocality: "Hà Nam",
-    addressCountry: "VN",
-  },
+  // Cơ sở đầu tiên trong Cài đặt là trụ sở khai với Google. Trước đây địa chỉ
+  // chép cứng ở đây, lệch với brands.ts và contact.astro là chuyện sớm muộn.
+  ...(b.locations[0] && {
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: b.locations[0].streetAddress,
+      addressLocality: b.locations[0].locality,
+      addressCountry: b.locations[0].country,
+    },
+  }),
   contactPoint: {
     "@type": "ContactPoint",
     telephone: b.hotline,
     contactType: "sales",
-    areaServed: "VN",
-    availableLanguage: ["vi", "en"],
+    areaServed: b.locations[0]?.country ?? "VN",
+    availableLanguage: b.locales,
   },
   sameAs: b.social.map((s) => s.href).filter((h) => h !== "#"),
 };

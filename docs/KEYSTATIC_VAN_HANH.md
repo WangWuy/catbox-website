@@ -23,6 +23,28 @@ deploy độc lập. Site công khai vẫn tĩnh 100% như trước khi có CMS.
 
 ## Phần 1 — Cho dev
 
+### 1.0 Hai điều dễ hiểu nhầm về đường dẫn và ảnh
+
+Ghi lại vì cả hai đều là lỗi ÂM THẦM — build vẫn xanh, chỉ dữ liệu đi sai chỗ.
+
+1. **Mọi `path` trong `keystatic.config.ts` tính từ GỐC REPO**, không phải từ
+   `sites/cfc/`. Keystatic ghi thẳng vào cây file của repo GitHub và không biết
+   site nằm ở thư mục con. Viết `src/content/products/*` là commit vào
+   `/src/content/products/` ở gốc repo — nơi không trang nào đọc.
+2. **Mọi `fields.image` phải có `publicPath`**, nếu không frontmatter chỉ nhận
+   mỗi tên file và `resolveImage()` không tìm ra ảnh. Dùng helper `asset()`
+   trong `packages/config/keystatic-fields.ts`, đừng tự viết `directory` rời.
+
+Nếu xoá một file content ở máy dev mà build báo lỗi `Rolldown failed to resolve
+import ... content-layer-deferred-module`, đó là cache content của Astro chưa
+mất theo:
+
+```bash
+rm -rf sites/cfc/.astro sites/cfc/node_modules/.astro
+```
+
+Cloudflare Pages build từ đầu nên không dính lỗi này.
+
 ### 1.1 Điều kiện tiên quyết (CHƯA LÀM — đang chặn)
 
 > ⚠️ **Việc đang chặn toàn bộ:** `sites/cfc/keystatic.config.ts` còn ghi
@@ -107,10 +129,34 @@ Vào `admin.cfc.vn` → xác thực email → vào Keystatic.
 
 ### 2.2 Cấu trúc nội dung
 
-Có 2 mục:
+Menu bên trái chia thành 6 nhóm:
 
-- **Đầu mục sản phẩm** — các nhóm sản phẩm, chia 3 tầng.
-- **Sản phẩm** — từng sản phẩm cụ thể.
+| Nhóm | Gồm | Dùng để |
+| --- | --- | --- |
+| **Nội dung trang** | Trang chủ · Trang giới thiệu · Trang năng lực sản xuất · Trang sản phẩm · Trang quy trình · Trang liên hệ · Trang tin tức · Trang chính sách · Trang 404 · Tóm tắt cho AI | Sửa chữ, ảnh và các danh sách trên từng trang cố định |
+| **Sản phẩm** | Đầu mục sản phẩm · Sản phẩm | Cây danh mục 3 tầng và từng sản phẩm |
+| **Chính sách** | Chính sách | Các trang điều khoản, tự hiện ở chân trang |
+| **Tin tức** | Bài viết | Blog |
+| **Trang tự tạo** | Trang | Tự thêm trang mới (Khuyến mãi, Tuyển dụng...) |
+| **Cài đặt** | Cài đặt CFC | Hotline, Zalo, email, địa chỉ, giờ làm việc, danh sách sale, mạng xã hội, chứng nhận, số liệu năng lực, menu, chân trang |
+
+Nhóm **Thương hiệu khác** (Cài đặt Catbox / Tetta) là của hai site anh em, người
+phụ trách CFC không cần đụng tới.
+
+> **Sửa một chỗ, đổi mọi nơi.** Hotline trong **Cài đặt** chảy ra thanh trên
+> cùng, chân trang, trang liên hệ, nút gọi ở trang sản phẩm và cả file tóm tắt
+> cho AI. Địa chỉ cũng vậy. Đừng đi tìm để sửa từng trang — không có chỗ nào
+> khác để sửa nữa.
+
+### 2.2b Tự thêm một trang mới
+
+**Trang** → **+ New** → điền tên, nội dung, rồi Save. Trang lên ở địa chỉ theo
+tên (đặt tên "Khuyến mãi hè" thì trang nằm ở `/khuyen-mai-he`).
+
+- Tick **Hiện ở chân trang** để trang xuất hiện trong cột link dưới cùng.
+- **Tránh đặt trùng tên với trang có sẵn** (contact, products, blog, about-us,
+  quy-trinh, chinh-sach, search). Trùng thì trang mới sẽ không lên site — trang
+  cũ vẫn giữ đường dẫn đó.
 
 Cây đầu mục hiện tại (khớp sitemap):
 

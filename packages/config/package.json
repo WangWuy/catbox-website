@@ -6,7 +6,10 @@
   "exports": {
     "./brands": "./brands.ts",
     "./schema": "./schema.ts",
+    "./settings": "./settings.ts",
     "./nav": "./nav.ts",
+    "./blog": "./blog.ts",
+    "./categories": "./categories.ts",
     "./keystatic-fields": "./keystatic-fields.ts"
   },
   "dependencies": {

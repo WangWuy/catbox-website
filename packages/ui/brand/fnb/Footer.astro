@@ -14,26 +14,24 @@ interface Props {
   brand: FnbBrandId;
   /** Endpoint Worker nhận form; đổi ở .env khi deploy */
   formEndpoint?: string;
+  /**
+   * Link cột chính sách. Site truyền vào danh sách dựng từ content (chính sách
+   * + trang khách tự tạo có tick "hiện ở chân trang"), nhờ vậy khách đổi tên
+   * hay thêm một chính sách mới là chân trang tự cập nhật.
+   *
+   * Bỏ trống thì dùng `POLICY_LINKS` tĩnh — site chưa CMS-hoá phần này vẫn chạy.
+   */
+  footerLinks?: { label: string; href: string }[];
 }
 
-const { brand, formEndpoint = "/api/subscribe" } = Astro.props;
+const { brand, formEndpoint = "/api/subscribe", footerLinks } = Astro.props;
+const policyLinks = footerLinks?.length ? footerLinks : POLICY_LINKS;
 const b = BRANDS[brand];
 
-const newsletterCopy: Record<FnbBrandId, { title: string; desc: string }> = {
-  catbox: {
-    title: "Đăng ký nhận catalogue năng lực",
-    desc: "Hồ sơ năng lực sản xuất, bảng chất liệu và case study mới nhất.",
-  },
-  tetta: {
-    title: "Đăng ký nhận catalogue Tết",
-    desc: "Bộ sưu tập hộp quà theo mùa và bảng giá cập nhật.",
-  },
-  cfc: {
-    title: "Đăng ký nhận bảng giá sỉ",
-    desc: "Bảng giá cập nhật theo chất liệu Kraft / MG và số lượng đặt.",
-  },
-};
-const copy = newsletterCopy[brand];
+// Nội dung khối bản tin và dòng điều khoản đọc từ "Cài đặt" của brand — trước
+// đây là một map 3 brand nằm ngay trong component, sửa lời mời đăng ký phải vào
+// sửa code.
+const copy = b.footer;
 ---
 
 <footer class="bg-primary-deep text-white">
@@ -85,7 +83,7 @@ const copy = newsletterCopy[brand];
 
       <ul class="flex flex-col gap-2.5">
         {
-          POLICY_LINKS.map((p) => (
+          policyLinks.map((p) => (
             <li>
               <a href={p.href} class="text-sm text-white/60 transition-colors hover:text-white">
                 {p.label}
@@ -165,15 +163,19 @@ const copy = newsletterCopy[brand];
         }
       </ul>
 
-      <p class="border-t border-white/12 pt-3 text-micro leading-relaxed text-white/45">
-        KV Hà Nội / Hà Nam: thanh toán khi nhận hàng · Ngoài KV: thanh toán trước khi giao
-      </p>
+      {
+        copy.terms && (
+          <p class="border-t border-white/12 pt-3 text-micro leading-relaxed text-white/45">
+            {copy.terms}
+          </p>
+        )
+      }
     </div>
 
     <!-- Cột 3: newsletter -->
     <div class="flex flex-col gap-4">
-      <h2 class="text-meta font-bold tracking-eyebrow text-white uppercase">{copy.title}</h2>
-      <p class="text-sm leading-relaxed text-white/60">{copy.desc}</p>
+      <h2 class="text-meta font-bold tracking-eyebrow text-white uppercase">{copy.newsletterTitle}</h2>
+      <p class="text-sm leading-relaxed text-white/60">{copy.newsletterDesc}</p>
       <form
         method="post"
         action={formEndpoint}

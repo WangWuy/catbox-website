@@ -4,6 +4,7 @@ import {
   blogSchema,
   caseStudySchema,
   categorySchema,
+  pageSchema,
   policySchema,
   productSchema,
 } from "@config/schema";
@@ -17,4 +18,5 @@ export const collections = {
   caseStudies: defineCollection({ loader: md("case-studies"), schema: caseStudySchema }),
   blog: defineCollection({ loader: md("blog"), schema: blogSchema }),
   policies: defineCollection({ loader: md("policies"), schema: policySchema }),
+  pages: defineCollection({ loader: md("pages"), schema: pageSchema }),
 };

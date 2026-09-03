@@ -1,0 +1,91 @@
+{
+  "seo": {
+    "title": "Liên hệ",
+    "description": "Liên hệ xưởng CFC để nhận báo giá bao bì giấy F&B. Nhà máy KCN Đồng Văn, Hà Nam — văn phòng Hà Đông, Hà Nội."
+  },
+  "hero": {
+    "title": "Liên hệ",
+    "image": "products/hop-giay-kraft.png",
+    "imageAlt": "Bao bì giấy CFC"
+  },
+  "places": {
+    "hotlineLabel": "Hotline",
+    "salesLabels": ["Khách lẻ", "Khách sỉ"]
+  },
+  "form": {
+    "title": "Liên hệ"
+  },
+  "faq": {
+    "title": "Một số câu hỏi thường gặp",
+    "items": [
+      {
+        "q": "Công ty có chính sách đại lý không?",
+        "a": [
+          "Có! Nếu khách hàng muốn trở thành đại lý, xưởng có chính sách giá tốt, hỗ trợ marketing và tư vấn bán hàng."
+        ]
+      },
+      {
+        "q": "Công ty có hỗ trợ vận chuyển không?",
+        "a": [
+          "Có! Xưởng hỗ trợ vận chuyển tận nơi với phí ship hợp lý, miễn phí vận chuyển cho đơn hàng lớn."
+        ]
+      },
+      {
+        "q": "Thời gian sản xuất bao bì có lâu không?",
+        "a": [
+          "Đơn hàng có sẵn: giao ngay trong 1-3 ngày.",
+          "Đơn hàng in logo: sản xuất khoảng 7-15 ngày, tùy số lượng."
+        ]
+      },
+      {
+        "q": "Bao bì giấy có an toàn với thực phẩm nóng không?",
+        "a": [
+          "Có! Toàn bộ giấy và mực in đều đạt tiêu chuẩn tiếp xúc thực phẩm.",
+          "Xưởng có sẵn các loại tráng PE / PLA phù hợp với đồ nóng và đồ có dầu mỡ."
+        ]
+      },
+      {
+        "q": "Công ty có in logo thương hiệu lên bao bì không?",
+        "a": [
+          "Có! Xưởng nhận thiết kế và in logo thương hiệu theo yêu cầu.",
+          "Công nghệ in offset chất lượng cao, màu sắc sắc nét, không phai."
+        ]
+      },
+      {
+        "q": "Số lượng tối thiểu để in logo là bao nhiêu?",
+        "a": [
+          "Tùy loại sản phẩm, số lượng tối thiểu khoảng 5.000 - 10.000 sản phẩm cho một mẫu in."
+        ]
+      }
+    ]
+  },
+  "company": {
+    "blocks": [
+      {
+        "title": "Mục tiêu chất lượng",
+        "body": [
+          "Hướng đến sự hoàn hảo trong từng sản phẩm, đảm bảo đáp ứng mọi yêu cầu về chất lượng và an toàn.",
+          "Không ngừng cải tiến quy trình sản xuất để mang đến những sản phẩm tốt nhất với chi phí hợp lý."
+        ]
+      },
+      {
+        "title": "Cam kết chất lượng",
+        "body": [
+          "Sử dụng nguồn nguyên liệu được kiểm soát chặt chẽ, đạt tiêu chuẩn an toàn vệ sinh thực phẩm.",
+          "Sản phẩm đa dạng về chủng loại và kích thước, đáp ứng nhu cầu đa dạng của khách hàng.",
+          "Dịch vụ hỗ trợ chuyên nghiệp, nhanh chóng và tận tình."
+        ]
+      },
+      {
+        "title": "Giá trị thương hiệu",
+        "body": [
+          "Chất lượng, uy tín, tận tâm và hướng đến sự hài lòng của khách hàng."
+        ]
+      }
+    ]
+  },
+  "business": {
+    "priceRange": "$$",
+    "openingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  }
+}
