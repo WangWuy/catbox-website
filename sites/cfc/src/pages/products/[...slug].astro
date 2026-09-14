@@ -179,7 +179,7 @@ if (data.faq.length) {
                 data-image={g}
                 data-index={i}
                 aria-pressed={i === 0}
-                class="size-(--size-thumb-gallery) shrink-0 overflow-hidden rounded-card-soft transition-opacity duration-(--duration-fast) aria-pressed:opacity-thumb-active cursor-pointer hover:opacity-90"
+                class="size-thumb-gallery shrink-0 overflow-hidden rounded-card-soft transition-opacity duration-(--duration-fast) aria-pressed:opacity-thumb-active cursor-pointer hover:opacity-90"
               >
                 <img src={g} alt="" width="72" height="72" class="size-full object-contain pointer-events-none select-none" />
               </button>
@@ -191,7 +191,7 @@ if (data.faq.length) {
       {
         data.swatches.length > 0 && (
           <div class="flex items-center gap-3" data-swatches>
-            <span class="text-[13px] font-semibold text-ink-muted">Chất liệu:</span>
+            <span class="text-meta font-semibold text-ink-muted">Chất liệu:</span>
             {displaySwatches.map((s, i) => (
               <button
                 type="button"
@@ -205,7 +205,7 @@ if (data.faq.length) {
                 <span class="sr-only">{s.label}</span>
               </button>
             ))}
-            <span data-swatch-label class="text-[13px] text-ink-faint">
+            <span data-swatch-label class="text-meta text-ink-faint">
               {data.swatches[0]?.label}
             </span>
           </div>
@@ -242,7 +242,7 @@ if (data.faq.length) {
         <a
           href={`tel:${b.hotline.replace(/\D/g, "")}`}
           data-analytics="click_hotline"
-          class="pill flex h-12 items-center gap-2 bg-(--color-surface-pill) px-7 text-ink transition-colors hover:bg-(--color-surface-pill-hover)"
+          class="pill flex h-12 items-center gap-2 bg-surface-pill px-7 text-ink transition-colors hover:bg-surface-pill-hover"
         >
           <Icon name="lucide:phone" class="size-4" aria-hidden="true" /> {b.hotline}
         </a>
@@ -251,7 +251,7 @@ if (data.faq.length) {
       {
         data.specs.length > 0 && (
           <div class="overflow-hidden rounded-panel border border-line bg-(--color-surface-card)">
-            <h2 class="border-b border-line bg-surface-alt px-5 py-3 text-[13px] font-bold tracking-wide uppercase">
+            <h2 class="border-b border-line bg-surface-alt px-5 py-3 text-meta font-bold tracking-wide uppercase">
               Thông số kỹ thuật
             </h2>
             <table class="w-full text-sm">
