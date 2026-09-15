@@ -169,6 +169,7 @@ export const aboutSchema = z.object({
           icon: z.string(),
           title: z.string(),
           body: z.string(),
+          tone: z.enum(["primary", "eco"]).optional(),
         }),
       )
       .default([]),
@@ -196,7 +197,13 @@ export const aboutSchema = z.object({
     accent: z.array(z.string()).default([]),
     label: z.string(),
     items: z
-      .array(z.object({ title: z.string().optional(), desc: z.string() }))
+      .array(
+        z.object({
+          title: z.string().optional(),
+          desc: z.string(),
+          tone: z.enum(["primary", "eco"]).optional(),
+        }),
+      )
       .default([]),
   }),
   video: heading.extend({ reels }),

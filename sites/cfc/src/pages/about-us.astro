@@ -87,6 +87,7 @@ const description = about.seo.description;
               title={p.title}
               body={p.body}
               glowFrom={i === 0 ? "top-right" : "top-left"}
+              tone={p.tone ?? (i === 1 ? "eco" : "primary")}
             />
           ))
         }
@@ -132,26 +133,42 @@ const description = about.seo.description;
       />
       <div class="grid gap-4 md:grid-cols-3" data-reveal-group>
         {
-          about.sections.items.map((s) => (
-            <a
-              href={s.href}
-              class="group flex flex-col gap-3 rounded-panel border border-line bg-surface p-6 transition-colors hover:border-primary"
-            >
-              <span class="flex size-(--size-icon-panel-box) items-center justify-center rounded-panel bg-surface-tint text-primary">
-                <Icon name={s.icon} class="size-(--size-icon-panel)" aria-hidden="true" />
-              </span>
-              <h3 class="font-display text-card-title font-bold">{s.title}</h3>
-              <p class="text-meta leading-relaxed text-ink-muted">{s.desc}</p>
-              <span class="mt-auto flex items-center gap-1.5 pt-2 text-label font-semibold text-primary">
-                Xem chi tiết
-                <Icon
-                  name="lucide:arrow-right"
-                  class="size-(--size-icon-inline) transition-transform group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
-              </span>
-            </a>
-          ))
+          about.sections.items.map((s, i) => {
+            const isEco = i === 2;
+            return (
+              <a
+                href={s.href}
+                class:list={[
+                  "group flex flex-col gap-3 rounded-panel border bg-surface p-6 transition-colors",
+                  isEco ? "border-line hover:border-eco" : "border-line hover:border-primary",
+                ]}
+              >
+                <span
+                  class:list={[
+                    "flex size-(--size-icon-panel-box) items-center justify-center rounded-panel transition-colors",
+                    isEco ? "bg-eco-tint text-eco" : "bg-surface-tint text-primary",
+                  ]}
+                >
+                  <Icon name={s.icon} class="size-(--size-icon-panel)" aria-hidden="true" />
+                </span>
+                <h3 class="font-display text-card-title font-bold">{s.title}</h3>
+                <p class="text-meta leading-relaxed text-ink-muted">{s.desc}</p>
+                <span
+                  class:list={[
+                    "mt-auto flex items-center gap-1.5 pt-2 text-label font-semibold transition-colors",
+                    isEco ? "text-eco" : "text-primary",
+                  ]}
+                >
+                  Xem chi tiết
+                  <Icon
+                    name="lucide:arrow-right"
+                    class="size-(--size-icon-inline) transition-transform group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  />
+                </span>
+              </a>
+            );
+          })
         }
       </div>
     </section>

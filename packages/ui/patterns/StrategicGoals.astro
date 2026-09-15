@@ -16,6 +16,8 @@ export interface StrategicGoal {
   /** Nhãn nhỏ trên đoạn mô tả — bỏ trống thì lấy `label` chung của khối */
   title?: string;
   desc: string;
+  /** Tông màu: 'primary' (cam) hoặc 'eco' (xanh lá) */
+  tone?: "primary" | "eco";
 }
 
 interface Props {
@@ -47,22 +49,40 @@ const {
 
   <ol class="grid gap-5 md:grid-cols-3" data-reveal-group>
     {
-      goals.map((g, i) => (
-        <li class="flex min-h-(--height-goal-card) items-center gap-4 rounded-card-soft border border-line bg-surface-card p-6 shadow-card">
-          <span
-            class="flex size-(--size-goal-number-box) flex-none items-center justify-center rounded-full bg-surface-alt font-display text-goal-number leading-none font-extrabold text-primary"
-            aria-hidden="true"
+      goals.map((g, i) => {
+        const isEco = g.tone === "eco";
+        return (
+          <li
+            class:list={[
+              "group flex min-h-(--height-goal-card) items-center gap-4 rounded-card-soft border bg-surface-card p-6 shadow-card transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-lg",
+              isEco
+                ? "border-eco-border/60 hover:border-eco"
+                : "border-line hover:border-primary",
+            ]}
           >
-            {String(i + 1).padStart(2, "0")}
-          </span>
-          <span class="flex flex-col gap-1.5">
-            <span class="text-tiny tracking-(--tracking-eyebrow) text-ink-muted uppercase">
-              {g.title ?? label}
+            <span
+              class:list={[
+                "flex size-(--size-goal-number-box) flex-none items-center justify-center rounded-full font-display text-goal-number leading-none font-extrabold transition-transform duration-500 ease-out group-hover:scale-105",
+                isEco ? "bg-eco-tint text-eco" : "bg-surface-alt text-primary",
+              ]}
+              aria-hidden="true"
+            >
+              {String(i + 1).padStart(2, "0")}
             </span>
-            <span class="text-meta leading-relaxed font-semibold text-ink">{g.desc}</span>
-          </span>
-        </li>
-      ))
+            <span class="flex flex-col gap-1.5">
+              <span
+                class:list={[
+                  "text-tiny tracking-(--tracking-eyebrow) uppercase transition-colors duration-500 ease-out",
+                  isEco ? "font-bold text-eco" : "font-semibold text-ink-muted group-hover:text-primary",
+                ]}
+              >
+                {g.title ?? label}
+              </span>
+              <span class="text-meta leading-relaxed font-semibold text-ink">{g.desc}</span>
+            </span>
+          </li>
+        );
+      })
     }
   </ol>
 </section>

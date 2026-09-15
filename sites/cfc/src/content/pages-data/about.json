@@ -24,12 +24,14 @@
       {
         "icon": "lucide:eye",
         "title": "Tầm nhìn",
-        "body": "Trở thành xưởng sản xuất bao bì giấy F&B được các chuỗi bánh mì, quán ăn nhanh tin chọn hàng đầu tại miền Bắc, nhờ sản xuất trực tiếp không qua trung gian."
+        "body": "Trở thành xưởng sản xuất bao bì giấy F&B được các chuỗi bánh mì, quán ăn nhanh tin chọn hàng đầu tại miền Bắc, nhờ sản xuất trực tiếp không qua trung gian.",
+        "tone": "primary"
       },
       {
         "icon": "lucide:target",
         "title": "Sứ mệnh",
-        "body": "Cung cấp bao bì giấy đạt chuẩn an toàn thực phẩm với giá xưởng, giao đúng lịch và đồng hành cùng khách hàng xây dựng thương hiệu qua từng sản phẩm in ấn."
+        "body": "Cung cấp bao bì giấy đạt chuẩn an toàn thực phẩm với giá xưởng, giao đúng lịch và đồng hành cùng khách hàng xây dựng thương hiệu qua từng sản phẩm in ấn.",
+        "tone": "eco"
       }
     ]
   },
@@ -69,9 +71,21 @@
     "accent": ["chiến lược", "phát triển", "bền vững"],
     "label": "Mục tiêu",
     "items": [
-      { "desc": "— cần khách cung cấp nội dung chính thức —" },
-      { "desc": "— cần khách cung cấp nội dung chính thức —" },
-      { "desc": "— cần khách cung cấp nội dung chính thức —" }
+      {
+        "title": "Mục tiêu 01",
+        "desc": "Mở rộng năng lực phục vụ hơn 5.000 đối tác chuỗi F&B với giá gốc trực tiếp từ xưởng.",
+        "tone": "primary"
+      },
+      {
+        "title": "Mục tiêu 02",
+        "desc": "Tự động hóa dây chuyền in Offset và Flexo nhằm rút ngắn 30% thời gian giao hàng.",
+        "tone": "primary"
+      },
+      {
+        "title": "Mục tiêu 03",
+        "desc": "Phát triển bền vững, 100% dòng sản phẩm bao bì giấy đạt chuẩn phân hủy sinh học và an toàn sức khỏe.",
+        "tone": "eco"
+      }
     ]
   },
   "video": {

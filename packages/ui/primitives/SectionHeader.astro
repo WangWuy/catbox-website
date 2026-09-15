@@ -249,9 +249,10 @@ const isCenter = align === "center";
     }
 
     async function loop() {
-      const type = ms("--duration-type-char", 55);
-      const untype = ms("--duration-untype-char", 30);
-      const hold = ms("--duration-type-hold", 3000);
+      const type = ms("--duration-type-char", 90);
+      const untype = ms("--duration-untype-char", 45);
+      const hold = ms("--duration-type-hold", 4500);
+      const pause = ms("--duration-type-pause", 500);
 
       for (let i = 0; ; i = (i + 1) % words.length) {
         const word = words[i];
@@ -266,6 +267,7 @@ const isCenter = align === "center";
           el.textContent = word.slice(0, n);
           await sleep(untype);
         }
+        await sleep(pause);
       }
     }
 
@@ -274,8 +276,10 @@ const isCenter = align === "center";
         for (const e of entries) {
           if (!e.isIntersecting) continue;
           io.disconnect();
-          el.textContent = "";
-          loop();
+          setTimeout(() => {
+            el.textContent = "";
+            loop();
+          }, 400);
         }
       },
       { threshold: 0.6 },

@@ -699,6 +699,14 @@ export function aboutFields(imageDir: string) {
             }),
             title: fields.text({ label: "Tiêu đề" }),
             body: fields.text({ label: "Nội dung", multiline: true }),
+            tone: fields.select({
+              label: "Tông màu",
+              options: [
+                { label: "Cam ấm (Mặc định)", value: "primary" },
+                { label: "Xanh lá sinh thái (Eco Green)", value: "eco" },
+              ],
+              defaultValue: "primary",
+            }),
           }),
           {
             label: "Thẻ (Tầm nhìn / Sứ mệnh)",
@@ -747,6 +755,14 @@ export function aboutFields(imageDir: string) {
           fields.object({
             title: fields.text({ label: "Tiêu đề riêng", validation: { isRequired: false } }),
             desc: fields.text({ label: "Nội dung", multiline: true }),
+            tone: fields.select({
+              label: "Tông màu",
+              options: [
+                { label: "Cam ấm (Mặc định)", value: "primary" },
+                { label: "Xanh lá sinh thái (Eco Green)", value: "eco" },
+              ],
+              defaultValue: "primary",
+            }),
           }),
           { label: "Mục tiêu", itemLabel: (props) => props.fields.desc.value || "Mục tiêu" },
         ),

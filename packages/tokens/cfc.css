@@ -17,6 +17,13 @@
   --color-cta-hover:     #C0392B;
   --color-zalo:          #0088FF;
 
+  /* Điểm nhấn Sinh thái & Chuẩn an toàn thực phẩm F&B (Eco-friendly & Food-grade) */
+  --color-eco:           #15803D;  /* Xanh lá thực phẩm (đạt chuẩn tương phản AA 4.5:1 trên nền Kraft) */
+  --color-eco-hover:     #166534;
+  --color-eco-tint:      #E8F5E9;  /* Nền mạ nhạt cho badge, icon box */
+  --color-eco-border:    #86EFAC;  /* Viền xanh dịu */
+  --color-eco-deep:      #14532D;  /* Xanh rừng sâu — phối gradient mặt thẻ */
+
   --color-surface:       #F2EFEA;
   --color-surface-alt:   #EBE6DE;  /* Beige-gray công nghiệp */
   --color-surface-tint:  #F6EFE4;  /* Kem kraft — nền ảnh, logo box */
@@ -90,10 +97,23 @@
   --height-hero-sm: 520px;
   --height-hero: 75vh;
   --height-hero-min: 600px;
+
+  /* Nhịp điệu chuyển động & độ trễ (Motion & Timing) — làm chậm hơn để hiệu ứng đầm, mượt mà hơn */
+  --duration-base:        450ms;  /* Mặc định 300ms -> tăng lên 450ms */
+  --duration-slow:        700ms;  /* Mặc định 500ms -> tăng lên 700ms (lật thẻ 3D...) */
+  --duration-reveal:      800ms;  /* Mặc định 600ms -> tăng lên 800ms */
+  --stagger-reveal:       160ms;  /* Mặc định 60ms -> tăng lên 160ms: các thẻ xuất hiện lần lượt rõ ràng */
+  --duration-type-char:   85ms;   /* Mặc định 55ms -> gõ chậm rãi, rõ chữ */
+  --duration-untype-char: 40ms;   /* Mặc định 30ms */
+  --duration-type-hold:   3500ms; /* Dừng 3.5s trước khi xoá gõ chữ tiếp */
 }
 
 :root {
   color-scheme: light;
+  --duration-type-char:   90ms;   /* Tốc độ gõ từng chữ */
+  --duration-untype-char: 45ms;   /* Tốc độ xoá chữ */
+  --duration-type-hold:   4500ms; /* Giữ chữ 4.5 giây để đọc thoải mái */
+  --duration-type-pause:  500ms;  /* Quãng nghỉ 0.5s trước khi gõ từ mới */
 }
 
 body {

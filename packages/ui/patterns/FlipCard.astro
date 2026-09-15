@@ -27,12 +27,27 @@ interface Props {
    * phải dùng "top-left".
    */
   glowFrom?: "top-left" | "top-right";
+  /** Tông màu chủ đạo: 'primary' (cam nóng) hoặc 'eco' (xanh lá sinh thái) */
+  tone?: "primary" | "eco";
 }
 
-const { icon, title, body, hint = "Chạm để xem chi tiết", glowFrom = "top-left" } = Astro.props;
+const {
+  icon,
+  title,
+  body,
+  hint = "Chạm để xem chi tiết",
+  glowFrom = "top-left",
+  tone = "primary",
+} = Astro.props;
 
 const gradientClass =
-  glowFrom === "top-right" ? "bg-gradient-to-bl from-primary to-primary-deep" : "bg-gradient-to-br from-primary to-primary-deep";
+  tone === "eco"
+    ? glowFrom === "top-right"
+      ? "bg-gradient-to-bl from-eco to-eco-deep"
+      : "bg-gradient-to-br from-eco to-eco-deep"
+    : glowFrom === "top-right"
+      ? "bg-gradient-to-bl from-primary to-primary-deep"
+      : "bg-gradient-to-br from-primary to-primary-deep";
 ---
 
 <div class="group h-(--height-flip-card) [perspective:var(--perspective-flip-card)]" data-flip-card>
