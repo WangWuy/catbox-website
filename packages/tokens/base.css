@@ -428,6 +428,13 @@
    * chỉ cần đủ để 2 ảnh không dính liền lúc đang trượt. */
   --space-gallery-slide-gap: 8px;
 
+  /* Carousel "Tin tức" ở trang chủ (NewsGrid) — chỉ dùng dưới md:, từ md: trở
+   * lên quay lại lưới 3 cột tĩnh. Bề ngang card tính đúng khít 2 card/trang
+   * (trừ đúng 1 gap giữa chúng) — KHÔNG hé mép card thứ 3: card thứ 3 chỉ có
+   * ảnh nên hé một dải mỏng trông như lỗi vỡ layout, không phải gợi ý cuộn. */
+  --width-news-carousel-card: calc((100% - var(--space-news-carousel-gap)) / 2);
+  --space-news-carousel-gap: 0.75rem;
+
   /* --- Chuyển động ------------------------------------------------------ *
    * Trước đây duration rải rác dạng `duration-500` (ProductCard, PostCard,
    * CategoryCards), `duration-200` và `duration-150` (CategoryNav) — ba nguồn

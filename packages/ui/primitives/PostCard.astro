@@ -60,6 +60,8 @@ interface Props {
   showDate?: boolean;
   /** Đường line nhỏ ngăn cách giữa tiêu đề và đoạn trích mô tả */
   showDivider?: boolean;
+  /** Ẩn mô tả + divider dưới `md:` — dùng ở carousel Tin tức trang chủ, card hẹp chỉ đủ chỗ cho ảnh + tiêu đề */
+  hideExcerptMobile?: boolean;
   class?: string;
 }
 
@@ -77,6 +79,7 @@ const {
   dense = false,
   showDate = true,
   showDivider = true,
+  hideExcerptMobile = false,
   class: className = "",
 } = Astro.props;
 
@@ -141,7 +144,12 @@ const excerpt = description ? clip(description, excerptChars) : undefined;
   {showDate && <DateBadge {date} />}
 
   <div
-    class="flex flex-1 flex-col items-center gap-(--space-post-card-gap) pt-(--space-post-card-text) text-center"
+    class:list={[
+      "flex flex-1 flex-col items-center gap-(--space-post-card-gap) text-center",
+      hideExcerptMobile
+        ? "pt-(--space-post-card-gap) md:pt-(--space-post-card-text)"
+        : "pt-(--space-post-card-text)",
+    ]}
   >
     {/* Ngày đã hiện ở badge trên ảnh; thẻ <time> ẩn giữ giá trị máy đọc được */}
     <time datetime={date.toISOString()} class="sr-only">{fmt(date)}</time>
@@ -162,12 +170,19 @@ const excerpt = description ? clip(description, excerptChars) : undefined;
       excerpt && (
         <>
           {showDivider && (
-            <span class="h-0.5 w-7 rounded-full bg-ink/15" aria-hidden="true" />
+            <span
+              class:list={[
+                "h-0.5 w-7 rounded-full bg-ink/15",
+                hideExcerptMobile && "hidden md:block",
+              ]}
+              aria-hidden="true"
+            />
           )}
           <p
             class:list={[
               "clamp-excerpt text-body leading-relaxed text-pretty text-ink-muted",
               excerptWidth,
+              hideExcerptMobile && "hidden md:block",
             ]}
           >
             {excerpt}
