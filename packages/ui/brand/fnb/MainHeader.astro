@@ -1,92 +1,349 @@
 ---
 /**
- * Header chính — nút menu mobile + Logo trái + Search bo tròn full width giữa
- * + pill CTA phải. Dính (sticky) ở mép trên và thu gọn lại khi trang đã cuộn.
+ * Header chính gộp 1 thanh — Logo trái + Dải Menu điều hướng giữa + CTA phải.
+ * Đã bỏ ô tìm kiếm (SearchBox) và tích hợp toàn bộ Menu danh mục (kèm Mega Menu)
+ * vào một thanh duy nhất, thay thế việc tách 2 thanh MainHeader và CategoryNav.
  *
- * Chỉ phục vụ khung F&B (CFC + Tetta) — header Catbox ở
- * @ui/brand/catbox/SiteHeader.astro.
- *
- * Nhãn/đích CTA lấy thẳng từ `headerCta` trong brands.ts — không rẽ nhánh
- * theo brand trong component (trước đây CFC bị ép cứng sang /login, một trang
- * không tồn tại). Màu nền lấy từ token `surface-pill` của từng theme.
- *
- * Nút hamburger nằm ở ĐÂY chứ không ở `CategoryNav` như trước: dưới md thanh
- * CategoryNav chỉ còn mỗi cái nút đó (menu ngang và pill khuyến mãi đều ẩn),
- * nên nó chiếm trọn một dải 48px ngay trên banner chỉ để chứa một nút. Gộp lên
- * đây thì mobile bớt hẳn một thanh.
+ * Hỗ trợ sticky clone thu gọn khi cuộn trang (chuẩn Woodmart / E-commerce).
+ * Mobile: Drawer hamburger trái + Logo giữa + CTA tư vấn phải.
  */
 import { Icon } from "astro-icon/components";
 import { BRANDS, type FnbBrandId } from "@config/brands";
 import type { NavEntry } from "@config/nav";
-import SearchBox from "@ui/primitives/SearchBox.astro";
 import BrandLogo from "@ui/brand/fnb/BrandLogo.astro";
 import MobileNav from "@ui/brand/fnb/MobileNav.astro";
 
 interface Props {
   brand: FnbBrandId;
-  /**
-   * Menu đã dựng sẵn ở BaseLayout (`buildNavEntries`) — chỉ dùng cho drawer
-   * mobile. Không tự dựng ở đây: CategoryNav phải nhận đúng danh sách này.
-   */
   items?: NavEntry[];
-  /** Pathname hiện tại để drawer tô mục đang xem */
   current?: string;
-  /** Biến thể sticky clone thu gọn khi cuộn trang */
   isStickyClone?: boolean;
 }
 
 const { brand, items = [], current = "/", isStickyClone = false } = Astro.props;
 const b = BRANDS[brand];
 const cta = b.headerCta;
+
+const isActive = (href: string) =>
+  href === "/" ? current === "/" : current.startsWith(href);
 ---
 
-{
-  isStickyClone ? (
-    <header
-      data-sticky-clone
-      class="fixed top-0 left-0 right-0 z-(--z-header) -translate-y-full border-b border-line-soft bg-surface shadow-(--shadow-header) transition-transform duration-(--duration-base) ease-(--ease-out-soft)"
+<header
+  data-sticky-clone={isStickyClone ? "" : undefined}
+  class:list={[
+    "border-b border-line-soft bg-surface transition-colors",
+    isStickyClone
+      ? "fixed top-0 left-0 right-0 z-(--z-header) -translate-y-full shadow-(--shadow-header) transition-transform duration-(--duration-base) ease-(--ease-out-soft)"
+      : "relative z-(--z-header)",
+  ]}
+>
+  {/* DESKTOP HEADER (md:flex) */}
+  <div
+    class:list={[
+      "site-container hidden md:flex items-center justify-between gap-4 lg:gap-8",
+      isStickyClone ? "h-(--height-header-compact)" : "h-(--height-header)",
+    ]}
+  >
+    {/* Cột trái: Logo */}
+    <a
+      href="/"
+      class="flex flex-none items-center gap-3 transition-opacity hover:opacity-95"
+      aria-label={`${b.name} — trang chủ`}
     >
-      <div class="site-container grid h-(--height-header-mobile-compact) grid-cols-[1fr_auto_1fr] items-center gap-3 md:flex md:h-(--height-header-compact) md:gap-6 lg:gap-10">
-        {items.length > 0 && <MobileNav {brand} {items} {current} class="md:hidden" />}
+      <BrandLogo brand={brand} compact={isStickyClone} />
+    </a>
 
-        <a href="/" class="flex flex-none items-center gap-3 justify-self-center md:justify-self-auto" aria-label={`${b.name} — trang chủ`}>
-          <BrandLogo brand={brand} compact />
-        </a>
+    {/* Cột giữa: Dải Navigation chính */}
+    <nav aria-label="Menu chính" class="flex-1 flex items-center justify-center min-w-0">
+      <ul class="flex items-center gap-3 lg:gap-6 flex-wrap">
+        {
+          items.map((item) => (
+            <li class="flex-none">
+              {item.isMega && item.megaParents && item.megaParents.length > 0 ? (
+                <details class="group/nav-item [&[open]>summary>.chev]:rotate-180">
+                  <summary
+                    class={`flex cursor-pointer list-none items-center gap-1.5 text-nav whitespace-nowrap select-none transition-colors py-2 ${
+                      isActive(item.href)
+                        ? "font-bold text-primary"
+                        : "font-semibold text-ink hover:text-primary"
+                    }`}
+                  >
+                    {item.icon && <Icon name={item.icon} class="size-4" aria-hidden="true" />}
+                    <span>{item.label}</span>
+                    <Icon
+                      name="lucide:chevron-down"
+                      class="chev size-3.5 text-ink-faint transition-transform duration-(--duration-fast)"
+                      aria-hidden="true"
+                    />
+                  </summary>
 
-        <div class="hidden w-full flex-1 md:block">
-          <SearchBox placeholder={b.searchPlaceholder} />
-        </div>
+                  {/* Mega Menu Dropdown */}
+                  <div class="mega-menu-wrapper absolute top-full left-0 right-0 z-(--z-header) w-full shadow-xl">
+                    <div class="site-container py-4">
+                      <div class="mega-menu-card flex rounded-2xl border border-line bg-surface-input shadow-lg overflow-hidden min-h-(--height-mega-min)">
+                        {/* Cột trái: Danh mục cha */}
+                        <div class="w-(--width-mega-sidebar) lg:w-(--width-mega-sidebar-lg) shrink-0 border-r border-line bg-surface-input py-3 flex flex-col gap-1.5">
+                          {item.megaParents.map((parent, idx) => (
+                            <a
+                              href={parent.href}
+                              data-parent-target={parent.slug}
+                              data-active={idx === 0 ? "true" : "false"}
+                              class="mega-parent-btn group/parent flex items-center justify-between gap-3 px-6 py-3 font-medium transition-all duration-(--duration-fast) text-sm cursor-pointer select-none text-ink data-[active=true]:bg-surface-hover data-[active=true]:text-ink data-[active=true]:shadow-xs data-[active=false]:hover:bg-surface-hover"
+                            >
+                              <div class="flex items-center gap-3 min-w-0">
+                                {parent.icon && (
+                                  <Icon
+                                    name={parent.icon}
+                                    class="size-4.5 shrink-0 transition-colors text-ink-muted"
+                                    aria-hidden="true"
+                                  />
+                                )}
+                                <span class="truncate">{parent.label}</span>
+                              </div>
+                              <Icon
+                                name="lucide:chevron-right"
+                                class="size-4 shrink-0 transition-all text-ink-faint group-data-[active=true]/parent:translate-x-0.5 group-hover/parent:translate-x-0.5"
+                                aria-hidden="true"
+                              />
+                            </a>
+                          ))}
+                        </div>
 
-        <a
-          href={cta.href}
-          class="pill hidden h-9 flex-none bg-surface-pill px-4 text-xs text-primary-deep transition-colors hover:bg-surface-pill-hover md:flex md:h-10 md:px-5 md:text-sm"
-        >
-          <Icon name="lucide:user" class="size-4" aria-hidden="true" />
-          <span class="hidden sm:inline">{cta.label}</span>
-        </a>
-      </div>
-    </header>
-  ) : (
-    <header class="border-b border-line-soft bg-surface">
-      <div class="site-container grid h-(--height-header-mobile) grid-cols-[1fr_auto_1fr] items-center gap-3 md:flex md:h-(--height-header) md:gap-6 lg:gap-10">
-        {items.length > 0 && <MobileNav {brand} {items} {current} class="md:hidden" />}
+                        {/* Khung phải: Danh mục con & Sản phẩm */}
+                        <div class="flex-1 min-w-0 p-6 bg-surface-input flex flex-col justify-between">
+                          {item.megaParents.map((parent, idx) => (
+                            <div
+                              data-parent-panel={parent.slug}
+                              data-active={idx === 0 ? "true" : "false"}
+                              class={`mega-panel flex-col justify-between h-full ${idx === 0 ? "flex" : "hidden"}`}
+                            >
+                              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-6">
+                                {parent.subcategories.map((sub) => (
+                                  <div class="flex flex-col gap-2 min-w-0">
+                                    <a
+                                      href={sub.href}
+                                      class="group/sub font-bold text-sm text-ink hover:text-primary transition-colors flex items-start justify-between gap-1 pb-1.5 border-b border-line-soft"
+                                    >
+                                      <div class="flex items-start gap-1.5">
+                                        {sub.icon && (
+                                          <Icon
+                                            name={sub.icon}
+                                            class="size-4 text-primary shrink-0 mt-0.5"
+                                            aria-hidden="true"
+                                          />
+                                        )}
+                                        <span>{sub.label}</span>
+                                      </div>
+                                      <Icon
+                                        name="lucide:arrow-right"
+                                        class="size-3 text-primary opacity-0 group-hover/sub:opacity-100 transition-opacity shrink-0 mt-0.5"
+                                        aria-hidden="true"
+                                      />
+                                    </a>
 
-        <a href="/" class="flex flex-none items-center gap-3 justify-self-center md:justify-self-auto" aria-label={`${b.name} — trang chủ`}>
-          <BrandLogo brand={brand} />
-        </a>
+                                    <ul class="flex flex-col gap-1.5 pt-0.5">
+                                      {sub.items.length > 0 ? (
+                                        sub.items.map((p) => (
+                                          <li class="min-w-0">
+                                            <a
+                                              href={p.href}
+                                              class="text-(length:--text-meta) leading-snug text-ink-muted hover:text-primary hover:translate-x-0.5 transition-all duration-(--duration-fast) block py-0.5"
+                                            >
+                                              {p.label}
+                                            </a>
+                                          </li>
+                                        ))
+                                      ) : (
+                                        <li>
+                                          <a
+                                            href={sub.href}
+                                            class="text-xs text-ink-faint hover:text-primary italic"
+                                          >
+                                            Xem chi tiết nhóm →
+                                          </a>
+                                        </li>
+                                      )}
+                                    </ul>
+                                  </div>
+                                ))}
+                              </div>
 
-        <div class="hidden w-full flex-1 md:block">
-          <SearchBox placeholder={b.searchPlaceholder} />
-        </div>
+                              <div class="pt-5 mt-6 border-t border-line flex items-center justify-between text-xs text-ink-faint">
+                                <span>
+                                  Xem tất cả các giải pháp bao bì thuộc nhóm{" "}
+                                  <strong>{parent.label}</strong>
+                                </span>
+                                <a
+                                  href={parent.href}
+                                  class="text-primary font-bold hover:underline inline-flex items-center gap-1"
+                                >
+                                  Xem danh mục này →
+                                </a>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </details>
+              ) : item.fallbackGroups && item.fallbackGroups.length > 0 ? (
+                <details class="group [&[open]>summary>.chev]:rotate-180">
+                  <summary
+                    class={`flex cursor-pointer list-none items-center gap-1.5 text-nav whitespace-nowrap py-2 ${
+                      isActive(item.href)
+                        ? "font-bold text-primary"
+                        : "font-semibold text-ink hover:text-primary"
+                    }`}
+                  >
+                    {item.icon && <Icon name={item.icon} class="size-4" aria-hidden="true" />}
+                    <span>{item.label}</span>
+                    <Icon
+                      name="lucide:chevron-down"
+                      class="chev size-3.5 text-ink-faint transition-transform duration-(--duration-fast)"
+                      aria-hidden="true"
+                    />
+                  </summary>
+                  <div class="absolute top-full left-0 right-0 z-(--z-header) w-full border-y border-line bg-surface shadow-lg">
+                    <div class="site-container grid gap-x-6 gap-y-4 py-5 sm:grid-cols-2 lg:grid-cols-4">
+                      {item.fallbackGroups.map((g) => (
+                        <div class="min-w-0">
+                          {g.items.map((c) => (
+                            <a
+                              href={c.href}
+                              class="block rounded-chip px-3 py-2 text-sm font-medium text-ink transition-colors hover:bg-surface-tint hover:text-primary"
+                            >
+                              {c.label}
+                            </a>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </details>
+              ) : (
+                <a
+                  href={item.href}
+                  class={`flex items-center gap-1.5 text-nav whitespace-nowrap transition-colors py-2 ${
+                    isActive(item.href)
+                      ? "font-bold text-primary"
+                      : "font-semibold text-ink hover:text-primary"
+                  }`}
+                >
+                  {item.icon && <Icon name={item.icon} class="size-4" aria-hidden="true" />}
+                  <span>{item.label}</span>
+                </a>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
 
-        <a
-          href={cta.href}
-          class="pill hidden h-11 flex-none bg-surface-pill px-5 text-sm text-primary-deep transition-colors hover:bg-surface-pill-hover md:flex"
-        >
-          <Icon name="lucide:user" class="size-4" aria-hidden="true" />
-          <span class="hidden sm:inline">{cta.label}</span>
-        </a>
-      </div>
-    </header>
-  )
-}
+    {/* Cột phải: CTA */}
+    <a
+      href={cta.href}
+      class="pill flex-none h-10 bg-surface-pill px-5 text-sm font-semibold text-primary-deep transition-all hover:bg-surface-pill-hover hover:scale-[1.02] flex items-center gap-2"
+    >
+      <Icon name="lucide:phone-call" class="size-4 text-primary" aria-hidden="true" />
+      <span>{cta.label}</span>
+    </a>
+  </div>
+
+  {/* MOBILE HEADER (md:hidden) */}
+  <div
+    class:list={[
+      "site-container flex items-center justify-between gap-3 md:hidden",
+      isStickyClone ? "h-(--height-header-mobile-compact)" : "h-(--height-header-mobile)",
+    ]}
+  >
+    {/* Trái: Hamburger Drawer */}
+    <div class="flex-none">
+      {items.length > 0 && <MobileNav {brand} {items} {current} />}
+    </div>
+
+    {/* Giữa: Logo */}
+    <a
+      href="/"
+      class="flex flex-1 items-center justify-center min-w-0"
+      aria-label={`${b.name} — trang chủ`}
+    >
+      <BrandLogo brand={brand} compact />
+    </a>
+
+    {/* Phải: Nút gọi / liên hệ nhanh */}
+    <a
+      href={cta.href}
+      class="pill flex-none h-8 px-3 bg-surface-pill text-xs font-semibold text-primary-deep flex items-center gap-1.5 transition-colors hover:bg-surface-pill-hover"
+      aria-label={cta.label}
+    >
+      <Icon name="lucide:phone" class="size-3.5 text-primary" aria-hidden="true" />
+      <span class="hidden xs:inline">Tư vấn</span>
+    </a>
+  </div>
+</header>
+
+<script is:inline>
+  // Chuyển đổi tab Danh mục cha -> Khung sản phẩm trong Mega Menu
+  document.addEventListener("DOMContentLoaded", () => {
+    const wrappers = document.querySelectorAll(".mega-menu-wrapper");
+    wrappers.forEach((wrapper) => {
+      const buttons = wrapper.querySelectorAll(".mega-parent-btn");
+      const panels = wrapper.querySelectorAll(".mega-panel");
+      const firstSlug = buttons[0]?.getAttribute("data-parent-target");
+      const details = wrapper.closest("details");
+
+      function activate(targetSlug) {
+        buttons.forEach((btn) => {
+          const isTarget = btn.getAttribute("data-parent-target") === targetSlug;
+          btn.setAttribute("data-active", isTarget ? "true" : "false");
+        });
+
+        panels.forEach((panel) => {
+          const isTarget = panel.getAttribute("data-parent-panel") === targetSlug;
+          panel.setAttribute("data-active", isTarget ? "true" : "false");
+          if (isTarget) {
+            panel.classList.remove("hidden");
+            panel.classList.add("flex");
+          } else {
+            panel.classList.add("hidden");
+            panel.classList.remove("flex");
+          }
+        });
+      }
+
+      buttons.forEach((btn) => {
+        btn.addEventListener("mouseenter", () => {
+          const slug = btn.getAttribute("data-parent-target");
+          if (slug) activate(slug);
+        });
+
+        btn.addEventListener("focus", () => {
+          const slug = btn.getAttribute("data-parent-target");
+          if (slug) activate(slug);
+        });
+      });
+
+      if (details && firstSlug) {
+        details.addEventListener("toggle", () => {
+          if (details.open) activate(firstSlug);
+        });
+      }
+    });
+
+    // Đóng dropdown khi click ra ngoài
+    document.addEventListener("click", (e) => {
+      const openDetails = document.querySelectorAll("header details[open]");
+      openDetails.forEach((details) => {
+        const hasCard = details.querySelector(".mega-menu-card");
+        const insideContent = hasCard
+          ? e.target.closest("summary")?.parentElement === details ||
+            (e.target.closest(".mega-menu-card") && details.contains(e.target))
+          : details.contains(e.target);
+        if (!insideContent || e.target.closest("a")) {
+          details.removeAttribute("open");
+        }
+      });
+    });
+  });
+</script>

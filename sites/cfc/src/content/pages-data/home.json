@@ -20,7 +20,7 @@
   },
   "bestsellers": {
     "title": "Bán chạy",
-    "limit": 10
+    "limit": 50
   },
   "news": {
     "title": "Tin Tức",

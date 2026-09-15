@@ -66,16 +66,27 @@
    * `bg-surface` gần như tàng hình, chỉ còn mỗi đường viền đánh dấu. */
   --color-surface-card: #FFFFFF;
 
+  /* Overlay "Xem nhanh" trượt lên khi hover ProductCard (layout minimal) —
+   * nâu kraft chocolate cùng tông `primary-deep`, hạ alpha để ảnh sản phẩm
+   * còn lộ mờ phía sau thay vì bị che kín màu đặc. */
+  --color-overlay-quickview: color-mix(in srgb, var(--color-primary-deep) 88%, transparent);
+
   /* Màu thanh trình duyệt (<meta name="theme-color">) */
   --color-theme:         #E67E22;
 
-  --font-display: "Roboto", ui-sans-serif, system-ui, sans-serif;
-  --font-body:    "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Montserrat", sans-serif;
+  --font-body:    "Montserrat", sans-serif;
 
   /* Bo góc nhẹ riêng cho ảnh minh họa (vd. cặp ảnh "Tổng quan về công ty" ở
    * about-us) — tách khỏi `--radius-panel` (0px, cố ý thẳng góc cho card/section
    * của brand CFC) vì đây là khối ảnh độc lập, không phải panel/card. */
   --radius-image-soft: 12px;
+
+  /* Banner Hero full màn hình cho CFC */
+  --height-hero-mobile: 440px;
+  --height-hero-sm: 520px;
+  --height-hero: 75vh;
+  --height-hero-min: 600px;
 }
 
 :root {

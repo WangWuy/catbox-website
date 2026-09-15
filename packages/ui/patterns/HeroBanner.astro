@@ -38,21 +38,20 @@ interface Props {
 const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } = Astro.props;
 ---
 
-{/* Padding đáy chỉ chừa từ `lg` — đó là bề ngang duy nhất dải stat hiện ra
-    (dưới `lg` khối stat bị ẩn hẳn, xem chú thích ở khối stat bên dưới). */}
-<section class:list={["px-2 pt-2", stats && stats.length > 0 && "lg:pb-14"]}>
-  <div class="relative">
-    <div class="relative overflow-hidden rounded-panel bg-surface-tint">
+{/* Banner full màn hình — loại bỏ padding ngoài và bo góc để ảnh tràn viền edge-to-edge. */}
+<section class:list={["w-full", stats && stats.length > 0 && "lg:pb-14"]}>
+  <div class="relative w-full">
+    <div class="relative overflow-hidden bg-surface-tint">
       <SmartImage
         {assets}
         src={image}
         alt=""
-        width={1536}
-        height={1024}
-        ratio="16x10"
+        width={1920}
+        height={1080}
+        ratio="16x9"
         priority
         sizes="100vw"
-        class="h-(--height-hero-mobile) w-full object-cover sm:h-(--height-hero-sm) md:h-(--height-hero)"
+        class="h-(--height-hero-mobile) w-full object-cover sm:h-(--height-hero-sm) md:h-(--height-hero) md:min-h-(--height-hero-min,580px)"
       />
 
       <!-- Gradient từ trái sang giúp chữ đọc được trên mọi ảnh khách gửi sau -->
@@ -131,7 +130,7 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
         /* Chỉ hiện từ `lg` — bề ngang duy nhất 5 thẻ xếp gọn MỘT hàng chờm lên
            banner. Dưới `lg` ẩn hẳn: xếp 2–3 cột thì dải stat cao ~280px, đẩy
            hero xuống và ngốn trọn khung nhìn đầu tiên trên mobile. */
-        <div class="hidden px-2 lg:absolute lg:inset-x-0 lg:-bottom-14 lg:block">
+        <div class="hidden lg:absolute lg:inset-x-0 lg:-bottom-14 lg:block">
           <div class="site-container">
             <div data-reveal-group class="grid grid-cols-5 gap-4">
               {stats.map((s) => (

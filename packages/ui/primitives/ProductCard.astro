@@ -68,7 +68,7 @@ const minimal = layout === "minimal";
       height={600}
       ratio="1x1"
       {variant}
-      class="aspect-square w-full object-cover transition-transform duration-(--duration-slow) group-hover:scale-(--scale-card-hover)"
+      class="aspect-square w-full object-cover"
     />
     {
       badge && !minimal && (
@@ -77,6 +77,15 @@ const minimal = layout === "minimal";
         </span>
       )
     }
+    {/* Overlay "Xem nhanh" — chỉ hiện ở layout minimal khi hover */}
+    {minimal && (
+      <span
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center bg-(--color-overlay-quickview) py-3 text-xs font-bold uppercase tracking-widest text-white transition-transform duration-(--duration-base) ease-out group-hover:translate-y-0"
+      >
+        Xem nhanh
+      </span>
+    )}
   </a>
 
   {
