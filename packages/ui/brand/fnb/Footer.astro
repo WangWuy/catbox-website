@@ -216,7 +216,7 @@ const copy = b.footer;
   <div class="border-t border-white/12">
     <div class="site-container flex items-center justify-between gap-4 py-5">
       <p class="text-meta text-white/50">
-        © {new Date().getFullYear()} {b.short} — {b.legalName}
+        © {new Date().getFullYear()} {b.short}{b.legalName && b.legalName !== b.short ? ` — ${b.legalName}` : ""}
       </p>
       <a
         href="#top"

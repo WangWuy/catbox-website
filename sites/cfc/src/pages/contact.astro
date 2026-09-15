@@ -19,8 +19,9 @@ import { Icon } from "astro-icon/components";
 import { parseContact } from "@config/pages";
 import Layout from "../layouts/Layout.astro";
 import contactData from "../content/pages-data/contact.json";
-import PageHero from "@ui/patterns/PageHero.astro";
+import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 import SmartImage from "@ui/primitives/SmartImage.astro";
+import TrustPanel from "@ui/shared/TrustPanel.astro";
 import { BRANDS } from "@config/brands";
 import { formatAddress, formatHours } from "@config/settings";
 
@@ -54,9 +55,9 @@ const places = b.locations.map((l, i) => ({
   email: b.email,
   lines:
     i === 0
-      ? [{ label: page.places.hotlineLabel, value: b.hotline, href: b.hotlineHref }]
-      : b.salesReps.slice(0, page.places.salesLabels.length).map((r, j) => ({
-          label: page.places.salesLabels[j],
+      ? [{ label: page.places?.hotlineLabel ?? "Hotline", value: b.hotline, href: b.hotlineHref }]
+      : b.salesReps.slice(0, page.places?.salesLabels.length ?? 0).map((r, j) => ({
+          label: page.places?.salesLabels[j] ?? "Sale",
           value: `${r.phone} (${r.name})`,
           href: tel(r.phone),
         })),
@@ -104,73 +105,80 @@ const fieldClass =
 ---
 
 <Layout title={page.seo.title} {description} {jsonLd}>
-  <PageHero
-    title={page.hero.title}
-    crumbs={[{ label: page.hero.title }]}
-    {assets}
-    image={page.hero.image}
-    imageAlt={page.hero.imageAlt}
-  />
+  <Breadcrumb items={[{ label: page.seo.title }]} />
 
-  {/* --- 2 thẻ địa điểm: ảnh vuông bên trái, khối chữ bên phải ------------ */}
-  <section class="site-container mt-16 grid gap-8 sm:grid-cols-2 sm:gap-10">
-    {
-      places.map((p) => (
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
-          {/* Khung vuông (size- đặt cùng bề ngang/cao) + rounded-full → hình
-              tròn. Ảnh bên trong object-cover nên cắt theo tâm, không méo.
-              Hàng dùng `items-center`: khối chữ thấp hơn hình tròn nên neo
-              đỉnh (items-start) sẽ trông lệch lên. */}
-          <div class="size-(--size-contact-place-image-sm) flex-none overflow-hidden rounded-full bg-surface-tint sm:size-(--size-contact-place-image)">
-            <SmartImage
-              {assets}
-              src={p.image}
-              alt={`${b.name} — ${p.title}`}
-              width={580}
-              height={580}
-              ratio="1x1"
-              class="aspect-square size-full object-cover"
-            />
-          </div>
+  {/* --- Khối năng lực & cam kết (TrustPanel) hoặc 2 thẻ địa điểm --------- */}
+  {
+    page.trust ? (
+      <div class="mt-6 sm:mt-10">
+        <TrustPanel
+          brand="cfc"
+          {assets}
+          image={page.trust.image}
+          imageAlt={page.trust.imageAlt}
+          eyebrow={page.trust.eyebrow}
+          heading={page.trust.title}
+          headingColor={page.trust.titleColor}
+          body={page.trust.body}
+          stats={page.trust.stats}
+          cta={page.trust.cta}
+        />
+      </div>
+    ) : (
+      <section class="site-container mt-16 grid gap-8 sm:grid-cols-2 sm:gap-10">
+        {places.map((p) => (
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
+            <div class="size-(--size-contact-place-image-sm) flex-none overflow-hidden rounded-full bg-surface-tint sm:size-(--size-contact-place-image)">
+              <SmartImage
+                {assets}
+                src={p.image}
+                alt={`${b.name} — ${p.title}`}
+                width={580}
+                height={580}
+                ratio="1x1"
+                class="aspect-square size-full object-cover"
+              />
+            </div>
 
-          <div class="flex flex-col gap-3">
-            <h2 class="text-(length:--text-contact-place-title) leading-snug font-extrabold">
-              {p.title}
-            </h2>
+            <div class="flex flex-col gap-3">
+              <h2 class="text-(length:--text-contact-place-title) leading-snug font-extrabold">
+                {p.title}
+              </h2>
 
-            <p class="text-body leading-relaxed text-ink-muted">{p.address}</p>
+              <p class="text-body leading-relaxed text-ink-muted">{p.address}</p>
 
-            <p class="text-body leading-relaxed text-ink-muted">
-              <strong class="font-bold text-ink">{p.hours.days}</strong>
-              <br />
-              {p.hours.time}
-            </p>
+              <p class="text-body leading-relaxed text-ink-muted">
+                <strong class="font-bold text-ink">{p.hours.days}</strong>
+                <br />
+                {p.hours.time}
+              </p>
 
-            <p class="flex flex-col gap-1 text-body leading-relaxed text-ink-muted">
-              <a
-                href={`mailto:${p.email}`}
-                class="font-bold text-ink transition-colors hover:text-primary"
-              >
-                {p.email}
-              </a>
-              {p.lines.map((l) => (
+              <p class="flex flex-col gap-1 text-body leading-relaxed text-ink-muted">
                 <a
-                  href={l.href}
-                  data-analytics="click_hotline"
-                  class="transition-colors hover:text-primary"
+                  href={`mailto:${p.email}`}
+                  class="font-bold text-ink transition-colors hover:text-primary"
                 >
-                  {l.label} {l.value}
+                  {p.email}
                 </a>
-              ))}
-            </p>
+                {p.lines.map((l) => (
+                  <a
+                    href={l.href}
+                    data-analytics="click_hotline"
+                    class="transition-colors hover:text-primary"
+                  >
+                    {l.label} {l.value}
+                  </a>
+                ))}
+              </p>
+            </div>
           </div>
-        </div>
-      ))
-    }
-  </section>
+        ))}
+      </section>
+    )
+  }
 
   {/* --- Hàng dưới: form | FAQ ------------------------------------------- */}
-  <div class="site-container mt-14 grid gap-10 lg:grid-cols-(--cols-contact-main) lg:gap-12">
+  <div id="contact-form" class="site-container mt-14 grid scroll-mt-10 gap-10 lg:grid-cols-(--cols-contact-main) lg:gap-12">
     <section class="flex flex-col gap-5">
       <h2 class="text-(length:--text-contact-place-title) font-extrabold tracking-tight uppercase">
         {page.form.title}

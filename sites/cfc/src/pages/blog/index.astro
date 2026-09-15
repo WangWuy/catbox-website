@@ -6,8 +6,10 @@ import { getCollection } from "astro:content";
 import { parseBlogPage } from "@config/pages";
 import Layout from "../../layouts/Layout.astro";
 import blogData from "../../content/pages-data/blog.json";
-import PageHero from "@ui/patterns/PageHero.astro";
+import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 import PostCard from "@ui/primitives/PostCard.astro";
+import BlogSidebar from "@ui/patterns/BlogSidebar.astro";
+import ClientPagination from "@ui/primitives/ClientPagination.astro";
 
 const assets = import.meta.glob<{ default: ImageMetadata }>(
   "/src/assets/**/*.{png,jpg,jpeg,webp,avif}",
@@ -18,36 +20,63 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, z) => z.data.date.getTime() - a.data.date.getTime(),
 );
 
+const allProducts = await getCollection("products", ({ data }) => !data.draft);
+const hotProducts = allProducts.filter((p) => p.data.bestseller).slice(0, 5);
+const sidebarProducts =
+  hotProducts.length > 0 ? hotProducts : allProducts.slice(0, 5);
+const hotArticles = posts.slice(0, 5);
+
 const page = parseBlogPage(blogData);
 
-// Chỉ còn dùng cho <meta name="description"> ở Layout — banner không hiện mô tả.
 const description = page.seo.description;
 ---
 
 <Layout title={page.seo.title} {description}>
-  <PageHero
-    title={page.heroTitle}
-    crumbs={[{ label: page.crumbLabel }]}
-    {assets}
-    image={page.heroImage}
-  />
+  <Breadcrumb items={[{ label: page.crumbLabel }]} />
 
-  <div class="site-container pt-10 pb-16">
-    <div class="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-      {
-        posts.map((p, i) => (
-          <PostCard
-            {assets}
-            as="h2"
-            title={p.data.title}
-            href={`/blog/${p.id}`}
-            date={p.data.date}
-            cover={p.data.cover}
-            description={p.data.description}
-            variant={i + 1}
-          />
-        ))
-      }
+  <div class="site-container pt-4 pb-16">
+    <h1 class="sr-only">{page.heroTitle}</h1>
+
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_264px]">
+      <!-- Cột trái: Lưới bài viết 2 cột x 5 dòng (10 bài/trang) -->
+      <div class="lg:border-r lg:border-line lg:pr-10" data-pagination-container>
+        <div
+          id="blog-posts-grid"
+          class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2"
+        >
+          {
+            posts.map((p, i) => (
+              <div data-blog-card>
+                <PostCard
+                  {assets}
+                  as="h2"
+                  title={p.data.title}
+                  href={`/blog/${p.id}`}
+                  date={p.data.date}
+                  cover={p.data.cover}
+                  description={p.data.description}
+                  variant={i + 1}
+                />
+              </div>
+            ))
+          }
+        </div>
+
+        <ClientPagination
+          targetSelector="[data-blog-card]"
+          perPage={10}
+          scrollTargetSelector="#blog-posts-grid"
+        />
+      </div>
+
+      <!-- Cột phải: Sidebar (chiều rộng tối đa 264px) -->
+      <div class="w-full border-t border-line pt-10 lg:border-t-0 lg:pt-0">
+        <BlogSidebar
+          {assets}
+          products={sidebarProducts}
+          articles={hotArticles}
+        />
+      </div>
     </div>
   </div>
 </Layout>

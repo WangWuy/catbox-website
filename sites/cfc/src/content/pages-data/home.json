@@ -12,10 +12,10 @@
     "hashtag": "ưu đãi cho chuỗi",
     "stats": [
       { "icon": "lucide:package", "num": "4.400.000", "label": "Chiếc/năm" },
-      { "icon": "lucide:folder-open", "num": "88.000.000", "label": "Chiếc/năm" },
+      { "icon": "lucide:paper-bag", "num": "88.000.000", "label": "Chiếc/năm" },
       { "icon": "lucide:shopping-bag", "num": "990.000", "label": "Chiếc/năm" },
-      { "icon": "lucide:gift", "num": "6.600.000", "label": "Chiếc/năm" },
-      { "icon": "lucide:droplet", "num": "33.000", "label": "Cuộn/năm" }
+      { "icon": "lucide:boxes", "num": "6.600.000", "label": "Chiếc/năm" },
+      { "icon": "lucide:scroll", "num": "33.000", "label": "Cuộn/năm" }
     ]
   },
   "bestsellers": {
@@ -23,9 +23,9 @@
     "limit": 50
   },
   "news": {
-    "title": "Tin Tức",
-    "action": { "label": "Xem thêm tin →", "href": "/blog" },
-    "limit": 4
+    "title": "Tin tức – Xu hướng thiết kế",
+    "action": { "label": "Khám phá thêm ›", "href": "/blog" },
+    "limit": 3
   },
   "reels": {
     "label": "Mẫu túi bánh mì que in 4 màu theo yêu cầu",

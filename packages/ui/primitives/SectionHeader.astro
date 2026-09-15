@@ -55,6 +55,8 @@ interface Props {
    * trong CSS nên `mb-7` vẫn thắng, đè kiểu đó im lặng không có tác dụng.
    */
   spacing?: "default" | "none";
+  /** Căn lề tiêu đề: 'left' (mặc định, trái trên desktop) hoặc 'center' (luôn căn giữa mọi màn hình) */
+  align?: "left" | "center";
   class?: string;
 }
 
@@ -69,6 +71,7 @@ const {
   action,
   actionTone = "white",
   spacing = "default",
+  align = "left",
   class: className = "",
 } = Astro.props;
 
@@ -78,12 +81,25 @@ const accents = accent ? (Array.isArray(accent) ? accent : [accent]) : [];
 /* Không bật `typing` thì chỉ hiện từ đầu tiên: những từ sau là các vòng của
  * hiệu ứng, in hết ra một dòng là sai nghĩa tiêu đề. */
 const accentText = accents[0];
+const isCenter = align === "center";
 ---
 
 <div
-  class={`${spacing === "none" ? "" : "mb-7"} flex flex-col items-center gap-4 text-center md:flex-row md:flex-wrap md:items-center md:justify-between md:text-left ${className}`}
+  class:list={[
+    spacing === "none" ? "" : "mb-7",
+    "flex flex-col items-center gap-4 text-center",
+    isCenter
+      ? "justify-center"
+      : "md:flex-row md:flex-wrap md:items-center md:justify-between md:text-left",
+    className,
+  ]}
 >
-  <div class="flex flex-col items-center gap-1.5 md:items-start">
+  <div
+    class:list={[
+      "flex flex-col items-center gap-1.5",
+      !isCenter && "md:items-start",
+    ]}
+  >
     <h2
       {id}
       class="text-(length:--text-section-mobile) font-extrabold tracking-tight uppercase md:text-(length:--text-section)"

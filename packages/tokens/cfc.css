@@ -25,8 +25,11 @@
   --color-ink-muted:     #564337;  /* Xám tro */
   --color-ink-faint:     #9A938B;
 
-  --color-line:          #EDEDED;
-  --color-line-soft:     #F1F1F1;
+  /* Đường line ngăn cách — chỉnh sang tông xám kraft ấm để có độ tương phản
+   * tự nhiên trên nền `surface` beige (#F2EFEA) kèm texture; không dùng #EDEDED
+   * của nền trắng vì trùng độ sáng khiến viền bị chìm/tàng hình. */
+  --color-line:          #D5CDC2;
+  --color-line-soft:     #E2DDD5;
 
   /* Nền phụ cho các thanh/pill của khung F&B. Tách thành token riêng vì CFC
    * dùng xám trung tính (theo mockup Thái Dương), khác hẳn beige kraft của

@@ -1,97 +1,154 @@
 ---
 /**
- * Khối "hình ảnh + lời cam kết" đứng TRƯỚC form tư vấn (concept CFC trang Liên hệ).
- *
- * Vì sao đứng trước form: khách vào trang liên hệ ở trạng thái còn phân vân,
- * form trần chỉ là chi phí phải trả. Ảnh xưởng thật + số liệu năng lực trả lời
- * "vì sao tin được" ngay trước ô nhập đầu tiên.
- *
- * Số liệu đọc từ `BRANDS[brand].stats` chứ không nhận qua props — trang
- * /about-us dùng chung nguồn đó, hai trang lệch số là mồi GEO sai. Brand chưa
- * có số liệu thì lưới tự ẩn, không hiện khung rỗng.
+ * Khối "hình ảnh + lời cam kết & số liệu năng lực" (Trust / About Panel)
+ * Theo thiết kế 2 cột:
+ * - Cột trái: ảnh chân dung dọc bo tròn mềm mại (rounded-[28px])
+ * - Cột phải: eyebrow, tiêu đề lớn, vạch màu vàng nhấn, lưới 4 số liệu năng lực nổi bật,
+ *   đoạn giới thiệu và nút kêu gọi hành động (CTA).
  */
 import type { AssetMap } from "../lib/images";
 import SmartImage from "@ui/primitives/SmartImage.astro";
 import { BRANDS, type BrandId } from "@config/brands";
+import { Icon } from "astro-icon/components";
 
-interface Props {
-  brand: BrandId;
-  assets: AssetMap;
-  /** Ảnh cam kết — ảnh xưởng/đội ngũ thật, không phải ảnh sản phẩm */
-  image?: string;
-  /** Tiêu đề đậm bên phải ảnh */
-  heading: string;
-  /** Các đoạn mô tả dưới lưới số liệu */
-  body: string[];
-  cta?: { label: string; href: string };
+interface PanelStat {
+  num: string;
+  label: string;
+  color?: string;
+  highlight?: boolean;
 }
 
-/** Link ra ngoài site thì mở tab mới (CTA hay trỏ sang Zalo/Messenger). */
+interface Props {
+  brand?: BrandId;
+  assets: AssetMap;
+  /** Ảnh cam kết — ảnh xưởng/đội ngũ thật */
+  image?: string;
+  imageAlt?: string;
+  eyebrow?: string;
+  /** Tiêu đề đậm bên phải ảnh */
+  heading: string;
+  headingColor?: string;
+  /** Các đoạn mô tả dưới lưới số liệu */
+  body: string[];
+  stats?: PanelStat[];
+  cta?: { label: string; href: string };
+  class?: string;
+}
+
 const isExternal = (href: string) => /^https?:\/\//.test(href);
 
-const { brand, assets, image, heading, body, cta } = Astro.props;
+const {
+  brand = "cfc",
+  assets,
+  image,
+  imageAlt,
+  eyebrow,
+  heading,
+  headingColor,
+  body,
+  stats: customStats,
+  cta,
+  class: className = "",
+} = Astro.props;
+
 const b = BRANDS[brand];
-const stats = b.stats;
+const stats: PanelStat[] =
+  customStats && customStats.length > 0
+    ? customStats
+    : b.stats.map((s) => ({ ...s, color: undefined }));
 ---
 
 <section
-  class="site-container grid items-start gap-8 lg:grid-cols-2 lg:gap-12"
+  class:list={[
+    "site-container grid gap-8 lg:grid-cols-2 lg:gap-14 lg:items-stretch",
+    className,
+  ]}
   aria-labelledby="trust-heading"
 >
-  <div class="overflow-hidden rounded-panel bg-surface-tint">
-    <SmartImage
-      {assets}
-      src={image}
-      alt={`${b.name} — đội ngũ và nhà xưởng`}
-      width={640}
-      height={480}
-      ratio="4x3"
-      class="aspect-4/3 w-full object-cover"
-    />
+  {/* Cột trái: Khung ảnh kích thước 565 x 705 (góc thẳng vuông vức) */}
+  <div class="relative mx-auto w-full max-w-[565px] lg:mx-0">
+    <div class="overflow-hidden bg-surface-tint">
+      <SmartImage
+        {assets}
+        src={image}
+        alt={imageAlt ?? `${b.name} — đội ngũ và nhà xưởng`}
+        width={565}
+        height={706}
+        ratio="3x4"
+        class="aspect-[565/706] w-full object-cover"
+      />
+    </div>
   </div>
 
-  <div class="flex flex-col gap-5">
-    <h2 id="trust-heading" class="text-2xl leading-snug font-extrabold text-primary">
-      {heading}
-    </h2>
-    {/* Gạch chân ngắn dưới tiêu đề, theo concept */}
-    <span class="h-(--height-rule-accent) w-(--width-rule-accent) bg-accent" aria-hidden="true"
-    ></span>
+  {/* Cột phải: Nội dung & lưới số liệu kéo dãn đều theo chiều cao ảnh */}
+  <div class="flex flex-col justify-between gap-6 py-0.5 lg:h-full">
+    {/* Cụm trên: Eyebrow + Tiêu đề + Vạch vàng */}
+    <div class="flex flex-col gap-4">
+      {
+        eyebrow && (
+          <span class="text-base font-semibold text-ink tracking-tight">
+            {eyebrow}
+          </span>
+        )
+      }
 
+      <h2
+        id="trust-heading"
+        class:list={[
+          "text-2xl font-bold leading-snug tracking-tight md:text-3xl",
+          headingColor ?? "text-ink",
+        ]}
+        set:html={heading}
+      />
+
+      {/* Gạch chân màu vàng trang trí */}
+      <span class="h-1 w-16 rounded-full bg-accent" aria-hidden="true"></span>
+    </div>
+
+    {/* Cụm giữa: Lưới 4 số liệu năng lực */}
     {
       stats.length > 0 && (
-        <dl class="grid grid-cols-2 gap-x-6 gap-y-5">
+        <dl class="grid grid-cols-2 gap-x-8 gap-y-7 py-2">
           {stats.map((s) => (
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col items-center text-center gap-1.5">
               <dt class="sr-only">{s.label}</dt>
               <dd
                 class:list={[
-                  "font-display text-3xl leading-none font-extrabold tracking-tight",
-                  s.highlight ? "text-cta" : "text-primary",
+                  "font-display text-4xl md:text-5xl font-bold tracking-tight leading-none",
+                  s.color ?? (s.highlight ? "text-cta" : "text-[#0088cc]"),
                 ]}
               >
                 {s.num}
               </dd>
-              <span class="text-meta font-medium text-ink-muted">{s.label}</span>
+              <span class="text-sm font-medium text-ink">
+                {s.label}
+              </span>
             </div>
           ))}
         </dl>
       )
     }
 
-    {body.map((p) => <p class="text-meta leading-relaxed text-ink-muted">{p}</p>)}
+    {/* Cụm dưới: Đoạn văn mô tả neo ở đáy */}
+    <div class="flex flex-col gap-3">
+      {body.map((p) => (
+        <p class="text-sm leading-relaxed text-ink-muted md:text-body" set:html={p} />
+      ))}
+    </div>
 
     {
       cta && (
-        <a
-          href={cta.href}
-          target={isExternal(cta.href) ? "_blank" : undefined}
-          rel={isExternal(cta.href) ? "noopener" : undefined}
-          data-analytics={cta.href.includes("zalo.me") ? "click_zalo" : undefined}
-          class="pill inline-flex h-11 w-fit items-center bg-cta px-7 text-label font-semibold text-white transition-colors hover:bg-cta-hover"
-        >
-          {cta.label}
-        </a>
+        <div class="pt-2">
+          <a
+            href={cta.href}
+            target={isExternal(cta.href) ? "_blank" : undefined}
+            rel={isExternal(cta.href) ? "noopener" : undefined}
+            class="pill inline-flex h-11 items-center gap-2 bg-[#e0006c] px-7 text-sm font-bold text-white transition-all hover:bg-[#c2005d] hover:shadow-md"
+          >
+            <span>{cta.label}</span>
+            <Icon name="lucide:chevron-right" class="size-4" aria-hidden="true" />
+          </a>
+        </div>
       )
     }
   </div>

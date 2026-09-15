@@ -67,7 +67,7 @@ export const homepageSchema = z.object({
   news: z.object({
     title: z.string(),
     action: cta,
-    limit: z.number().int().positive().default(4),
+    limit: z.number().int().positive().default(3),
   }),
   /** Khối video trước Footer */
   reels: z.object({
@@ -361,12 +361,40 @@ export const contactSchema = z.object({
    * Google không bao giờ nói khác nhau. Ở đây chỉ còn nhãn của các dòng liên hệ
    * thuộc riêng cách bày trang này.
    */
-  places: z.object({
-    /** Nhãn dòng hotline trên thẻ cơ sở đầu tiên */
-    hotlineLabel: z.string(),
-    /** Nhãn cho từng nhân viên sale trên các thẻ cơ sở còn lại */
-    salesLabels: z.array(z.string()).default([]),
-  }),
+  places: z
+    .object({
+      /** Nhãn dòng hotline trên thẻ cơ sở đầu tiên */
+      hotlineLabel: z.string(),
+      /** Nhãn cho từng nhân viên sale trên các thẻ cơ sở còn lại */
+      salesLabels: z.array(z.string()).default([]),
+    })
+    .optional(),
+  trust: z
+    .object({
+      eyebrow: z.string().optional(),
+      title: z.string(),
+      titleColor: z.string().optional(),
+      image: z.string().optional(),
+      imageAlt: z.string().optional(),
+      stats: z
+        .array(
+          z.object({
+            num: z.string(),
+            label: z.string(),
+            color: z.string().optional(),
+            highlight: z.boolean().optional(),
+          }),
+        )
+        .default([]),
+      body: z.array(z.string()).default([]),
+      cta: z
+        .object({
+          label: z.string(),
+          href: z.string(),
+        })
+        .optional(),
+    })
+    .optional(),
   form: z.object({ title: z.string() }),
   faq: z.object({
     title: z.string(),

@@ -11,8 +11,10 @@ export const prerender = true;
 import type { ImageMetadata } from "astro";
 import { getCollection } from "astro:content";
 import Layout from "../../../layouts/Layout.astro";
-import PageHero from "@ui/patterns/PageHero.astro";
+import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 import PostCard from "@ui/primitives/PostCard.astro";
+import BlogSidebar from "@ui/patterns/BlogSidebar.astro";
+import ClientPagination from "@ui/primitives/ClientPagination.astro";
 import { collectTags, postsByTag } from "@config/blog";
 import { fillTemplate, parseBlogPage } from "@config/pages";
 import blogData from "../../../content/pages-data/blog.json";
@@ -32,6 +34,16 @@ const assets = import.meta.glob<{ default: ImageMetadata }>(
 
 const { tag, posts } = Astro.props;
 
+const allProducts = await getCollection("products", ({ data }) => !data.draft);
+const hotProducts = allProducts.filter((p) => p.data.bestseller).slice(0, 5);
+const sidebarProducts =
+  hotProducts.length > 0 ? hotProducts : allProducts.slice(0, 5);
+
+const allPosts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, z) => z.data.date.getTime() - a.data.date.getTime(),
+);
+const hotArticles = allPosts.slice(0, 5);
+
 const page = parseBlogPage(blogData);
 const description = fillTemplate(page.tagDescriptionTemplate, {
   tag: tag.label,
@@ -40,36 +52,58 @@ const description = fillTemplate(page.tagDescriptionTemplate, {
 ---
 
 <Layout title={fillTemplate(page.tagTitleTemplate, { tag: tag.label })} {description}>
-  <PageHero
-    title={tag.label}
-    crumbs={[{ label: page.crumbLabel, href: "/blog" }, { label: tag.label }]}
-    {assets}
-    image={page.heroImage}
-  />
+  <Breadcrumb items={[{ label: page.crumbLabel, href: "/blog" }, { label: tag.label }]} />
 
-  <div class="site-container pt-10 pb-16">
-    <div class="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-      {
-        posts.map((p, i) => (
-          <PostCard
-            {assets}
-            as="h2"
-            title={p.data.title}
-            href={`/blog/${p.id}`}
-            date={p.data.date}
-            cover={p.data.cover}
-            description={p.data.description}
-            variant={i + 1}
-          />
-        ))
-      }
+  <div class="site-container pt-4 pb-16">
+    <h1 class="sr-only">{tag.label}</h1>
+
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_264px]">
+      <!-- Cột trái: Lưới bài viết 2 cột x 5 dòng (10 bài/trang) -->
+      <div class="lg:border-r lg:border-line lg:pr-10" data-pagination-container>
+        <div
+          id="tag-posts-grid"
+          class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2"
+        >
+          {
+            posts.map((p, i) => (
+              <div data-blog-card>
+                <PostCard
+                  {assets}
+                  as="h2"
+                  title={p.data.title}
+                  href={`/blog/${p.id}`}
+                  date={p.data.date}
+                  cover={p.data.cover}
+                  description={p.data.description}
+                  variant={i + 1}
+                />
+              </div>
+            ))
+          }
+        </div>
+
+        <ClientPagination
+          targetSelector="[data-blog-card]"
+          perPage={10}
+          scrollTargetSelector="#tag-posts-grid"
+        />
+
+        <a
+          href="/blog"
+          class="mt-10 inline-flex text-meta font-bold text-primary-hover transition-colors hover:text-primary"
+        >
+          {page.backToAll}
+        </a>
+      </div>
+
+      <!-- Cột phải: Sidebar (chiều rộng tối đa 264px) -->
+      <div class="w-full border-t border-line pt-10 lg:border-t-0 lg:pt-0">
+        <BlogSidebar
+          {assets}
+          products={sidebarProducts}
+          articles={hotArticles}
+        />
+      </div>
     </div>
-
-    <a
-      href="/blog"
-      class="mt-10 inline-flex text-meta font-bold text-primary-hover transition-colors hover:text-primary"
-    >
-      {page.backToAll}
-    </a>
   </div>
 </Layout>

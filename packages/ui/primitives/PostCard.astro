@@ -47,6 +47,8 @@ interface Props {
   variant?: number;
   /** Ảnh nhỏ hơn ở lưới 3–4 cột dày; mặc định vừa cho lưới 3 cột */
   width?: number;
+  /** Tỉ lệ khung hình ảnh bìa: 16x10 (mặc định) hoặc 16x9 */
+  ratio?: "16x10" | "16x9";
   /**
    * Bật ở lưới DÀY — 4 cột trang chủ, hoặc 3 cột trong khối hẹp (bài liên quan).
    * Card ở đó chỉ ~283–293px nên max-width mặc định (38ch/50ch ≈ 323px/425px)
@@ -54,6 +56,10 @@ interface Props {
    * cặp token `*-dense` hẹp hơn để dáng tháp xuất hiện ở mọi lưới.
    */
   dense?: boolean;
+  /** Ẩn badge ngày đè góc ảnh — dùng ở lưới trang chủ, chỉ hiện ở trang tin tức riêng */
+  showDate?: boolean;
+  /** Đường line nhỏ ngăn cách giữa tiêu đề và đoạn trích mô tả */
+  showDivider?: boolean;
   class?: string;
 }
 
@@ -67,9 +73,18 @@ const {
   as: Heading = "h3",
   variant = 1,
   width = 600,
+  ratio = "16x10",
   dense = false,
+  showDate = true,
+  showDivider = true,
   class: className = "",
 } = Astro.props;
+
+const imgHeight =
+  ratio === "16x9"
+    ? Math.round((width * 9) / 16)
+    : Math.round((width * 10) / 16);
+const aspectClass = ratio === "16x9" ? "aspect-16/9" : "aspect-16/10";
 
 const titleWidth = dense
   ? "max-w-(--width-post-card-title-dense)"
@@ -107,23 +122,23 @@ const excerptChars = numericToken(
 const excerpt = description ? clip(description, excerptChars) : undefined;
 ---
 
-<article class:list={["group relative flex flex-col transition-all duration-(--duration-base) hover:-translate-y-1.5", className]}>
+<article class:list={["group relative flex flex-col", className]}>
   <div class="relative overflow-hidden bg-surface-tint">
     <SmartImage
       {assets}
       src={cover}
       alt={title}
       {width}
-      height={Math.round((width * 10) / 16)}
-      ratio="16x10"
+      height={imgHeight}
+      {ratio}
       {variant}
-      class="aspect-16/10 w-full object-cover transition-transform duration-(--duration-slow) group-hover:scale-(--scale-card-hover)"
+      class={`${aspectClass} w-full object-cover`}
     />
   </div>
   {/* Badge nằm NGOÀI div trên, neo vào <article>: nó thò ra ngoài mép trái ảnh
       (`--offset-date-badge-left` âm) nên đặt bên trong sẽ bị `overflow-hidden`
       cắt cụt — mà class đó phải giữ để chặn ảnh phóng to lúc hover tràn khung. */}
-  <DateBadge {date} />
+  {showDate && <DateBadge {date} />}
 
   <div
     class="flex flex-1 flex-col items-center gap-(--space-post-card-gap) pt-(--space-post-card-text) text-center"
@@ -145,14 +160,19 @@ const excerpt = description ? clip(description, excerptChars) : undefined;
 
     {
       excerpt && (
-        <p
-          class:list={[
-            "clamp-excerpt text-body leading-relaxed text-pretty text-ink-muted",
-            excerptWidth,
-          ]}
-        >
-          {excerpt}
-        </p>
+        <>
+          {showDivider && (
+            <span class="h-0.5 w-7 rounded-full bg-ink/15" aria-hidden="true" />
+          )}
+          <p
+            class:list={[
+              "clamp-excerpt text-body leading-relaxed text-pretty text-ink-muted",
+              excerptWidth,
+            ]}
+          >
+            {excerpt}
+          </p>
+        </>
       )
     }
   </div>

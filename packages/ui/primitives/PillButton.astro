@@ -7,15 +7,20 @@
 export interface Props extends astroHTML.JSX.HTMLAttributes {
   text: string;
   href?: string;
-  /** Nền nút — mặc định `white`; `default` cho nền phụ (surface-alt) */
-  tone?: "default" | "white";
+  /** Nền nút — mặc định `white`; `default` cho nền phụ (surface-alt); `solid` nền primary chữ trắng, không viền (CTA nổi bật, vd. "Khám phá thêm" ở NewsGrid) */
+  tone?: "default" | "white" | "solid";
   class?: string;
 }
 
 const { text, href, tone = "white", class: className = "", ...rest } = Astro.props;
 
-const toneClass = tone === "white" ? "bg-white hover:bg-surface-alt" : "bg-surface-alt hover:bg-surface-tint";
-const pillClass = `pill h-10 border border-line px-5 text-label font-semibold text-ink-muted transition-colors ${toneClass} ${className}`;
+const toneClass =
+  tone === "solid"
+    ? "border-transparent bg-primary text-white hover:bg-primary-hover"
+    : tone === "white"
+      ? "border-line bg-white text-ink-muted hover:bg-surface-alt"
+      : "border-line bg-surface-alt text-ink-muted hover:bg-surface-tint";
+const pillClass = `pill h-10 border px-5 text-label font-semibold transition-colors ${toneClass} ${className}`;
 ---
 
 {

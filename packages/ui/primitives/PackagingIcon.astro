@@ -1,0 +1,250 @@
+---
+/**
+ * PackagingIcon — Bộ icon SVG custom dành riêng cho ngành sản xuất bao bì giấy F&B.
+ *
+ * Thiết kế phong cách Duotone Precision:
+ * - Nét viền mảnh tinh tế (stroke 1.5 - 1.75px)
+ * - Mảng màu mờ tạo chiều sâu khối (fill-current opacity-12 ~ 20%)
+ * - Không nền background ngoài, đứng trực tiếp trên card
+ * - Nhận diện chính xác 5 chủng loại sản phẩm cốt lõi của xưởng F&B
+ */
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  name: string;
+  class?: string;
+}
+
+const { name, class: className = "size-8 text-primary" } = Astro.props;
+
+// Chuẩn hóa tên icon để khớp với cả tên Lucide cũ lẫn tên định danh mới
+const normalized = name.toLowerCase().replace(/^lucide:/, "");
+---
+
+{
+  normalized === "package" || normalized === "box" || normalized === "clamshell" ? (
+    /* 1. Hộp nắp gài / Hộp bánh burger / Hộp cơm F&B (Clamshell Food Box) */
+    <svg
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class={className}
+      aria-hidden="true"
+    >
+      {/* Nắp trên gập vát */}
+      <path
+        d="M4.5 14L7.5 6.5C7.8 5.6 8.7 5 9.7 5H22.3C23.3 5 24.2 5.6 24.5 6.5L27.5 14H4.5Z"
+        class="fill-current/15 stroke-current"
+        stroke-width="1.6"
+        stroke-linejoin="round"
+      />
+      {/* Thân hộp dưới */}
+      <path
+        d="M5.5 14L7.8 25.2C8 26.2 8.9 27 10 27H22C23.1 27 24 26.2 24.2 25.2L26.5 14"
+        class="fill-current/8 stroke-current"
+        stroke-width="1.6"
+        stroke-linejoin="round"
+      />
+      {/* Gờ nếp bế viền miệng nắp */}
+      <line x1="3" y1="14" x2="29" y2="14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      {/* Nẹp khóa gài mặt trước (lock tab) */}
+      <path
+        d="M13 14V17C13 17.6 13.4 18 14 18H18C18.6 18 19 17.6 19 17V14"
+        class="fill-white stroke-current"
+        stroke-width="1.5"
+        stroke-linejoin="round"
+      />
+      {/* Nếp gấp cạnh nắp bế */}
+      <line x1="10" y1="6" x2="7.5" y2="14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.45" />
+      <line x1="22" y1="6" x2="24.5" y2="14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.45" />
+    </svg>
+  ) : normalized === "paper-bag" || normalized === "bakery-bag" || normalized === "bag" ? (
+    /* 2. Túi giấy bánh mì que / Túi F&B đáy nẹp có răng cưa ziczac */
+    <svg
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class={className}
+      aria-hidden="true"
+    >
+      {/* Thân túi chính */}
+      <path
+        d="M7 8V25.5C7 26.3 7.7 27 8.5 27H23.5C24.3 27 25 26.3 25 25.5V8"
+        class="fill-current/8 stroke-current"
+        stroke-width="1.6"
+        stroke-linejoin="round"
+      />
+      {/* Mảng hông túi xếp nếp (side gusset) có bóng sâu */}
+      <path
+        d="M7 8V27H12.5V8L7 8Z"
+        class="fill-current/16"
+      />
+      {/* Miệng túi cắt răng cưa ziczac chuẩn máy cắt cuộn giấy */}
+      <path
+        d="M7 8L9.25 5.5L11.5 8L13.75 5.5L16 8L18.25 5.5L20.5 8L22.75 5.5L25 8"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      {/* Đường gân xếp hông túi */}
+      <line x1="12.5" y1="8" x2="12.5" y2="27" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2 2" opacity="0.6" />
+      {/* Nếp gấp đáy chữ V / kim cương */}
+      <path
+        d="M7 23.5L12.5 27L25 23.5"
+        stroke="currentColor"
+        stroke-width="1.4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        opacity="0.75"
+      />
+    </svg>
+  ) : normalized === "shopping-bag" || normalized === "handle-bag" ? (
+    /* 3. Túi giấy Kraft có quai xách xoắn tròn (Twisted Handle Bag) */
+    <svg
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class={className}
+      aria-hidden="true"
+    >
+      {/* Quai xách sau */}
+      <path
+        d="M12.5 12V7.5C12.5 5.6 14.1 4 16 4C17.9 4 19.5 5.6 19.5 7.5V12"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        opacity="0.45"
+      />
+      {/* Thân túi */}
+      <path
+        d="M5.5 14.5V25.5C5.5 26.6 6.4 27.5 7.5 27.5H24.5C25.6 27.5 26.5 26.6 26.5 25.5V14.5H5.5Z"
+        class="fill-current/8 stroke-current"
+        stroke-width="1.6"
+        stroke-linejoin="round"
+      />
+      {/* Mép gấp miệng túi trên (top fold hem) */}
+      <rect
+        x="5.5"
+        y="12"
+        width="21"
+        height="2.5"
+        rx="0.5"
+        class="fill-current/20 stroke-current"
+        stroke-width="1.4"
+      />
+      {/* Quai xách trước */}
+      <path
+        d="M10.5 12V7C10.5 5.1 12.1 3.5 14 3.5C15.9 3.5 17.5 5.1 17.5 7V12"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+      />
+      {/* Miếng vá cố định chân quai túi (patch handle) */}
+      <rect x="9.5" y="12" width="2" height="3" rx="0.5" class="fill-current" />
+      <rect x="16.5" y="12" width="2" height="3" rx="0.5" class="fill-current" />
+      {/* Nếp gấp tạo form túi giấy kraft */}
+      <line x1="18.5" y1="14.5" x2="18.5" y2="27.5" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2" opacity="0.45" />
+    </svg>
+  ) : normalized === "boxes" || normalized === "bowl" || normalized === "tray" ? (
+    /* 4. Tô giấy F&B / Khay bế định hình sinh học (Paper Bowl & Molded Tray) */
+    <svg
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class={className}
+      aria-hidden="true"
+    >
+      {/* Thân tô giấy vuốt thon */}
+      <path
+        d="M4.5 12C5 19.5 8 26 13 27H19C24 26 27 19.5 27.5 12"
+        class="fill-current/8 stroke-current"
+        stroke-width="1.6"
+        stroke-linejoin="round"
+      />
+      {/* Vành miệng cuốn tròn (rolled rim) của tô giấy */}
+      <ellipse
+        cx="16"
+        cy="12"
+        rx="12"
+        ry="3.5"
+        class="fill-current/18 stroke-current"
+        stroke-width="1.6"
+      />
+      {/* Gờ nắp đậy trong suốt / vòm nắp */}
+      <path
+        d="M7 11.5C7.5 8 11.5 5.5 16 5.5C20.5 5.5 24.5 8 25 11.5"
+        stroke="currentColor"
+        stroke-width="1.3"
+        stroke-linecap="round"
+        stroke-dasharray="3 2"
+        opacity="0.6"
+      />
+      {/* Đáy tô dập nhiệt phẳng */}
+      <line x1="12" y1="27" x2="20" y2="27" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      {/* Vạch định mức F&B thân tô */}
+      <path
+        d="M8.5 17C10.5 18.2 13.2 19 16 19C18.8 19 21.5 18.2 23.5 17"
+        stroke="currentColor"
+        stroke-width="1.2"
+        stroke-linecap="round"
+        opacity="0.45"
+      />
+    </svg>
+  ) : normalized === "scroll" || normalized === "roll" || normalized === "paper-roll" ? (
+    /* 5. Cuộn giấy bọc thực phẩm chống thấm dầu (Food Wrap Paper Roll) */
+    <svg
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class={className}
+      aria-hidden="true"
+    >
+      {/* Dải giấy phẳng đang được rút/trải ra (unrolling food wrap) */}
+      <path
+        d="M9 10L25.5 12C26.3 12.1 27 12.8 27.1 13.6L28 23C28.1 24 27.2 24.8 26.2 24.6L12.5 22.5L9 22V10Z"
+        class="fill-current/12 stroke-current"
+        stroke-width="1.5"
+        stroke-linejoin="round"
+      />
+      {/* Mặt ống cuộn tròn bên trái (roll cylinder) */}
+      <ellipse
+        cx="8.5"
+        cy="16"
+        rx="4.5"
+        ry="8"
+        class="fill-current/22 stroke-current"
+        stroke-width="1.6"
+      />
+      {/* Lõi rỗng carton ở giữa cuộn giấy */}
+      <ellipse
+        cx="8.5"
+        cy="16"
+        rx="1.8"
+        ry="3.2"
+        class="fill-white stroke-current"
+        stroke-width="1.3"
+      />
+      {/* Nẹp viền trên của cuộn giấy */}
+      <path
+        d="M8.5 8H20.5"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+      />
+      {/* Mép cắt giấy xé răng cưa tinh tế */}
+      <path
+        d="M24 12.5L25.5 23"
+        stroke="currentColor"
+        stroke-width="1.2"
+        stroke-linecap="round"
+        stroke-dasharray="2 2"
+        opacity="0.65"
+      />
+    </svg>
+  ) : (
+    /* Fallback dùng astro-icon nếu có icon bất kỳ khác từ CMS */
+    <Icon name={name} class={className} aria-hidden="true" />
+  )
+}
+

@@ -1,0 +1,170 @@
+---
+interface Props {
+  targetSelector: string;
+  perPage?: number;
+  scrollTargetSelector?: string;
+  class?: string;
+}
+
+const {
+  targetSelector,
+  perPage = 10,
+  scrollTargetSelector,
+  class: className = "",
+} = Astro.props;
+---
+
+<nav
+  aria-label="Phân trang"
+  class:list={["mt-12 flex items-center justify-center gap-1.5", className]}
+  data-client-pagination
+  data-target={targetSelector}
+  data-per-page={perPage}
+  data-scroll-target={scrollTargetSelector}
+  hidden
+>
+  <button
+    type="button"
+    data-page-prev
+    aria-label="Trang trước"
+    class="flex size-9 cursor-pointer items-center justify-center rounded-full border border-line bg-surface text-ink-muted transition-colors hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-40"
+  >
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M10 12l-4-4 4-4"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"></path>
+    </svg>
+  </button>
+
+  <div data-page-numbers class="flex items-center gap-1.5"></div>
+
+  <button
+    type="button"
+    data-page-next
+    aria-label="Trang tiếp theo"
+    class="flex size-9 cursor-pointer items-center justify-center rounded-full border border-line bg-surface text-ink-muted transition-colors hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-40"
+  >
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M6 4l4 4-4 4"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"></path>
+    </svg>
+  </button>
+</nav>
+
+<script>
+  (() => {
+    document
+      .querySelectorAll<HTMLElement>("[data-client-pagination]")
+      .forEach((nav) => {
+        const targetSelector = nav.dataset.target;
+        if (!targetSelector) return;
+
+        const perPage = parseInt(nav.dataset.perPage ?? "10", 10);
+        const scrollSelector = nav.dataset.scrollTarget;
+
+        const container =
+          nav.closest<HTMLElement>("[data-pagination-container]") ?? document;
+        const items = Array.from(
+          container.querySelectorAll<HTMLElement>(targetSelector)
+        );
+        const totalPages = Math.ceil(items.length / perPage);
+
+        if (totalPages <= 1) {
+          nav.hidden = true;
+          return;
+        }
+
+        nav.hidden = false;
+        const numbersContainer =
+          nav.querySelector<HTMLElement>("[data-page-numbers]");
+        const prevBtn = nav.querySelector<HTMLButtonElement>("[data-page-prev]");
+        const nextBtn = nav.querySelector<HTMLButtonElement>("[data-page-next]");
+        const scrollTarget = scrollSelector
+          ? document.querySelector<HTMLElement>(scrollSelector)
+          : container;
+
+        let current = 0;
+
+        function updatePage(pageIndex: number, shouldScroll = false) {
+          current = Math.max(0, Math.min(pageIndex, totalPages - 1));
+          const start = current * perPage;
+          const end = start + perPage;
+
+          items.forEach((item, idx) => {
+            item.hidden = idx < start || idx >= end;
+          });
+
+          if (numbersContainer) {
+            numbersContainer.innerHTML = "";
+            for (let i = 0; i < totalPages; i++) {
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.setAttribute("aria-label", `Trang ${i + 1}`);
+              btn.textContent = String(i + 1);
+              const active = i === current;
+              btn.setAttribute("aria-current", active ? "page" : "false");
+              btn.className = [
+                "size-9 cursor-pointer rounded-full text-sm font-semibold transition-colors",
+                active
+                  ? "bg-primary text-white"
+                  : "border border-line bg-surface text-ink-muted hover:border-primary hover:text-primary",
+              ].join(" ");
+              btn.addEventListener("click", () => updatePage(i, true));
+              numbersContainer.appendChild(btn);
+            }
+          }
+
+          if (prevBtn) {
+            const disabled = current <= 0;
+            prevBtn.disabled = disabled;
+            prevBtn.classList.toggle("opacity-40", disabled);
+            prevBtn.classList.toggle("pointer-events-none", disabled);
+          }
+
+          if (nextBtn) {
+            const disabled = current >= totalPages - 1;
+            nextBtn.disabled = disabled;
+            nextBtn.classList.toggle("opacity-40", disabled);
+            nextBtn.classList.toggle("pointer-events-none", disabled);
+          }
+
+          if (shouldScroll && scrollTarget) {
+            scrollTarget.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }
+
+        if (prevBtn) {
+          prevBtn.addEventListener("click", () =>
+            updatePage(current - 1, true)
+          );
+        }
+        if (nextBtn) {
+          nextBtn.addEventListener("click", () =>
+            updatePage(current + 1, true)
+          );
+        }
+
+        updatePage(0, false);
+      });
+  })();
+</script>
+

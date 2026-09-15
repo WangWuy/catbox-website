@@ -1,36 +1,13 @@
 ---
 /**
- * Khối video trước Footer — MỘT cửa sổ video dạng viên thuốc (pill), khung
- * 1000 × 399.2 bo tròn hai đầu, canh giữa trong site-container; không tiêu đề,
- * không mô tả, không CTA.
- *
- * Khai `--aspect-reel-pill` chứ không chốt chiều cao 399.2px: dưới 1000px khung
- * co theo bề ngang màn hình và vẫn giữ đúng dáng viên thuốc.
- *
- * Không nền riêng và không đệm phía TRÊN — khối dính liền khối bên trên. Chỉ
- * chừa đệm phía DƯỚI để khung video (`primary-ink`) không dán vào Footer
- * (`primary-deep`), vì hai màu nâu đậm này sát nhau sẽ mất ranh giới.
- *
- * Video hiện tại là reel quay DỌC 9:16 lấy từ fanpage: trong khung ngang dẹt
- * này `object-cover` sẽ cắt mất gần hết khung hình, nên vẫn dùng
- * `object-contain` — video nằm giữa với hai mảng `primary-ink` hai bên, đúng
- * dáng viên thuốc. Khi có video ngang thật, thay file là khung tự lấp đầy.
- *
- * `controls` bị bỏ: thanh điều khiển mặc định của trình duyệt là một dải chữ
- * nhật chạy sát đáy khung, hai đầu của nó bị chính đường bo tròn cắt cụt. Video
- * đã `muted` + `loop` + tự phát theo khung nhìn nên không còn nút nào cần bấm.
- *
- * Tự phát khi cuộn tới, dừng khi cuộn qua — IntersectionObserver thuần, theo
- * đúng cách `data-reveal` đang làm ở BaseLayout (xem chú thích ở đó): `muted`
- * là điều kiện bắt buộc để trình duyệt cho `play()` chạy không cần thao tác
- * người dùng, `loop` để video ngắn không dừng khựng giữa lúc đang xem.
- * `preload="metadata"` thay vì `"none"`: cần biết kích thước khung hình ngay
- * và phải có đủ dữ liệu để bắt đầu phát ngay khi vào khung nhìn, nhưng vẫn
- * không tải cả file lúc trang chưa cuộn tới.
- *
- * Chưa có video thì rơi về ảnh tĩnh — KHÔNG vẽ nút play giả, vì một nút bấm
- * không ra gì tệ hơn là không có nút.
+ * Khối video xưởng / giới thiệu.
+ * Hỗ trợ 2 biến thể:
+ * - `variant="controls"` (Trang chủ): Bộ player tương tác độc lập, đầy đủ nút Play/Pause,
+ *   thanh tiến trình (Seek bar), Bật/Tắt âm thanh, slider volume, và Fullscreen.
+ * - `variant="pill"` (Về chúng tôi): Dáng viên thuốc bo tròn 2 đầu (1000 × 399.2),
+ *   tự động phát ngầm (ambient reel) theo khung nhìn cuộn qua.
  */
+import { Icon } from "astro-icon/components";
 import type { AssetMap } from "../lib/images";
 import SmartImage from "@ui/primitives/SmartImage.astro";
 
@@ -38,66 +15,189 @@ interface Props {
   assets: AssetMap;
   /** Tên gọi cho trình đọc màn hình — không hiển thị trên trang */
   label: string;
-  /** Video trong public/ — khung pill dẹt, video dọc sẽ có viền tối hai bên */
+  /** Video trong public/ — khung pill dẹt hoặc player có controls */
   video?: string;
   /** Ảnh hiển thị trước khi bấm play (public/) */
   poster?: string;
   /** Ảnh tĩnh thay thế khi chưa có video (src/assets qua SmartImage) */
   image?: string;
+  /** Biến thể giao diện: "controls" (trang chủ) hoặc "pill" (về chúng tôi) */
+  variant?: "pill" | "controls";
 }
 
-const { assets, label, video, poster, image } = Astro.props;
+const { assets, label, video, poster, image, variant = "pill" } = Astro.props;
 ---
 
-<section class="pb-8 md:pb-12" aria-label={label} data-reveal>
-  <div class="site-container">
-    {
-      video ? (
-        <video
-          preload="metadata"
-          playsinline
-          muted
-          loop
-          poster={poster}
-          class="mx-auto aspect-(--aspect-reel-pill) w-full max-w-(--width-reel-pill) rounded-(--radius-reel-pill) bg-primary-ink object-contain"
-          aria-label={label}
-          data-factory-reel
-        >
-          <source src={video} type="video/mp4" />
-          Trình duyệt của bạn không phát được video này.
-        </video>
-      ) : (
-        <SmartImage
-          {assets}
-          src={image}
-          alt={label}
-          width={1000}
-          height={399}
-          ratio="16x9"
-          variant={4}
-          class="mx-auto aspect-(--aspect-reel-pill) w-full max-w-(--width-reel-pill) rounded-(--radius-reel-pill) bg-primary-ink object-cover"
-        />
-      )
-    }
-  </div>
-</section>
-
 {
-  video && (
-    <script>
-      // Tự phát/dừng theo khung nhìn — cùng cách `data-reveal` đang làm ở
-      // BaseLayout (IntersectionObserver thuần, không thư viện). Dừng thay vì
-      // để chạy ngầm khi cuộn qua: video ngoài khung nhìn vẫn tốn CPU giải mã
-      // nếu không pause, và người dùng bấm "controls" tạm dừng thủ công cũng
-      // không nên bị observer tự bấm play lại lần sau nó lọt vào khung nhìn.
-      (() => {
-        const videos = document.querySelectorAll<HTMLVideoElement>("[data-factory-reel]");
-        if (!videos.length || !("IntersectionObserver" in window)) return;
+  variant === "controls" ? (
+    <section class="pb-10 md:pb-16" aria-label={label} data-reveal>
+      <div class="site-container">
+        <div
+          class="custom-video-player group relative mx-auto aspect-(--aspect-reel-pill) min-h-[300px] w-full max-w-(--width-reel-pill) overflow-hidden rounded-input border border-line-soft/40 bg-primary-ink shadow-xl"
+          data-custom-player
+          tabindex="0"
+        >
+          {video ? (
+            <>
+              <video
+                preload="metadata"
+                playsinline
+                muted
+                loop
+                poster={poster}
+                class="video-element h-full w-full object-contain cursor-pointer"
+                aria-label={label}
+              >
+                <source src={video} type="video/mp4" />
+                Trình duyệt của bạn không phát được video này.
+              </video>
 
+              {/* Nút Play to ở giữa khi đang tạm dừng */}
+              <button
+                type="button"
+                class="center-play-btn absolute inset-0 m-auto flex size-16 md:size-20 items-center justify-center rounded-full bg-primary/90 text-white shadow-xl backdrop-blur-xs transition-all duration-300 hover:scale-110 hover:bg-primary active:scale-95 focus:outline-hidden"
+                aria-label="Phát video"
+              >
+                <Icon name="lucide:play" class="ml-1 size-8 md:size-9" aria-hidden="true" />
+              </button>
+
+              {/* Thanh điều khiển Controls Bar nổi ở đáy */}
+              <div class="controls-bar absolute inset-x-0 bottom-0 z-10 flex flex-col gap-2.5 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3.5 md:p-5 transition-opacity duration-300">
+                {/* Thanh tiến trình / Seek bar */}
+                <div
+                  class="progress-container group/progress relative flex h-3 w-full cursor-pointer items-center py-1"
+                  role="slider"
+                  aria-label="Tiến trình video"
+                >
+                  <div class="relative h-1.5 w-full overflow-hidden rounded-full bg-white/25 transition-all group-hover/progress:h-2">
+                    <div class="progress-bar absolute inset-y-0 left-0 w-0 bg-primary transition-all duration-75" />
+                  </div>
+                  <div
+                    class="progress-thumb pointer-events-none absolute size-3.5 -translate-x-1/2 rounded-full bg-white shadow-md opacity-0 transition-opacity group-hover/progress:opacity-100"
+                    style="left: 0%;"
+                  />
+                </div>
+
+                {/* Các nút bấm điều khiển */}
+                <div class="flex items-center justify-between gap-3 text-white">
+                  <div class="flex items-center gap-3 md:gap-4">
+                    {/* Play / Pause toggle */}
+                    <button
+                      type="button"
+                      class="btn-play-pause p-1 text-white transition-colors hover:text-primary focus:outline-hidden cursor-pointer"
+                      aria-label="Phát / Tạm dừng"
+                    >
+                      <Icon name="lucide:play" class="icon-play size-5 md:size-6" aria-hidden="true" />
+                      <Icon name="lucide:pause" class="icon-pause hidden size-5 md:size-6" aria-hidden="true" />
+                    </button>
+
+                    {/* Mute & Volume Slider */}
+                    <div class="flex items-center gap-2">
+                      <button
+                        type="button"
+                        class="btn-mute p-1 text-white transition-colors hover:text-primary focus:outline-hidden cursor-pointer"
+                        aria-label="Bật / Tắt âm thanh"
+                      >
+                        <Icon name="lucide:volume-2" class="icon-volume size-5" aria-hidden="true" />
+                        <Icon name="lucide:volume-x" class="icon-muted hidden size-5" aria-hidden="true" />
+                      </button>
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.05"
+                        value="1"
+                        class="volume-slider hidden sm:block h-1 w-14 lg:w-20 cursor-pointer appearance-none rounded-full bg-white/30 accent-primary"
+                        aria-label="Âm lượng"
+                      />
+                    </div>
+
+                    {/* Hiển thị thời gian */}
+                    <div class="time-display select-none font-mono text-xs text-white/80">
+                      <span class="time-current">0:00</span>
+                      <span class="text-white/40"> / </span>
+                      <span class="time-duration">0:00</span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3">
+                    <span class="hidden select-none text-xs text-white/60 md:inline-block max-w-xs truncate">
+                      {label}
+                    </span>
+
+                    {/* Fullscreen */}
+                    <button
+                      type="button"
+                      class="btn-fullscreen p-1 text-white transition-colors hover:text-primary focus:outline-hidden cursor-pointer"
+                      aria-label="Toàn màn hình"
+                    >
+                      <Icon name="lucide:maximize" class="icon-maximize size-5" aria-hidden="true" />
+                      <Icon name="lucide:minimize" class="icon-minimize hidden size-5" aria-hidden="true" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <SmartImage
+              {assets}
+              src={image}
+              alt={label}
+              width={1000}
+              height={399}
+              ratio="16x9"
+              variant={4}
+              class="h-full w-full object-cover"
+            />
+          )}
+        </div>
+      </div>
+    </section>
+  ) : (
+    /* Khung Pill cho Về chúng tôi (bo tròn 2 đầu, ambient reel tự phát) */
+    <section class="pb-8 md:pb-12" aria-label={label} data-reveal>
+      <div class="site-container">
+        {video ? (
+          <video
+            preload="metadata"
+            playsinline
+            muted
+            loop
+            poster={poster}
+            class="mx-auto aspect-(--aspect-reel-pill) w-full max-w-(--width-reel-pill) rounded-(--radius-reel-pill) bg-primary-ink object-contain cursor-pointer"
+            aria-label={label}
+            data-factory-reel
+          >
+            <source src={video} type="video/mp4" />
+            Trình duyệt của bạn không phát được video này.
+          </video>
+        ) : (
+          <SmartImage
+            {assets}
+            src={image}
+            alt={label}
+            width={1000}
+            height={399}
+            ratio="16x9"
+            variant={4}
+            class="mx-auto aspect-(--aspect-reel-pill) w-full max-w-(--width-reel-pill) rounded-(--radius-reel-pill) bg-primary-ink object-cover"
+          />
+        )}
+      </div>
+    </section>
+  )
+}
+
+<script is:inline>
+  (() => {
+    function initVideoComponents() {
+      // 1. Khung Pill (Về chúng tôi) — tự phát khi cuộn vào khung nhìn, dừng khi cuộn qua, click để toggle
+      const pillVideos = document.querySelectorAll("[data-factory-reel]");
+      if (pillVideos.length && "IntersectionObserver" in window) {
         const io = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
-              const el = entry.target as HTMLVideoElement;
+              const el = entry.target;
               if (entry.isIntersecting) {
                 el.play().catch(() => {});
               } else {
@@ -107,9 +207,214 @@ const { assets, label, video, poster, image } = Astro.props;
           },
           { threshold: 0.5 },
         );
+        pillVideos.forEach((el) => {
+          io.observe(el);
+          el.addEventListener("click", () => {
+            if (el.paused) el.play().catch(() => {});
+            else el.pause();
+          });
+        });
+      }
 
-        videos.forEach((el) => io.observe(el));
-      })();
-    </script>
-  )
-}
+      // 2. Khung Custom Player có Controls (Trang chủ)
+      const players = document.querySelectorAll("[data-custom-player]");
+      players.forEach((player) => {
+        const video = player.querySelector(".video-element");
+        if (!video) return;
+
+        const centerPlayBtn = player.querySelector(".center-play-btn");
+        const controlsBar = player.querySelector(".controls-bar");
+        const btnPlayPause = player.querySelector(".btn-play-pause");
+        const iconPlay = player.querySelector(".icon-play");
+        const iconPause = player.querySelector(".icon-pause");
+        const btnMute = player.querySelector(".btn-mute");
+        const iconVolume = player.querySelector(".icon-volume");
+        const iconMuted = player.querySelector(".icon-muted");
+        const volumeSlider = player.querySelector(".volume-slider");
+        const progressContainer = player.querySelector(".progress-container");
+        const progressBar = player.querySelector(".progress-bar");
+        const progressThumb = player.querySelector(".progress-thumb");
+        const timeCurrent = player.querySelector(".time-current");
+        const timeDuration = player.querySelector(".time-duration");
+        const btnFullscreen = player.querySelector(".btn-fullscreen");
+        const iconMaximize = player.querySelector(".icon-maximize");
+        const iconMinimize = player.querySelector(".icon-minimize");
+
+        let userManuallyPaused = false;
+
+        function formatTime(sec) {
+          if (!sec || isNaN(sec)) return "0:00";
+          const m = Math.floor(sec / 60);
+          const s = Math.floor(sec % 60);
+          return `${m}:${s < 10 ? "0" : ""}${s}`;
+        }
+
+        function togglePlay() {
+          if (video.paused || video.ended) {
+            userManuallyPaused = false;
+            video.play().catch(() => {});
+          } else {
+            userManuallyPaused = true;
+            video.pause();
+          }
+        }
+
+        let hideTimeout;
+        function resetHideTimer() {
+          if (controlsBar) controlsBar.style.opacity = "1";
+          clearTimeout(hideTimeout);
+          if (!video.paused) {
+            hideTimeout = setTimeout(() => {
+              if (controlsBar) controlsBar.style.opacity = "0";
+            }, 2500);
+          }
+        }
+
+        function updatePlayState() {
+          if (video.paused) {
+            if (centerPlayBtn) {
+              centerPlayBtn.style.opacity = "1";
+              centerPlayBtn.style.pointerEvents = "auto";
+            }
+            iconPlay?.classList.remove("hidden");
+            iconPause?.classList.add("hidden");
+            if (controlsBar) controlsBar.style.opacity = "1";
+          } else {
+            if (centerPlayBtn) {
+              centerPlayBtn.style.opacity = "0";
+              centerPlayBtn.style.pointerEvents = "none";
+            }
+            iconPlay?.classList.add("hidden");
+            iconPause?.classList.remove("hidden");
+            resetHideTimer();
+          }
+        }
+
+        video.addEventListener("play", updatePlayState);
+        video.addEventListener("pause", updatePlayState);
+
+        video.addEventListener("click", togglePlay);
+        centerPlayBtn?.addEventListener("click", togglePlay);
+        btnPlayPause?.addEventListener("click", togglePlay);
+
+        video.addEventListener("timeupdate", () => {
+          if (!video.duration) return;
+          const pct = (video.currentTime / video.duration) * 100;
+          if (progressBar) progressBar.style.width = `${pct}%`;
+          if (progressThumb) progressThumb.style.left = `${pct}%`;
+          if (timeCurrent) timeCurrent.textContent = formatTime(video.currentTime);
+        });
+
+        video.addEventListener("loadedmetadata", () => {
+          if (timeDuration) timeDuration.textContent = formatTime(video.duration);
+        });
+
+        // Seek
+        function seek(e) {
+          if (!progressContainer || !video.duration) return;
+          const rect = progressContainer.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const pos = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+          video.currentTime = pos * video.duration;
+        }
+
+        progressContainer?.addEventListener("click", seek);
+
+        // Mute & Volume
+        function updateVolumeUI() {
+          if (video.muted || video.volume === 0) {
+            iconVolume?.classList.add("hidden");
+            iconMuted?.classList.remove("hidden");
+            if (volumeSlider) volumeSlider.value = "0";
+          } else {
+            iconVolume?.classList.remove("hidden");
+            iconMuted?.classList.add("hidden");
+            if (volumeSlider) volumeSlider.value = String(video.volume);
+          }
+        }
+
+        btnMute?.addEventListener("click", () => {
+          video.muted = !video.muted;
+          updateVolumeUI();
+        });
+
+        volumeSlider?.addEventListener("input", (e) => {
+          const val = parseFloat(e.target.value);
+          video.volume = val;
+          video.muted = val === 0;
+          updateVolumeUI();
+        });
+
+        // Fullscreen
+        function toggleFullscreen() {
+          if (!document.fullscreenElement) {
+            if (player.requestFullscreen) {
+              player.requestFullscreen();
+            } else if (player.webkitRequestFullscreen) {
+              player.webkitRequestFullscreen();
+            }
+          } else {
+            if (document.exitFullscreen) {
+              document.exitFullscreen();
+            }
+          }
+        }
+
+        btnFullscreen?.addEventListener("click", toggleFullscreen);
+        document.addEventListener("fullscreenchange", () => {
+          const isFull = !!document.fullscreenElement;
+          iconMaximize?.classList.toggle("hidden", isFull);
+          iconMinimize?.classList.toggle("hidden", !isFull);
+        });
+
+        player.addEventListener("mousemove", resetHideTimer);
+        player.addEventListener("mouseleave", () => {
+          if (!video.paused && controlsBar) {
+            controlsBar.style.opacity = "0";
+          }
+        });
+
+        // Phím tắt Space / M / F
+        player.addEventListener("keydown", (e) => {
+          if (e.code === "Space" || e.code === "KeyK") {
+            e.preventDefault();
+            togglePlay();
+          } else if (e.code === "KeyM") {
+            e.preventDefault();
+            video.muted = !video.muted;
+            updateVolumeUI();
+          } else if (e.code === "KeyF") {
+            e.preventDefault();
+            toggleFullscreen();
+          }
+        });
+
+        // Khởi tạo UI volume ban đầu
+        updateVolumeUI();
+
+        // Tự động phát khi cuộn tới, tạm dừng khi cuộn qua
+        if ("IntersectionObserver" in window) {
+          const io = new IntersectionObserver(
+            ([entry]) => {
+              if (entry.isIntersecting) {
+                if (!userManuallyPaused) {
+                  video.play().catch(() => {});
+                }
+              } else {
+                video.pause();
+              }
+            },
+            { threshold: 0.35 },
+          );
+          io.observe(player);
+        }
+      });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initVideoComponents);
+    } else {
+      initVideoComponents();
+    }
+  })();
+</script>

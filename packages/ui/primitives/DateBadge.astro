@@ -48,10 +48,10 @@ const solid = (variant ?? (isToday ? "solid" : "outline")) === "solid";
   class:list={[
     "pointer-events-none absolute top-(--offset-date-badge) left-(--offset-date-badge-left)",
     "flex size-(--size-date-badge) flex-col items-center justify-center",
-    "rounded-sm leading-none",
+    "rounded-sm leading-none transition-colors duration-(--duration-base) ease-out",
     solid
       ? "bg-primary text-white"
-      : "border-(length:--width-date-badge-border) border-primary bg-white text-primary",
+      : "border-(length:--width-date-badge-border) border-primary bg-white text-primary group-hover:bg-primary group-hover:text-white",
     className,
   ]}
   aria-hidden="true"

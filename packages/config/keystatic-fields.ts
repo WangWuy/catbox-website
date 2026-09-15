@@ -417,14 +417,16 @@ export function settingsFields() {
  * `ICON_OPTIONS`: tên icon gõ sai làm `astro-icon` hỏng build cả site.
  */
 const STAT_ICON_OPTIONS = [
-  { label: "Hộp", value: "lucide:package" },
-  { label: "Tệp mở", value: "lucide:folder-open" },
+  { label: "Túi giấy F&B", value: "lucide:paper-bag" },
+  { label: "Hộp / Thùng", value: "lucide:package" },
+  { label: "Kiện hàng / Hộp các loại", value: "lucide:boxes" },
   { label: "Túi xách", value: "lucide:shopping-bag" },
-  { label: "Quà tặng", value: "lucide:gift" },
-  { label: "Giọt nước", value: "lucide:droplet" },
-  { label: "Cuộn giấy", value: "lucide:scroll-text" },
+  { label: "Cuộn giấy", value: "lucide:scroll" },
+  { label: "Đạt chuẩn đóng gói", value: "lucide:package-check" },
+  { label: "Xếp lớp / Giấy lót", value: "lucide:layers" },
   { label: "Nhà máy", value: "lucide:factory" },
-  { label: "Cốc", value: "lucide:cup-soda" },
+  { label: "Cốc / Ly", value: "lucide:cup-soda" },
+  { label: "Quà tặng", value: "lucide:gift" },
 ] as const;
 
 /**
@@ -516,7 +518,7 @@ export function homepageFields(imageDir: string) {
       {
         title: fields.text({ label: "Tiêu đề khối" }),
         action: ctaFields("Nút xem thêm"),
-        limit: fields.number({ label: "Số bài tối đa", defaultValue: 4 }),
+        limit: fields.number({ label: "Số bài tối đa", defaultValue: 3 }),
       },
       { label: "Khối tin tức" },
     ),
