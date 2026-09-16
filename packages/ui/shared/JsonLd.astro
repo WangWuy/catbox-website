@@ -16,7 +16,19 @@ interface Props {
 
 const { brand, extra = [] } = Astro.props;
 const b = BRANDS[brand];
-const base = Astro.site?.href ?? b.site;
+const isCfc = brand === "cfc";
+
+const base = isCfc
+  ? (Astro.site?.href ??
+     (typeof process !== "undefined" && process.env.SITE_URL ? process.env.SITE_URL : null) ??
+     (typeof process !== "undefined" && process.env.VERCEL_PROJECT_PRODUCTION_URL
+       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+       : null) ??
+     (typeof process !== "undefined" && process.env.VERCEL_URL
+       ? `https://${process.env.VERCEL_URL}`
+       : null) ??
+     b.site)
+  : (Astro.site?.href ?? b.site);
 
 const orgId = `${b.site}/#organization`;
 
@@ -26,8 +38,8 @@ const organization: Record<string, unknown> = {
   name: b.name,
   legalName: b.legalName,
   url: b.site,
-  // TODO Pha 4: thay bằng logo PNG gốc khách gửi (Google yêu cầu raster cho Organization.logo)
-  logo: new URL("/og/default.svg", base).href,
+  // Với CFC: dùng logo PNG thật; các brand khác giữ placeholder SVG
+  logo: new URL(isCfc ? "/logo.png" : "/og/default.svg", base).href,
   email: b.email,
   telephone: b.hotline,
   // Cơ sở đầu tiên trong Cài đặt là trụ sở khai với Google. Trước đây địa chỉ

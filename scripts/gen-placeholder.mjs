@@ -14,8 +14,11 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const require = createRequire(join(ROOT, "sites/cfc/package.json"));
+const sharp = require("sharp");
 
 /** Bảng màu lấy đúng từ packages/tokens — giữ đồng bộ khi đổi token. */
 const BRANDS = {
@@ -71,14 +74,45 @@ for (const brand of Object.keys(BRANDS)) {
       count++;
     }
   }
+
   // Ảnh OG mặc định cho SEOHead khi bài viết chưa có ogImage riêng
-  await mkdir(join(ROOT, "sites", brand, "public", "og"), { recursive: true });
-  await writeFile(
-    join(ROOT, "sites", brand, "public", "og", "default.svg"),
-    svg(brand, "og", [1200, 630], 3),
-    "utf8",
-  );
+  // Chú ý: Telegram, Zalo, Facebook chỉ render PNG/JPG, không render SVG!
+  const ogDir = join(ROOT, "sites", brand, "public", "og");
+  await mkdir(ogDir, { recursive: true });
+  const ogSvg = svg(brand, "og", [1200, 630], 3);
+  await writeFile(join(ogDir, "default.svg"), ogSvg, "utf8");
+
+  if (brand === "cfc") {
+    // CFC có logo thật, sinh thẻ OG chuẩn 1200x630 hiển thị logo nổi bật
+    const bgSvg = `
+      <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FAF6F0"/>
+            <stop offset="100%" stop-color="#F0E5D5"/>
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="630" fill="url(#bg)"/>
+        <rect x="32" y="32" width="1136" height="566" rx="24" fill="#FFFFFF" stroke="#E5D7C3" stroke-width="2"/>
+      </svg>
+    `;
+    const logoBuf = await sharp(join(ROOT, "sites/cfc/public/logo.png"))
+      .resize({ width: 620, fit: "inside" })
+      .toBuffer();
+    const meta = await sharp(logoBuf).metadata();
+    const top = Math.round((630 - meta.height) / 2);
+    const left = Math.round((1200 - meta.width) / 2);
+    const ogPngBuf = await sharp(Buffer.from(bgSvg))
+      .composite([{ input: logoBuf, top, left }])
+      .png()
+      .toBuffer();
+
+    await writeFile(join(ogDir, "og-image.png"), ogPngBuf);
+    await writeFile(join(ogDir, "default.png"), ogPngBuf);
+    count += 2;
+  }
+
   count++;
 }
 
-console.log(`✓ Đã sinh ${count} placeholder cho 3 site.`);
+console.log(`✓ Đã sinh ${count} placeholder (SVG + PNG OG) cho 3 site.`);

@@ -62,6 +62,8 @@ interface BrandInfra {
   themeColor: string;
   /** Favicon của brand — CFC dùng logo PNG, 2 brand còn lại dùng SVG */
   favicon: string;
+  /** Ảnh OG mặc định (PNG 1200×630) dùng cho link preview mạng xã hội */
+  ogImage?: string;
   /** Ngôn ngữ thật sự được dịch (§9: làm thật VI + EN, không để cờ chết) */
   locales: string[];
   defaultLocale: string;
@@ -110,6 +112,7 @@ const INFRA: Record<BrandId, BrandInfra> = {
     site: "https://cfc.vn",
     themeColor: "#E67E22", // = --color-theme trong tokens/cfc.css
     favicon: "/logo.png",
+    ogImage: "/og/og-image.png",
     locales: ["vi", "en"],
     defaultLocale: "vi",
   },
