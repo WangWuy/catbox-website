@@ -40,10 +40,10 @@ interface Props {
 const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } = Astro.props;
 ---
 
-{/* Banner full màn hình — ảnh tràn viền edge-to-edge, các thẻ danh mục không bo góc theo mẫu 2T Print */}
-<section class:list={["w-full", stats && stats.length > 0 && "pb-12 sm:pb-14 lg:pb-16"]}>
+{/* Banner CFC theo mẫu 2T Print — hẹp ngang trong site-container, bo góc nhẹ, phối hợp với header tạo thành 1 màn hình đầu tiên */}
+<section class:list={["w-full site-container pt-2 md:pt-4", stats && stats.length > 0 && "pb-12 sm:pb-14 lg:pb-16"]}>
   <div class="relative w-full">
-    <div class="relative overflow-hidden bg-surface-tint">
+    <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-surface-tint shadow-sm">
       <SmartImage
         {assets}
         src={image}
@@ -52,7 +52,7 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
         height={1080}
         ratio="16x9"
         priority
-        sizes="100vw"
+        sizes="(min-width: 1280px) 1280px, 100vw"
         class="h-(--height-hero-mobile) w-full object-cover sm:h-(--height-hero-sm) md:h-(--height-hero) md:min-h-(--height-hero-min,400px)"
       />
 
@@ -73,7 +73,7 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
       }
 
       <div class:list={["absolute inset-0 flex items-center", stats && stats.length > 0 && "pb-10 sm:pb-12 lg:pb-14"]}>
-        <div class="site-container">
+        <div class="w-full px-5 sm:px-8 md:px-12">
           {/* Hiệu ứng VÀO TRANG (không phải cuộn): hero luôn nằm trong khung
               nhìn đầu tiên nên lượt quét lần-vẽ-đầu ở BaseLayout gắn `in` cho
               mấy dòng này ngay, không chờ cuộn. `--reveal-delay` tăng dần để
@@ -129,7 +129,7 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
 
     {
       stats && stats.length > 0 && (
-        /* 5 ô danh mục — bố cục chân banner, không bo góc (rounded-none), chỉ đổ bóng shadow khi hover, không dịch chuyển vị trí */
+        /* 5 ô danh mục — bố cục chân banner, chỉ đổ bóng shadow khi hover, không dịch chuyển vị trí */
         <div class="absolute inset-x-0 -bottom-8 sm:-bottom-10 lg:-bottom-12 z-10 px-2 sm:px-4">
           <div
             data-reveal-group
@@ -143,7 +143,7 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
                   <Tag
                     href={s.href}
                     class:list={[
-                      "group flex h-full flex-col items-center justify-center gap-1.5 sm:gap-2.5 rounded-none border border-black/5 bg-white/95 px-1 py-2 sm:px-3 sm:py-4.5 text-center shadow-[0_4px_16px_rgba(0,0,0,0.06)] backdrop-blur-md transition-shadow duration-300 ease-out hover:shadow-[0_16px_32px_-4px_rgba(0,0,0,0.18)] hover:border-black/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                      "group flex h-full flex-col items-center justify-center gap-1.5 sm:gap-2.5 rounded-lg border border-black/5 bg-white/95 px-1 py-2 sm:px-3 sm:py-4 text-center shadow-[0_4px_16px_rgba(0,0,0,0.06)] backdrop-blur-md transition-shadow duration-300 ease-out hover:shadow-[0_16px_32px_-4px_rgba(0,0,0,0.18)] hover:border-black/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                       s.href && "cursor-pointer"
                     ]}
                   >
