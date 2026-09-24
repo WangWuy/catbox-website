@@ -93,7 +93,7 @@ const navEntries = buildNavEntries(brand, categories, products);
       Bỏ qua tới nội dung chính
     </a>
 
-    <TopbarSwitcher {brand} />
+    {brand === "cfc" ? null : <TopbarSwitcher {brand} />}
     {brand === "cfc" ? (
       <CfcHeader items={navEntries} {current} />
     ) : (
