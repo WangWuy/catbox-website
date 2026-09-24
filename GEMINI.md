@@ -43,3 +43,23 @@ gives you structural context (callers, dependents, test coverage) that file sear
 3. Use `get_affected_flows_tool` to understand impact.
 4. Use `query_graph_tool` pattern="tests_for" to check coverage.
 <!-- /code-review-graph MCP tools -->
+
+<!-- commit-safety rules -->
+## Commit Safety Rules
+
+**Tuyệt đối KHÔNG xóa file khi commit trừ khi được người dùng yêu cầu rõ ràng.**
+
+### Quy tắc bắt buộc trước mỗi commit
+
+1. **Kiểm tra file bị xóa**: Chạy `git diff --cached --name-only --diff-filter=D` trước khi commit.
+   - Nếu có file bị xóa mà không phải mục tiêu của task → **DỪNG LẠI**, báo cho người dùng.
+2. **Không dùng `git add .` bừa bãi**: Luôn dùng `git add <file>` cụ thể hoặc `git add -p` để kiểm soát từng thay đổi.
+3. **Mỗi commit chỉ làm một việc**: Không gộp nhiều thay đổi không liên quan vào cùng một commit.
+4. **Xem lại trước khi commit**: Chạy `git diff --cached --stat` để xác nhận đúng file, đúng số dòng thêm/xóa.
+
+### Bài học từ sự cố thực tế
+
+- Commit `c3729e8` đã **xóa nhầm `CfcHeader.astro` (440 dòng)** khi tinh chỉnh hero banner — do `git add .` cuốn theo file không liên quan.
+- File được khôi phục từ git history bằng: `git show <commit>:<path> > <path>`
+- Pre-commit hook tại `.git/hooks/pre-commit` sẽ **cảnh báo và yêu cầu xác nhận** khi commit xóa bất kỳ file nào.
+<!-- /commit-safety rules -->
