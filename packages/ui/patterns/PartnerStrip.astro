@@ -1,0 +1,132 @@
+---
+/**
+ * PartnerStrip — dải logo đối tác cuộn ngang với nút prev/next.
+ *
+ * Thiết kế: nền trắng, border trên/dưới mỏng, logo grayscale → màu khi hover,
+ * cuộn mượt bằng scroll-behavior: smooth, nút arrow tròn hai bên.
+ *
+ * Props:
+ *  - title  : tiêu đề nhỏ trên thanh (ví dụ "Đối tác tin cậy")
+ *  - partners: mảng { name, logo, href? }
+ *    logo có thể là:
+ *      • đường dẫn nội bộ (bắt đầu bằng /) → dùng thẻ <img> thường
+ *      • URL ngoài                           → như trên
+ *
+ * Cách dùng: tự render SVG inline cho logo biết trước (HABECO, Samsung…),
+ * hoặc truyền danh sách src ảnh bên ngoài.
+ */
+
+interface Partner {
+  name: string;
+  /** Đường dẫn tới file ảnh logo (relative /src/... hoặc URL tuyệt đối) */
+  logo: string;
+  /** URL trang web đối tác; bỏ trống thì không wrap thẻ <a> */
+  href?: string;
+}
+
+interface Props {
+  /** Nhãn nhỏ bên trái (ví dụ "Đối tác tin cậy của CFC") */
+  title?: string;
+  partners: Partner[];
+}
+
+const { title = "Đối tác tin cậy của CFC", partners } = Astro.props;
+
+const stripId = "partner-strip";
+---
+
+<div class="partner-strip-wrapper border-y border-border bg-white py-5">
+  <div class="site-container flex items-center gap-4">
+    {/* Label bên trái */}
+    {
+      title && (
+        <p class="hidden shrink-0 text-xs font-semibold uppercase tracking-widest text-ink-muted md:block">
+          {title}
+        </p>
+      )
+    }
+
+    {/* Nút Prev */}
+    <button
+      type="button"
+      data-strip-prev={stripId}
+      aria-label="Xem đối tác trước"
+      class="partner-arrow flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-white shadow-sm transition hover:border-primary hover:text-primary"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+
+    {/* Track cuộn */}
+    <div
+      id={stripId}
+      class="partner-track flex flex-1 snap-x snap-mandatory items-center gap-8 overflow-x-auto scroll-smooth"
+      style="scrollbar-width:none;-ms-overflow-style:none;"
+    >
+      {
+        partners.map((p) => {
+          const img = (
+            <img
+              src={p.logo}
+              alt={p.name}
+              width="120"
+              height="48"
+              loading="lazy"
+              class="h-10 w-auto max-w-[120px] object-contain grayscale transition duration-300 hover:grayscale-0"
+            />
+          );
+          return (
+            <div class="partner-item snap-start shrink-0 flex items-center justify-center px-2">
+              {p.href ? (
+                <a
+                  href={p.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={p.name}
+                  class="block"
+                >
+                  {img}
+                </a>
+              ) : (
+                img
+              )}
+            </div>
+          );
+        })
+      }
+    </div>
+
+    {/* Nút Next */}
+    <button
+      type="button"
+      data-strip-next={stripId}
+      aria-label="Xem đối tác tiếp theo"
+      class="partner-arrow flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-white shadow-sm transition hover:border-primary hover:text-primary"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<style>
+  /* Ẩn scrollbar trên webkit */
+  .partner-track::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+
+<script>
+  // Scroll left/right khi bấm nút — cuộn theo chiều rộng 1 item (~160px).
+  document.querySelectorAll<HTMLButtonElement>("[data-strip-prev],[data-strip-next]").forEach((btn) => {
+    const trackId = btn.dataset.stripPrev ?? btn.dataset.stripNext ?? "";
+    const track = document.getElementById(trackId);
+    if (!track) return;
+    const dir = btn.hasAttribute("data-strip-prev") ? -1 : 1;
+    btn.addEventListener("click", () => {
+      track.scrollBy({ left: dir * 160, behavior: "smooth" });
+    });
+  });
+</script>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <!-- Lotus icon simplified -->
+  <g transform="translate(8,10)">
+    <path d="M20,38 Q12,24 20,10 Q28,24 20,38Z" fill="#003087" opacity="0.9"/>
+    <path d="M20,38 Q6,28 8,14 Q16,22 20,38Z" fill="#003087" opacity="0.7"/>
+    <path d="M20,38 Q34,28 32,14 Q24,22 20,38Z" fill="#003087" opacity="0.7"/>
+    <path d="M20,38 Q2,34 4,20 Q12,28 20,38Z" fill="#003087" opacity="0.5"/>
+    <path d="M20,38 Q38,34 36,20 Q28,28 20,38Z" fill="#003087" opacity="0.5"/>
+  </g>
+  <text x="52" y="28" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#003087">Vietnam</text>
+  <text x="52" y="44" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#003087">Airlines</text>
+</svg>
