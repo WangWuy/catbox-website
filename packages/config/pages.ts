@@ -39,11 +39,12 @@ const seo = z.object({
   description: z.string(),
 });
 
-/** Một ô số liệu trên hero trang chủ */
+/** Một ô số liệu hoặc danh mục đại diện trên hero trang chủ */
 const heroStat = z.object({
   icon: z.string(),
-  num: z.string(),
+  num: z.string().optional(),
   label: z.string(),
+  href: z.string().optional(),
 });
 
 export const homepageSchema = z.object({

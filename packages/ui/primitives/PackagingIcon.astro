@@ -242,6 +242,73 @@ const normalized = name.toLowerCase().replace(/^lucide:/, "");
         opacity="0.65"
       />
     </svg>
+  ) : normalized === "cup-soda" || normalized === "cup" || normalized === "paper-cup" ? (
+    /* 6. Cốc giấy / Ly giấy F&B chuyên dụng */
+    <svg
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class={className}
+      aria-hidden="true"
+    >
+      {/* Thân ly giấy vuốt thon xuống đáy */}
+      <path
+        d="M8.5 9.5L10.5 26.2C10.6 27.2 11.5 28 12.5 28H19.5C20.5 28 21.4 27.2 21.5 26.2L23.5 9.5"
+        class="fill-current/8 stroke-current"
+        stroke-width="1.6"
+        stroke-linejoin="round"
+      />
+      {/* Đai bọc ly / Cup sleeve cách nhiệt chống nóng */}
+      <path
+        d="M9.3 14.5L10.1 21H21.9L22.7 14.5H9.3Z"
+        class="fill-current/16 stroke-current"
+        stroke-width="1.3"
+        stroke-linejoin="round"
+      />
+      {/* Miệng nắp ly có gờ */}
+      <rect
+        x="6.5"
+        y="6.5"
+        width="19"
+        height="3"
+        rx="1.5"
+        class="fill-current/20 stroke-current"
+        stroke-width="1.5"
+      />
+      {/* Vòm nắp uống trực tiếp */}
+      <path
+        d="M11 6.5C11 5 13 4 16 4C19 4 21 5 21 6.5"
+        stroke="currentColor"
+        stroke-width="1.4"
+        stroke-linecap="round"
+      />
+    </svg>
+  ) : normalized === "straw" || normalized === "paper-straw" ? (
+    /* 7. Ống hút giấy F&B thân thiện môi trường */
+    <svg
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class={className}
+      aria-hidden="true"
+    >
+      {/* Thân ống hút đặt chéo */}
+      <rect
+        x="13.5"
+        y="3"
+        width="5"
+        height="26"
+        rx="2.5"
+        transform="rotate(22 16 16)"
+        class="fill-current/10 stroke-current"
+        stroke-width="1.6"
+      />
+      {/* Đường sọc xoắn in trên ống hút giấy */}
+      <line x1="10.5" y1="8.5" x2="15.5" y2="10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.6" />
+      <line x1="12.5" y1="13.5" x2="17.5" y2="15.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.6" />
+      <line x1="14.5" y1="18.5" x2="19.5" y2="20.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.6" />
+      <line x1="16.5" y1="23.5" x2="21.5" y2="25.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.6" />
+    </svg>
   ) : (
     /* Fallback dùng astro-icon nếu có icon bất kỳ khác từ CMS */
     <Icon name={name} class={className} aria-hidden="true" />

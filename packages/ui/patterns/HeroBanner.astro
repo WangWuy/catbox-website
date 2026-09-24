@@ -18,8 +18,9 @@ import PackagingIcon from "@ui/primitives/PackagingIcon.astro";
 
 export interface HeroStat {
   icon: string;
-  num: string;
+  num?: string;
   label: string;
+  href?: string;
 }
 
 interface Props {
@@ -32,17 +33,17 @@ interface Props {
   titleAccent?: string;
   subtitle?: string;
   hashtag?: string;
-  /** Thẻ thống kê đè lên đáy banner, ví dụ số liệu năng lực sản xuất */
+  /** Thẻ thống kê hoặc danh mục đè lên đáy banner */
   stats?: HeroStat[];
 }
 
 const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } = Astro.props;
 ---
 
-{/* Banner full màn hình — loại bỏ padding ngoài và bo góc để ảnh tràn viền edge-to-edge. */}
-<section class:list={["w-full", stats && stats.length > 0 && "lg:pb-14"]}>
+{/* Banner CFC theo mẫu 2T Print — hẹp ngang trong site-container, bo góc nhẹ, phối hợp với header tạo thành 1 màn hình đầu tiên */}
+<section class:list={["w-full site-container pt-2 md:pt-4", stats && stats.length > 0 && "pb-12 sm:pb-14 lg:pb-16"]}>
   <div class="relative w-full">
-    <div class="relative overflow-hidden bg-surface-tint">
+    <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-surface-tint shadow-sm">
       <SmartImage
         {assets}
         src={image}
@@ -51,8 +52,8 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
         height={1080}
         ratio="16x9"
         priority
-        sizes="100vw"
-        class="h-(--height-hero-mobile) w-full object-cover sm:h-(--height-hero-sm) md:h-(--height-hero) md:min-h-(--height-hero-min,580px)"
+        sizes="(min-width: 1280px) 1280px, 100vw"
+        class="h-(--height-hero-mobile) w-full object-cover sm:h-(--height-hero-sm) md:h-(--height-hero) md:min-h-(--height-hero-min,400px)"
       />
 
       <!-- Gradient từ trái sang giúp chữ đọc được trên mọi ảnh khách gửi sau -->
@@ -66,23 +67,23 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
         stats && stats.length > 0 && (
           <div
             aria-hidden="true"
-            class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent md:h-40"
+            class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/60 to-transparent md:h-36"
           />
         )
       }
 
-      <div class:list={["absolute inset-0 flex items-center", stats && stats.length > 0 && "lg:pb-16"]}>
-        <div class="site-container">
+      <div class:list={["absolute inset-0 flex items-center", stats && stats.length > 0 && "pb-10 sm:pb-12 lg:pb-14"]}>
+        <div class="w-full px-5 sm:px-8 md:px-12">
           {/* Hiệu ứng VÀO TRANG (không phải cuộn): hero luôn nằm trong khung
               nhìn đầu tiên nên lượt quét lần-vẽ-đầu ở BaseLayout gắn `in` cho
               mấy dòng này ngay, không chờ cuộn. `--reveal-delay` tăng dần để
               bốn dòng hiện lần lượt từ trên xuống. */}
-          <div class="flex max-w-2xl flex-col items-start gap-5">
+          <div class="flex max-w-2xl flex-col items-start gap-4 md:gap-5">
             {
               eyebrow && (
                 <span
                   data-reveal
-                  class="pill bg-white/15 px-4 py-2 text-tiny tracking-eyebrow text-white uppercase backdrop-blur-sm"
+                  class="pill bg-white/15 px-3 py-1.5 sm:px-4 sm:py-2 text-tiny tracking-eyebrow text-white uppercase backdrop-blur-sm"
                 >
                   {eyebrow}
                 </span>
@@ -103,7 +104,7 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
                 <p
                   data-reveal
                   style="--reveal-delay: calc(var(--stagger-reveal) * 2)"
-                  class="max-w-lg text-body leading-relaxed text-white/85 md:text-base"
+                  class="max-w-lg text-body leading-relaxed text-white/85 text-xs sm:text-sm md:text-base line-clamp-2 sm:line-clamp-none"
                 >
                   {subtitle}
                 </p>
@@ -115,7 +116,7 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
                 <p
                   data-reveal
                   style="--reveal-delay: calc(var(--stagger-reveal) * 3)"
-                  class="text-sm font-semibold text-white/80"
+                  class="text-xs sm:text-sm font-semibold text-white/80"
                 >
                   #nhận nhiều <span class="text-cta">{hashtag}</span>
                 </p>
@@ -128,37 +129,44 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
 
     {
       stats && stats.length > 0 && (
-        /* Chỉ hiện từ `lg` — bề ngang duy nhất 5 thẻ xếp gọn MỘT hàng chờm lên
-           banner. Dưới `lg` ẩn hẳn: xếp 2–3 cột thì dải stat cao ~280px, đẩy
-           hero xuống và ngốn trọn khung nhìn đầu tiên trên mobile. */
-        <div class="hidden lg:absolute lg:inset-x-0 lg:-bottom-14 lg:block">
-          <div class="site-container">
-            <div
-              data-reveal-group
-              style="--duration-reveal: 2000ms; --stagger-reveal: 200ms;"
-              class="mx-auto grid max-w-5xl grid-cols-5 gap-3.5 px-4"
-            >
-              {stats.map((s) => (
+        /* 5 ô danh mục — bố cục chân banner, chỉ đổ bóng shadow khi hover, không dịch chuyển vị trí */
+        <div class="absolute inset-x-0 -bottom-8 sm:-bottom-10 lg:-bottom-12 z-10 px-2 sm:px-4">
+          <div
+            data-reveal-group
+            style="--duration-reveal: 1500ms; --stagger-reveal: 120ms;"
+            class="mx-auto grid max-w-4xl grid-cols-5 gap-1.5 sm:gap-3 lg:gap-4"
+          >
+            {stats.map((s) => {
+              const Tag = s.href ? "a" : "div";
+              return (
                 <div class="h-full">
-                  <div class="group flex h-full flex-col items-center gap-2.5 rounded-none border border-black/5 bg-white/95 px-3 py-4.5 text-center shadow-[0_4px_20px_rgba(0,0,0,0.06)] backdrop-blur-md transition-all duration-500 ease-out hover:-translate-y-2.5 hover:border-black/10 hover:shadow-[0_20px_35px_-5px_rgba(0,0,0,0.2)]">
-                    {/* Icon bao bì custom duotone — không background */}
-                    <div class="flex size-10 items-center justify-center text-primary transition-transform duration-300 group-hover:scale-110">
-                      <PackagingIcon name={s.icon} class="size-8 text-primary" />
+                  <Tag
+                    href={s.href}
+                    class:list={[
+                      "group flex h-full flex-col items-center justify-center gap-1.5 sm:gap-2.5 rounded-lg border border-black/5 bg-white/95 px-1 py-2 sm:px-3 sm:py-4 text-center shadow-[0_4px_16px_rgba(0,0,0,0.06)] backdrop-blur-md transition-shadow duration-300 ease-out hover:shadow-[0_16px_32px_-4px_rgba(0,0,0,0.18)] hover:border-black/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                      s.href && "cursor-pointer"
+                    ]}
+                  >
+                    {/* Icon bao bì custom duotone — không dịch chuyển khi hover */}
+                    <div class="flex size-7 sm:size-9 lg:size-10 items-center justify-center text-primary">
+                      <PackagingIcon name={s.icon} class="size-6 sm:size-7 lg:size-8 text-primary" />
                     </div>
 
-                    {/* Con số thống kê */}
-                    <span class="font-display text-xl font-semibold tracking-tight text-ink lg:text-2xl">
-                      {s.num}
-                    </span>
+                    {/* Con số thống kê (nếu có) */}
+                    {s.num && (
+                      <span class="font-display text-sm sm:text-lg lg:text-xl font-semibold tracking-tight text-ink">
+                        {s.num}
+                      </span>
+                    )}
 
-                    {/* Đơn vị */}
-                    <span class="text-(length:--text-meta) font-medium text-ink-muted">
+                    {/* Tên danh mục */}
+                    <span class="font-display text-[9px] sm:text-xs lg:text-sm font-bold tracking-wider text-ink uppercase group-hover:text-primary transition-colors leading-tight">
                       {s.label}
                     </span>
-                  </div>
+                  </Tag>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
       )

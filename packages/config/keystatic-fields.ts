@@ -418,14 +418,15 @@ export function settingsFields() {
  */
 const STAT_ICON_OPTIONS = [
   { label: "Túi giấy F&B", value: "lucide:paper-bag" },
-  { label: "Hộp / Thùng", value: "lucide:package" },
-  { label: "Kiện hàng / Hộp các loại", value: "lucide:boxes" },
   { label: "Túi xách", value: "lucide:shopping-bag" },
-  { label: "Cuộn giấy", value: "lucide:scroll" },
+  { label: "Cuộn giấy / Giấy gói", value: "lucide:scroll" },
+  { label: "Hộp / Thùng", value: "lucide:package" },
+  { label: "Cốc / Ly", value: "lucide:cup-soda" },
+  { label: "Ống hút giấy", value: "straw" },
+  { label: "Kiện hàng / Hộp các loại", value: "lucide:boxes" },
   { label: "Đạt chuẩn đóng gói", value: "lucide:package-check" },
   { label: "Xếp lớp / Giấy lót", value: "lucide:layers" },
   { label: "Nhà máy", value: "lucide:factory" },
-  { label: "Cốc / Ly", value: "lucide:cup-soda" },
   { label: "Quà tặng", value: "lucide:gift" },
 ] as const;
 
@@ -492,12 +493,13 @@ export function homepageFields(imageDir: string) {
               options: STAT_ICON_OPTIONS,
               defaultValue: "lucide:package",
             }),
-            num: fields.text({ label: "Con số", description: "Ví dụ “4.400.000”." }),
-            label: fields.text({ label: "Đơn vị", description: "Ví dụ “Chiếc/năm”." }),
+            num: fields.text({ label: "Con số (nếu có)", description: "Ví dụ “4.400.000” (có thể để trống)." }),
+            label: fields.text({ label: "Nhãn / Tên danh mục", description: "Ví dụ “TÚI GIẤY” hoặc “Chiếc/năm”." }),
+            href: fields.text({ label: "Đường dẫn (Link khi click)", description: "Ví dụ “/danh-muc/tui-giay-thuc-pham”." }),
           }),
           {
-            label: "Số liệu trên hero",
-            itemLabel: (props) => `${props.fields.num.value} ${props.fields.label.value}`,
+            label: "Số liệu / Danh mục trên hero",
+            itemLabel: (props) => props.fields.label.value || props.fields.num.value || "Ô danh mục",
           },
         ),
       },

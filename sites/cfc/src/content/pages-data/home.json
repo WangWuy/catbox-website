@@ -11,11 +11,11 @@
     "subtitle": "Túi giấy, giấy gói và hộp đựng thực phẩm in theo yêu cầu. Không qua trung gian, báo giá trong 30 phút.",
     "hashtag": "ưu đãi cho chuỗi",
     "stats": [
-      { "icon": "lucide:package", "num": "4.400.000", "label": "Chiếc/năm" },
-      { "icon": "lucide:paper-bag", "num": "88.000.000", "label": "Chiếc/năm" },
-      { "icon": "lucide:shopping-bag", "num": "990.000", "label": "Chiếc/năm" },
-      { "icon": "lucide:boxes", "num": "6.600.000", "label": "Chiếc/năm" },
-      { "icon": "lucide:scroll", "num": "33.000", "label": "Cuộn/năm" }
+      { "icon": "lucide:shopping-bag", "label": "Túi giấy", "href": "/danh-muc/tui-giay-thuc-pham" },
+      { "icon": "lucide:scroll", "label": "Giấy gói", "href": "/danh-muc/giay-goi-thuc-pham" },
+      { "icon": "lucide:package", "label": "Hộp giấy", "href": "/danh-muc/hop-dung-thuc-an" },
+      { "icon": "lucide:cup-soda", "label": "Cốc giấy", "href": "/danh-muc/coc-1-lop" },
+      { "icon": "straw", "label": "Ống hút giấy", "href": "/danh-muc/ong-hut-giay" }
     ]
   },
   "bestsellers": {

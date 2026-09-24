@@ -92,11 +92,11 @@
    * của brand CFC) vì đây là khối ảnh độc lập, không phải panel/card. */
   --radius-image-soft: 12px;
 
-  /* Banner Hero full màn hình cho CFC */
-  --height-hero-mobile: 440px;
-  --height-hero-sm: 520px;
-  --height-hero: 75vh;
-  --height-hero-min: 600px;
+  /* Banner Hero gọn gàng chuẩn 1 màn hình cho CFC (theo mẫu 2T Print) */
+  --height-hero-mobile: 360px;
+  --height-hero-sm: 420px;
+  --height-hero: clamp(400px, 48vh, 460px);
+  --height-hero-min: 400px;
 
   /* Nhịp điệu chuyển động & độ trễ (Motion & Timing) — làm chậm hơn để hiệu ứng đầm, mượt mà hơn */
   --duration-base:        450ms;  /* Mặc định 300ms -> tăng lên 450ms */
