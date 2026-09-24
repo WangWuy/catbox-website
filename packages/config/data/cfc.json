@@ -133,19 +133,19 @@
     ],
     "entries": [
       {
-        "label": "Trang chủ",
-        "href": "/",
-        "icon": "lucide:croissant",
-        "isMega": false
-      },
-      {
         "label": "Sản phẩm",
         "href": "/products",
         "icon": "lucide:package",
         "isMega": true
       },
       {
-        "label": "Về chúng tôi",
+        "label": "Trang chủ",
+        "href": "/",
+        "icon": "lucide:croissant",
+        "isMega": false
+      },
+      {
+        "label": "Giới thiệu",
         "href": "/about-us",
         "icon": "lucide:factory",
         "isMega": false
