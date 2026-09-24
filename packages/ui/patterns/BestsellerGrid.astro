@@ -1,6 +1,6 @@
 ---
 /**
- * BÁN CHẠY — tabs cố định lọc theo nhóm danh mục + lưới 4 cột × 2 dòng = 8 thẻ/trang,
+ * BÁN CHẠY — tabs cố định lọc theo nhóm danh mục + lưới 5 cột × 2 dòng = 10 thẻ/trang,
  * pagination riêng cho từng tab.
  *
  * SEO-safe: TOÀN BỘ sản phẩm render trong HTML ngay từ đầu; JS chỉ
@@ -31,7 +31,7 @@ interface Props {
   /** @deprecated Dùng tabGroups thay thế */
   tabs?: string[];
   items: (ProductCardData & { category: string; categorySlug: string })[];
-  /** Số item mỗi trang, mặc định 8 (2 dòng × 4 cột) */
+  /** Số item mỗi trang, mặc định 10 (2 dòng × 5 cột) */
   perPage?: number;
 }
 
@@ -42,7 +42,7 @@ const {
   tabGroups,
   tabs = [],
   items,
-  perPage = 8,
+  perPage = 10,
 } = Astro.props;
 
 // Nếu có tabGroups thì dùng; fallback về tabs cũ
@@ -81,9 +81,9 @@ const allGroups: TabGroup[] = [
     }
   </div>
 
-  <!-- Lưới sản phẩm: 2 cột mobile → 3 cột md → 4 cột lg (ảnh lớn hơn) -->
+  <!-- Lưới sản phẩm: 2 cột mobile → 3 cột md → 5 cột lg -->
   <div
-    class="grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-4"
+    class="grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-5"
     data-bs-grid
     data-bs-per={perPage}
     data-reveal-group
@@ -100,7 +100,6 @@ const allGroups: TabGroup[] = [
       ))
     }
   </div>
-
 
   <p data-bs-empty hidden class="py-10 text-center text-ink-muted">
     Chưa có sản phẩm trong danh mục này.
@@ -120,7 +119,7 @@ const allGroups: TabGroup[] = [
     const section = grid.closest("section");
     if (!section) return;
 
-    const perPage = parseInt(grid.dataset.bsPer ?? "8", 10);
+    const perPage = parseInt(grid.dataset.bsPer ?? "10", 10);
     const cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-product]"));
     const tabsBar = section.querySelector<HTMLElement>("[data-bs-tabs]");
     const tabButtons = tabsBar
