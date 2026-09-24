@@ -21,7 +21,7 @@ import catalogData from "../content/pages-data/catalog.json";
 import homeData from "../content/pages-data/home.json";
 
 import HeroBanner from "@ui/patterns/HeroBanner.astro";
-import BestsellerGrid from "@ui/patterns/BestsellerGrid.astro";
+import BestsellerGrid, { type TabGroup } from "@ui/patterns/BestsellerGrid.astro";
 import NewsGrid from "@ui/patterns/NewsGrid.astro";
 import FactoryReels from "@ui/patterns/FactoryReels.astro";
 
@@ -53,6 +53,7 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft))
 const toCard = (p: (typeof products)[number]) => ({
   title: p.data.title,
   category: label(p.data.category),
+  categorySlug: p.data.category,   // slug gốc để JS lọc theo nhóm tab
   href: `/products/${p.id}`,
   image: p.data.image,
   badge: p.data.badge,
@@ -64,7 +65,35 @@ const bestsellers = products
   .filter((p) => p.data.bestseller)
   .slice(0, home.bestsellers.limit)
   .map(toCard);
-const tabs = [...new Set(bestsellers.map((p) => p.category))];
+
+/**
+ * 5 tabs cố định theo yêu cầu khách hàng.
+ * Mỗi tab gom nhiều category slug → 1 nhóm hiển thị.
+ */
+const BESTSELLER_TAB_GROUPS: TabGroup[] = [
+  {
+    label: "Túi giấy thực phẩm",
+    slugs: ["tui-giay-thuc-pham", "tui-dung-banh-bao", "tui-dung-xuc-xich-lap-xuong",
+            "bao-banh-mi-que", "bao-banh-mi-tam-giac", "bao-banh-mi-kep", "tui-banh-mi"],
+  },
+  {
+    label: "Giấy gói thực phẩm",
+    slugs: ["giay-goi-thuc-pham", "giay-goi-hamburger", "giay-lot", "giay-lot-banh-bao",
+            "giay-goi-chong-dau"],
+  },
+  {
+    label: "Hộp đựng thức ăn giấy",
+    slugs: ["hop-dung-thuc-an", "hop-dung-salad", "hop-dung-xoi", "khay-do-chien"],
+  },
+  {
+    label: "Cốc giấy",
+    slugs: ["coc-1-lop", "coc-2-lop", "coc-giay-ong-hut"],
+  },
+  {
+    label: "Ống hút giấy",
+    slugs: ["ong-hut-giay"],
+  },
+];
 ---
 
 <Layout title={home.seo.title} description={home.seo.description}>
@@ -82,7 +111,7 @@ const tabs = [...new Set(bestsellers.map((p) => p.category))];
 
     <BestsellerGrid
       {assets}
-      {tabs}
+      tabGroups={BESTSELLER_TAB_GROUPS}
       title={home.bestsellers.title}
       items={bestsellers}
     />
