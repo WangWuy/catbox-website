@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
   "buildCommand": "pnpm --filter @catbox/site-cfc run build:vercel",
   "outputDirectory": "sites/cfc/dist",
   "installCommand": "pnpm install --frozen-lockfile"
