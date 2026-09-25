@@ -1,8 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm --filter @catbox/site-catbox build",
-  "outputDirectory": "sites/catbox/dist",
+  "buildCommand": "pnpm --filter @catbox/site-cfc build",
+  "outputDirectory": "sites/cfc/dist",
   "installCommand": "pnpm install --frozen-lockfile",
-  "framework": null,
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- sites/catbox packages"
+  "framework": null
 }
