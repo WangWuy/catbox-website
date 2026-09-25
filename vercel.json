@@ -1,7 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm --filter @catbox/site-cfc exec astro build && cd sites/cfc && npx pagefind --site dist",
+  "buildCommand": "pnpm --filter @catbox/site-cfc run build:vercel",
   "outputDirectory": "sites/cfc/dist",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "framework": null
+  "installCommand": "pnpm install --frozen-lockfile"
 }
