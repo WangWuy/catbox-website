@@ -41,7 +41,7 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
 ---
 
 {/* Banner full màn hình — ảnh tràn viền edge-to-edge, các thẻ danh mục không bo góc theo mẫu 2T Print */}
-<section class:list={["w-full", stats && stats.length > 0 && "pb-12 sm:pb-14 lg:pb-16"]}>
+<section class:list={["w-full", stats && stats.length > 0 && "pb-36 sm:pb-14 lg:pb-16"]}>
   <div class="relative w-full">
     <div class="relative overflow-hidden bg-surface-tint">
       <SmartImage
@@ -72,7 +72,7 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
         )
       }
 
-      <div class:list={["absolute inset-0 flex items-center", stats && stats.length > 0 && "pb-10 sm:pb-12 lg:pb-14"]}>
+      <div class:list={["absolute inset-0 flex items-center", stats && stats.length > 0 && "pb-14 sm:pb-12 lg:pb-14"]}>
         <div class="site-container">
           {/* Hiệu ứng VÀO TRANG (không phải cuộn): hero luôn nằm trong khung
               nhìn đầu tiên nên lượt quét lần-vẽ-đầu ở BaseLayout gắn `in` cho
@@ -129,21 +129,21 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
 
     {
       stats && stats.length > 0 && (
-        /* 5 ô danh mục — bố cục chân banner, không bo góc (rounded-none), chỉ đổ bóng shadow khi hover, không dịch chuyển vị trí */
-        <div class="absolute inset-x-0 -bottom-8 sm:-bottom-10 lg:-bottom-12 z-10 px-2 sm:px-4">
+        /* Các ô danh mục theo mẫu 2T Print: trên mobile hiển thị lưới 2x2 (4 ô, ẩn ô thứ 5), trên sm+ hiển thị đủ 5 ô */
+        <div class="absolute inset-x-0 -bottom-28 sm:-bottom-10 lg:-bottom-12 z-10 px-3 sm:px-4">
           <div
             data-reveal-group
             style="--duration-reveal: 1500ms; --stagger-reveal: 120ms;"
-            class="mx-auto grid max-w-4xl grid-cols-5 gap-1.5 sm:gap-3 lg:gap-4"
+            class="mx-auto grid max-w-4xl grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3 lg:gap-4"
           >
-            {stats.map((s) => {
+            {stats.map((s, idx) => {
               const Tag = s.href ? "a" : "div";
               return (
-                <div class="h-full">
+                <div class:list={["h-full", idx >= 4 && "hidden sm:block"]}>
                   <Tag
                     href={s.href}
                     class:list={[
-                      "group flex h-full flex-col items-center justify-center gap-1.5 sm:gap-2.5 rounded-none border border-black/5 bg-white/95 px-1 py-2 sm:px-3 sm:py-4.5 text-center shadow-(--shadow-hero-chip) backdrop-blur-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                      "group flex h-full flex-col items-center justify-center gap-1.5 sm:gap-2.5 rounded-none border border-black/5 bg-white/95 px-2 py-3.5 sm:px-3 sm:py-4.5 text-center shadow-(--shadow-hero-chip) backdrop-blur-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                       s.href &&
                         "cursor-pointer transition-shadow duration-300 ease-out hover:shadow-(--shadow-hero-chip-hover) hover:border-black/10"
                     ]}
@@ -163,7 +163,7 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
                     {/* Tên danh mục */}
                     <span
                       class:list={[
-                        "font-display text-[9px] sm:text-xs lg:text-sm font-bold tracking-wider text-ink uppercase leading-tight",
+                        "font-display text-xs sm:text-xs lg:text-sm font-bold tracking-wider text-ink uppercase leading-tight",
                         s.href && "transition-colors group-hover:text-primary"
                       ]}
                     >
