@@ -24,6 +24,78 @@ const b = BRANDS.catbox;
 const siblings = otherBrands("catbox");
 ---
 
+<!-- ═══════════════════════════════════════════════════════════
+     TRUST BAR — 4 thẻ nổi giống 2tprint.com, đặt trên footer.
+     ════════════════════════════════════════════════════════════ -->
+<div class="bg-primary-deep pt-12">
+  <div class="site-container">
+    {(() => {
+      type TrustItem = {
+        icon: string;
+        title: string;
+        sub: string;
+        href?: string;
+        highlight?: boolean;
+      };
+      const items: TrustItem[] = [
+        {
+          icon: "lucide:truck",
+          title: "Giao hàng toàn quốc",
+          sub: "Đóng gói cẩn thận, giao tận nơi",
+        },
+        {
+          icon: "lucide:refresh-ccw",
+          title: "Đổi trả miễn phí",
+          sub: "Trong vòng 7 ngày nếu lỗi sản xuất",
+        },
+        {
+          icon: "lucide:shield-check",
+          title: "100% Hoàn tiền",
+          sub: "Nếu sản phẩm không đúng yêu cầu",
+        },
+        {
+          icon: "lucide:phone-call",
+          title: `Hotline: ${b.hotline}`,
+          sub: "Hỗ trợ 24/7",
+          href: b.hotlineHref,
+          highlight: true,
+        },
+      ];
+      return (
+        <ul
+          class="grid grid-cols-2 gap-4 lg:grid-cols-4"
+          role="list"
+          aria-label="Cam kết dịch vụ"
+        >
+          {items.map((item) => (
+            <li class="group flex items-center gap-4 rounded-2xl bg-surface p-5 shadow-md transition-shadow hover:shadow-lg">
+              <span
+                aria-hidden="true"
+                class="flex size-14 flex-none items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20"
+              >
+                <Icon name={item.icon} class="size-7 text-primary" />
+              </span>
+              <div class="min-w-0">
+                {item.href ? (
+                  <a
+                    href={item.href}
+                    class={`block text-sm font-bold leading-snug ${item.highlight ? "text-cta hover:underline" : "text-ink hover:text-primary"}`}
+                  >
+                    {item.title}
+                  </a>
+                ) : (
+                  <p class="text-sm font-bold leading-snug text-ink">{item.title}</p>
+                )}
+                <p class="mt-0.5 text-xs leading-relaxed text-ink-muted">{item.sub}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      );
+    })()}
+  </div>
+</div>
+
 <footer class="border-t border-line bg-primary-deep text-ink">
   <div class="site-container grid gap-14 py-18 lg:grid-cols-(--cols-footer)">
     <!-- Cột 1: pháp nhân + chứng nhận + policy + social -->
