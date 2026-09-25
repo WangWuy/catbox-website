@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist",
+    "build:vercel": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "dev:admin": "KEYSTATIC_ADMIN=node astro dev",
