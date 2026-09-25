@@ -14,7 +14,6 @@ import SEOHead from "@ui/shared/SEOHead.astro";
 import JsonLd from "@ui/shared/JsonLd.astro";
 import TopbarSwitcher from "@ui/brand/fnb/TopbarSwitcher.astro";
 import MainHeader from "@ui/brand/fnb/MainHeader.astro";
-import CfcHeader from "@ui/brand/fnb/CfcHeader.astro";
 import Footer from "@ui/brand/fnb/Footer.astro";
 import FloatingCta from "@ui/shared/FloatingCta.astro";
 
@@ -93,24 +92,16 @@ const navEntries = buildNavEntries(brand, categories, products);
       Bỏ qua tới nội dung chính
     </a>
 
-    {brand === "cfc" ? null : <TopbarSwitcher {brand} />}
-    {brand === "cfc" ? (
-      <CfcHeader items={navEntries} {current} />
-    ) : (
-      <MainHeader {brand} items={navEntries} {current} />
-    )}
+    <TopbarSwitcher {brand} />
+    <MainHeader {brand} items={navEntries} {current} />
 
-    {/* Mốc cho IntersectionObserver: nằm SAU header tĩnh. Khi người dùng cuộn
+    {/* Mốc cho IntersectionObserver: nằm SAU MainHeader. Khi người dùng cuộn
         qua hết cụm header tĩnh, thanh sticky compact clone sẽ trượt êm ái xuống
         từ mép trên theo chuẩn cấu trúc Woodmart */}
     <div data-header-sentinel aria-hidden="true" class="h-px -mt-px pointer-events-none"></div>
 
     {/* Thanh Header Sticky Thu Gọn (Clone chuẩn Woodmart / lygiaythaiduong.com) */}
-    {brand === "cfc" ? (
-      <CfcHeader items={navEntries} {current} isStickyClone />
-    ) : (
-      <MainHeader {brand} items={navEntries} {current} isStickyClone />
-    )}
+    <MainHeader {brand} items={navEntries} {current} isStickyClone />
 
     <main id="main" data-pagefind-body>
       <slot />

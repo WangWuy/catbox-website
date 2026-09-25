@@ -1,59 +1,28 @@
 ---
 /**
- * BÁN CHẠY — tabs cố định lọc theo nhóm danh mục + lưới 5 cột × 2 dòng = 10 thẻ/trang,
+ * BÁN CHẠY — tabs lọc theo danh mục + lưới 5 cột × 2 dòng = 10 thẻ/trang,
  * pagination riêng cho từng tab.
  *
  * SEO-safe: TOÀN BỘ sản phẩm render trong HTML ngay từ đầu; JS chỉ
  * ẩn/hiện bằng `hidden` theo tab đang chọn + trang hiện tại, không fetch thêm.
- *
- * `tabGroups`: mảng { label, slugs[] } — mỗi tab có thể gom nhiều category slug.
- * Nếu không truyền, fallback về behaviour cũ (1 tab = 1 category label).
  */
 import type { AssetMap } from "../lib/images";
 import ProductCard, { type ProductCardData } from "@ui/primitives/ProductCard.astro";
 import SectionHeader from "@ui/primitives/SectionHeader.astro";
 
-export interface TabGroup {
-  label: string;
-  /** Danh sách category slug thuộc tab này */
-  slugs: string[];
-}
-
 interface Props {
   assets: AssetMap;
   title?: string;
   action?: { label: string; href: string };
-  /**
-   * Danh sách tab cố định với nhiều slug / tab.
-   * Nếu truyền `tabGroups`, prop `tabs` bị bỏ qua.
-   */
-  tabGroups?: TabGroup[];
-  /** @deprecated Dùng tabGroups thay thế */
+  /** Nhãn tab; tab đầu tiên luôn là "Tất cả" */
   tabs?: string[];
-  items: (ProductCardData & { category: string; categorySlug: string })[];
+  items: (ProductCardData & { category: string })[];
   /** Số item mỗi trang, mặc định 10 (2 dòng × 5 cột) */
   perPage?: number;
 }
 
-const {
-  assets,
-  title = "Bán chạy",
-  action,
-  tabGroups,
-  tabs = [],
-  items,
-  perPage = 10,
-} = Astro.props;
-
-// Nếu có tabGroups thì dùng; fallback về tabs cũ
-const resolvedTabGroups: TabGroup[] = tabGroups
-  ? tabGroups
-  : tabs.map((t) => ({ label: t, slugs: [t] }));
-
-const allGroups: TabGroup[] = [
-  { label: "Tất cả", slugs: [] }, // slugs rỗng = hiện hết
-  ...resolvedTabGroups,
-];
+const { assets, title = "Bán chạy", action, tabs = [], items, perPage = 10 } = Astro.props;
+const allTabs = ["Tất cả", ...tabs];
 ---
 
 <section class="site-container" aria-labelledby="bestseller-heading" data-reveal>
@@ -66,16 +35,15 @@ const allGroups: TabGroup[] = [
     data-bs-tabs
   >
     {
-      allGroups.map((g, i) => (
+      allTabs.map((t, i) => (
         <button
           type="button"
           role="tab"
-          data-bs-tab={g.label}
-          data-bs-tab-slugs={JSON.stringify(g.slugs)}
+          data-bs-tab={t}
           aria-selected={i === 0}
           class="pill h-9 flex-none cursor-pointer border border-transparent px-4 text-label font-semibold whitespace-nowrap text-ink-muted transition-colors hover:text-ink aria-selected:border-primary aria-selected:text-primary"
         >
-          {g.label}
+          {t}
         </button>
       ))
     }
@@ -95,7 +63,7 @@ const allGroups: TabGroup[] = [
           {...p}
           layout="minimal"
           variant={(i % perPage) + 1}
-          filterData={{ categorySlug: p.categorySlug, bsIndex: String(i) }}
+          filterData={{ category: p.category, bsIndex: String(i) }}
         />
       ))
     }
@@ -128,13 +96,12 @@ const allGroups: TabGroup[] = [
     const pagination = section.querySelector<HTMLElement>("[data-bs-pagination]");
     const emptyMsg = section.querySelector<HTMLElement>("[data-bs-empty]");
 
-    // activeSlugs rỗng = hiện tất cả (tab "Tất cả")
-    let activeSlugs: string[] = [];
+    let activeTab = "Tất cả";
     let current = 0;
 
     function matchesTab(card: HTMLElement) {
-      if (activeSlugs.length === 0) return true;
-      return activeSlugs.includes(card.dataset.categorySlug ?? "");
+      if (activeTab === "Tất cả") return true;
+      return card.dataset.category === activeTab;
     }
 
     function renderPaginationButtons(totalPages: number) {
@@ -224,8 +191,7 @@ const allGroups: TabGroup[] = [
 
     tabButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
-        const rawSlugs = btn.dataset.bsTabSlugs ?? "[]";
-        activeSlugs = JSON.parse(rawSlugs) as string[];
+        activeTab = btn.dataset.bsTab ?? "Tất cả";
         tabButtons.forEach((b) => b.setAttribute("aria-selected", String(b === btn)));
         showPage(0, false);
       });
