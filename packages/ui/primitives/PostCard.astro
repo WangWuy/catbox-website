@@ -125,7 +125,12 @@ const excerptChars = numericToken(
 const excerpt = description ? clip(description, excerptChars) : undefined;
 ---
 
-<article class:list={["group relative flex flex-col", className]}>
+<article
+  class:list={[
+    "group relative flex flex-col transition-shadow duration-(--duration-base) hover:shadow-(--shadow-media-hover)",
+    className,
+  ]}
+>
   <div class="relative overflow-hidden bg-surface-tint">
     <SmartImage
       {assets}

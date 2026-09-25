@@ -1,13 +1,15 @@
 ---
 /**
- * PartnerStrip — dải logo đối tác cuộn ngang với nút prev/next.
+ * PartnerStrip — dải logo đối tác tự động trượt liên tục (marquee), dừng khi
+ * hover/focus. Danh sách logo được nhân đôi trong DOM để animation loop liền
+ * mạch bằng transform: translateX(-50%) — nửa đầu và nửa sau giống hệt nhau
+ * nên lúc animation "reset" về 0% trông như đang trượt tiếp, không giật.
  *
- * Thiết kế: nền trắng, border trên/dưới mỏng, logo grayscale → màu khi hover,
- * cuộn mượt bằng scroll-behavior: smooth, nút arrow tròn hai bên.
+ * Thiết kế: nền trắng, border trên/dưới mỏng, logo grayscale → màu khi hover.
  *
  * Props:
- *  - title   : tiêu đề nhỏ bên trái (ví dụ "Đối tác tin cậy của CFC")
- *  - partners: mảng { name, logo, href? }
+ *  - title/accent : nhãn nhỏ bên trái, "CFC" tô màu primary tách biệt
+ *  - partners     : mảng { name, logo, href? }
  *    logo: đường dẫn nội bộ (/partners/...) hoặc URL tuyệt đối.
  */
 
@@ -20,14 +22,18 @@ interface Partner {
 }
 
 interface Props {
-  /** Nhãn nhỏ bên trái (ví dụ "Đối tác tin cậy của CFC") */
+  /** Nhãn nhỏ bên trái (ví dụ "Đối tác tin cậy của") */
   title?: string;
+  /** Phần đuôi tô màu primary, tách biệt khỏi `title` (ví dụ tên brand "CFC") */
+  accent?: string;
   partners: Partner[];
 }
 
-const { title = "Đối tác tin cậy của CFC", partners } = Astro.props;
+const { title = "Đối tác tin cậy của", accent = "CFC", partners } = Astro.props;
 
-const stripId = "partner-strip";
+// Nhân đôi để track dài gấp 2 danh sách gốc — animation trượt đúng 50% rồi
+// lặp lại là ghép liền vào bản sao, mắt không nhận ra điểm nối.
+const track = [...partners, ...partners];
 ---
 
 <div class="partner-strip-wrapper border-y border-border bg-white py-5">
@@ -36,92 +42,70 @@ const stripId = "partner-strip";
     {
       title && (
         <p class="hidden shrink-0 text-xs font-semibold uppercase tracking-widest text-ink-muted md:block">
-          {title}
+          {title} {accent && <span class="text-primary">{accent}</span>}
         </p>
       )
     }
 
-    {/* Nút Prev */}
-    <button
-      type="button"
-      data-strip-prev={stripId}
-      aria-label="Xem đối tác trước"
-      class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border bg-white shadow-sm transition hover:border-primary hover:text-primary"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>
-    </button>
-
-    {/* Track cuộn logo */}
-    <div
-      id={stripId}
-      class="flex flex-1 snap-x snap-mandatory items-center gap-8 overflow-x-auto scroll-smooth"
-      style="scrollbar-width:none;-ms-overflow-style:none;"
-    >
-      {
-        partners.map((p) => {
-          const img = (
-            <img
-              src={p.logo}
-              alt={p.name}
-              width="120"
-              height="48"
-              loading="lazy"
-              class="h-10 w-auto max-w-[120px] cursor-pointer object-contain grayscale transition duration-300 hover:grayscale-0"
-            />
-          );
-          return (
-            <div class="snap-start shrink-0 flex items-center justify-center px-2">
-              {p.href ? (
-                <a
-                  href={p.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={p.name}
-                  class="block"
-                >
-                  {img}
-                </a>
-              ) : (
-                img
-              )}
-            </div>
-          );
-        })
-      }
+    {/* Viewport cắt phần logo tràn ra ngoài — track bên trong chạy marquee */}
+    <div class="marquee-viewport flex-1 overflow-hidden" style="mask-image:linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);">
+      <div class="marquee-track flex w-max items-center gap-8">
+        {
+          track.map((p) => {
+            const img = (
+              <img
+                src={p.logo}
+                alt={p.name}
+                width="120"
+                height="48"
+                loading="lazy"
+                class="h-10 w-auto max-w-[120px] cursor-pointer object-contain grayscale transition duration-300 hover:grayscale-0"
+              />
+            );
+            return (
+              <div class="flex shrink-0 items-center justify-center px-2" aria-hidden="true">
+                {p.href ? (
+                  <a href={p.href} target="_blank" rel="noopener noreferrer" tabindex={-1} class="block">
+                    {img}
+                  </a>
+                ) : (
+                  img
+                )}
+              </div>
+            );
+          })
+        }
+      </div>
     </div>
-
-    {/* Nút Next */}
-    <button
-      type="button"
-      data-strip-next={stripId}
-      aria-label="Xem đối tác tiếp theo"
-      class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border bg-white shadow-sm transition hover:border-primary hover:text-primary"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </button>
   </div>
 </div>
 
 <style>
-  /* Ẩn scrollbar webkit */
-  #partner-strip::-webkit-scrollbar {
-    display: none;
+  .marquee-track {
+    animation: partner-marquee var(--duration-marquee) linear infinite;
+  }
+
+  /* Dừng khi rê chuột hoặc focus vào một logo bên trong (bàn phím) — người
+     dùng cần thời gian đọc/bấm mà không bị trôi mất mục tiêu. */
+  .marquee-viewport:hover .marquee-track,
+  .marquee-track:has(:focus-visible) {
+    animation-play-state: paused;
+  }
+
+  @keyframes partner-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      /* Track dài gấp đôi (danh sách nhân đôi) nên lùi đúng nửa track là
+         khớp lại điểm bắt đầu ban đầu, loop liền mạch. */
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+    }
   }
 </style>
-
-<script>
-  // Scroll left/right khi bấm nút prev/next — cuộn ~160px mỗi lần.
-  document.querySelectorAll<HTMLButtonElement>("[data-strip-prev],[data-strip-next]").forEach((btn) => {
-    const trackId = btn.dataset.stripPrev ?? btn.dataset.stripNext ?? "";
-    const track = document.getElementById(trackId);
-    if (!track) return;
-    const dir = btn.hasAttribute("data-strip-prev") ? -1 : 1;
-    btn.addEventListener("click", () => {
-      track.scrollBy({ left: dir * 160, behavior: "smooth" });
-    });
-  });
-</script>

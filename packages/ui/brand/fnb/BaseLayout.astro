@@ -41,6 +41,8 @@ interface Props {
   products?: ProductEntryLike[];
   /** Link cột chính sách ở Footer — xem `footerLinks` của Footer.astro */
   footerLinks?: { label: string; href: string }[];
+  /** Xem `overlapTrustStrip` của Footer.astro */
+  overlapTrustStrip?: boolean;
 }
 
 const {
@@ -55,6 +57,7 @@ const {
   categories,
   products,
   footerLinks,
+  overlapTrustStrip,
 } = Astro.props;
 
 const b = BRANDS[brand];
@@ -116,7 +119,7 @@ const navEntries = buildNavEntries(brand, categories, products);
       <slot />
     </main>
 
-    <Footer {brand} {footerLinks} />
+    <Footer {brand} {footerLinks} {overlapTrustStrip} />
     <FloatingCta {brand} />
 
     <script is:inline define:vars={{ hotline: b.hotline }}>

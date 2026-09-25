@@ -1,0 +1,97 @@
+---
+/**
+ * Dải cam kết dịch vụ (giao hàng, đổi trả, hoàn tiền, hotline) — 4 thẻ nổi
+ * icon tròn nền nhạt, dùng ở đầu Footer. Tách khỏi Footer của từng brand
+ * (trước đây markup này nằm thẳng trong catbox/SiteFooter.astro với giá trị
+ * hardcode như `size-14`, `rounded-2xl`, `text-sm`) để CFC/Tetta dùng lại
+ * được mà không hardcode lần nữa.
+ */
+import { Icon } from "astro-icon/components";
+
+export interface TrustStripItem {
+  icon: string;
+  title: string;
+  sub: string;
+  href?: string;
+  /** Tô màu CTA (đỏ/cam nổi bật) thay vì màu chữ thường — dùng cho ô hotline */
+  highlight?: boolean;
+}
+
+interface Props {
+  items: TrustStripItem[];
+  label?: string;
+  /**
+   * `card` (mặc định): 4 thẻ nổi rời nhau, icon-trái/chữ-phải — dùng ngay
+   * trong Footer, nền `bg-primary-deep` bọc ngoài.
+   * `panel`: các ô liền nhau kiểu bảng, icon trên/chữ dưới, phóng to — dùng
+   * làm section độc lập đứng trước Footer (theo mockup 2tprint.com).
+   */
+  variant?: "card" | "panel";
+}
+
+const { items, label = "Cam kết dịch vụ", variant = "card" } = Astro.props;
+---
+
+{
+  variant === "panel" ? (
+    <ul
+      class="grid grid-cols-2 divide-x divide-line md:grid-cols-4"
+      role="list"
+      aria-label={label}
+    >
+      {items.map((item) => (
+        <li class="group relative flex flex-col items-center gap-4 bg-surface-card px-6 py-(--space-trust-strip-panel-y) text-center transition-[translate,box-shadow] duration-(--duration-slow) ease-(--ease-out-soft) hover:z-(--z-trust-strip-overlap) hover:-translate-y-(--distance-trust-strip-hover) hover:shadow-(--shadow-trust-strip-hover)">
+          <span
+            aria-hidden="true"
+            class="flex size-(--size-icon-panel-strip-box) flex-none items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20"
+          >
+            <Icon name={item.icon} class="size-(--size-icon-panel-strip) text-primary" />
+          </span>
+          <div class="min-w-0">
+            {item.href ? (
+              <a
+                href={item.href}
+                class={`block text-meta font-bold leading-snug ${item.highlight ? "text-cta hover:underline" : "text-ink hover:text-primary"}`}
+              >
+                {item.title}
+              </a>
+            ) : (
+              <p class="text-meta font-bold leading-snug text-ink">{item.title}</p>
+            )}
+            <p class="mt-1.5 text-meta leading-relaxed text-ink-muted">{item.sub}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <div class="bg-primary-deep pt-12">
+      <div class="site-container">
+        <ul class="grid grid-cols-2 gap-4 lg:grid-cols-4" role="list" aria-label={label}>
+          {items.map((item) => (
+            <li class="group flex items-center gap-4 rounded-panel bg-surface p-5 shadow-(--shadow-card) transition-shadow hover:shadow-(--shadow-header)">
+              <span
+                aria-hidden="true"
+                class="flex size-(--size-icon-panel-box) flex-none items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20"
+              >
+                <Icon name={item.icon} class="size-(--size-icon-panel) text-primary" />
+              </span>
+              <div class="min-w-0">
+                {item.href ? (
+                  <a
+                    href={item.href}
+                    class={`block text-meta font-bold leading-snug ${item.highlight ? "text-cta hover:underline" : "text-ink hover:text-primary"}`}
+                  >
+                    {item.title}
+                  </a>
+                ) : (
+                  <p class="text-meta font-bold leading-snug text-ink">{item.title}</p>
+                )}
+                <p class="mt-0.5 text-tiny leading-relaxed text-ink-muted">{item.sub}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}

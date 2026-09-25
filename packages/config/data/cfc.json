@@ -83,24 +83,10 @@
     {
       "name": "Nguyễn Mai",
       "phone": "0902.03.9983"
-    },
-    {
-      "name": "Hà Đại",
-      "phone": "0565.28.9983"
-    },
-    {
-      "name": "Anh Tuấn",
-      "phone": "0948.82.9983"
-    },
-    {
-      "name": "Mai Thanh",
-      "phone": "0915.82.9983"
     }
   ],
   "serviceHotlines": [
-    "0901 52 52 62",
-    "08 9983 9983",
-    "0911 86 2879"
+    "0901 52 52 62"
   ],
   "social": [
     {
@@ -166,7 +152,6 @@
   },
   "footer": {
     "newsletterTitle": "Đăng ký nhận bảng giá sỉ",
-    "newsletterDesc": "Bảng giá cập nhật theo chất liệu Kraft / MG và số lượng đặt.",
-    "terms": "KV Hà Nội / Hà Nam: thanh toán khi nhận hàng · Ngoài KV: thanh toán trước khi giao"
+    "newsletterDesc": "Bảng giá cập nhật theo chất liệu Kraft / MG và số lượng đặt."
   }
 }

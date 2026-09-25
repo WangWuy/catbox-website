@@ -27,6 +27,12 @@
   --color-surface:       #F2EFEA;
   --color-surface-alt:   #EBE6DE;  /* Beige-gray công nghiệp */
   --color-surface-tint:  #F6EFE4;  /* Kem kraft — nền ảnh, logo box */
+  /* Nền xen kẽ giữa các section trang chủ (concept 2tprint.com: xen kẽ nhẹ
+   * trắng/xám nhạt để phân tách bố cục từng đoạn). CFC giữ tông kraft nên
+   * không dùng trắng/xám trung tính như 2T Print — đây là be nhạt hơn hẳn
+   * `--color-surface` (#F2EFEA), cùng họ màu nhưng đủ tương phản để mắt nhận
+   * ra ranh giới section mà không lệch bản sắc thương hiệu. */
+  --color-surface-section-alt: #EAE4DA;
 
   --color-ink:           #191C1D;  /* Đen xám */
   --color-ink-muted:     #564337;  /* Xám tro */

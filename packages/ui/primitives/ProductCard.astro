@@ -53,7 +53,7 @@ const minimal = layout === "minimal";
 ---
 
 <article
-  class={`group flex flex-col ${
+  class={`group flex flex-col transition-shadow duration-(--duration-base) hover:shadow-(--shadow-media-hover) ${
     minimal ? "" : "overflow-hidden rounded-card border border-line bg-surface"
   }`}
   data-product

@@ -14,6 +14,12 @@
    * mắt vì section rộng hơn. */
   --space-section-gap: 1.75rem;   /* 28px — mobile */
   --space-section-gap-lg: 2.75rem; /* 44px — md trở lên */
+  /* Khoảng cách rộng giữa PartnerStrip (đối tác tin cậy) và TrustStrip đứng
+   * ngay sau nó trước Footer — rộng hơn hẳn khoảng cách section thường vì
+   * TrustStrip còn tràn margin âm xuống Footer, cần đủ trắng phía trên để
+   * không dính sát PartnerStrip. */
+  --space-trust-strip-top: 6rem;    /* 96px — mobile */
+  --space-trust-strip-top-lg: 8rem; /* 128px — md trở lên */
 
   /* Radius — DNA chung, cả 3 site giống nhau */
   --radius-pill: 999px;
@@ -186,6 +192,20 @@
   /* Khung tròn nền nhạt bọc ngoài --size-icon-panel */
   --size-icon-panel-box: 52px;
 
+  /* Icon dẫn đầu ô "panel" trong TrustStrip (section cam kết dịch vụ đứng
+   * riêng trước Footer) — to hơn hẳn --size-icon-panel vì đây là section độc
+   * lập, không phải phụ kiện nhỏ như trong Footer. */
+  --size-icon-panel-strip: 40px;
+  /* Khung tròn nền nhạt bọc ngoài --size-icon-panel-strip */
+  --size-icon-panel-strip-box: 76px;
+  /* Đệm trên/dưới mỗi ô panel — canh sao cho tổng chiều cao thẻ ≈ 165px
+   * (padding-y × 2 ≈ 29px + icon 76px + gap 16px + 2 dòng chữ ≈ 44px). */
+  --space-trust-strip-panel-y: 14px;
+  /* Margin âm kéo TrustStrip (variant panel) tràn xuống đè lên mép trên
+   * Footer — khoảng 1/3 chiều cao thẻ (~165px), phần lớn thẻ nổi trên nền
+   * sáng phía trên, chỉ đáy thẻ chạm nền tối Footer. */
+  --overlap-trust-strip: 55px;
+
   /* --- Trang Liên hệ (contact) ------------------------------------------- *
    * Bố cục theo mockup Thái Dương: hàng trên là 2 thẻ địa điểm (ảnh tròn +
    * khối chữ nằm cạnh nhau), hàng dưới là 2 cột form | FAQ, cuối trang là khối
@@ -293,6 +313,19 @@
    * dưới. Nhẹ hơn hẳn --shadow-page-hero-image: bóng trải suốt bề ngang màn
    * hình nên đậm một chút là thành vệt xám rõ mồn một dưới header. */
   --shadow-header: 0 2px 12px rgb(0 0 0 / 0.08);
+  /* Đổ bóng khi hover một ô TrustStrip (variant panel) — đậm hơn hẳn
+   * --shadow-card vì đi kèm hiệu ứng nổi lên (translateY âm), cần bóng rõ để
+   * bán được cảm giác thẻ tách khỏi mặt phẳng nền. */
+  --shadow-trust-strip-hover: 0 16px 32px rgb(0 0 0 / 0.12);
+  /* Đổ bóng nhẹ khi hover một ô ảnh/card CÓ LIÊN KẾT tới trang trong (ProductCard,
+   * PostCard...) — theo chuẩn "ảnh không bo góc, chỉ báo hiệu tương tác bằng
+   * dropshadow nhẹ khi hover". Ô không có link giữ nguyên tĩnh, không dùng token
+   * này. Nhẹ hơn --shadow-trust-strip-hover vì không đi kèm translateY. */
+  --shadow-media-hover: 0 8px 20px rgb(0 0 0 / 0.1);
+  /* Đổ bóng của 5 ô danh mục nổi ở chân HeroBanner — nhẹ ở trạng thái tĩnh,
+   * đậm hơn khi hover (chỉ ô có href mới nhận hover, xem HeroBanner.astro). */
+  --shadow-hero-chip: 0 4px 16px rgb(0 0 0 / 0.06);
+  --shadow-hero-chip-hover: 0 16px 32px -4px rgb(0 0 0 / 0.18);
   /* Độ mờ đánh dấu thumbnail gallery đang active — thay cho viền outline
    * cứng, ảnh đang chọn tự phủ mờ nhẹ thay vì đóng khung. */
   --opacity-thumb-active: 0.55;
@@ -323,6 +356,7 @@
 
   /* --- Tầng xếp lớp (z-index) ------------------------------------------ *
    * Gom về đây theo VAI TRÒ. */
+  --z-trust-strip-overlap: 1; /* TrustStrip đè margin âm lên mép trên Footer */
   --z-catnav: 30; /* thanh danh mục + panel mega menu xổ xuống từ nó */
   --z-header: 40; /* header dính — phải nằm trên nội dung cuộn bên dưới */
   --z-floating: 50; /* FloatingCta (Zalo + hotline) */
@@ -400,6 +434,10 @@
    * là nửa tròn hoàn hảo còn cạnh trên/dưới vẫn thẳng, ở mọi bề ngang. */
   --radius-reel-pill: 999px;
 
+  /* Player video full-bleed (FactoryReels variant="controls" ở Trang chủ) —
+   * tràn hết chiều ngang viewport, tỉ lệ điện ảnh 21:9 rộng hơn 16:9 thường. */
+  --aspect-reel-cinematic: 21 / 9;
+
   /* Mũi tam giác trong nút play (WhyChooseUs) — vẽ bằng border nên cần cả bề
    * ngang lẫn nửa chiều cao, không dùng được --size-* vuông. */
   --width-play-triangle: 18px;
@@ -444,6 +482,10 @@
   --duration-base: 300ms;   /* dịch chuyển nhỏ, mở/đóng drawer nav mobile */
   --duration-slow: 500ms;   /* phóng ảnh trong card khi rê chuột */
   --duration-reveal: 600ms; /* khối fade + trồi lên khi cuộn vào khung nhìn */
+  /* Một vòng lặp marquee logo đối tác (PartnerStrip) — trượt hết danh sách
+   * rồi lặp lại liền mạch. Chậm hơn hẳn các duration UI ở trên vì đây là
+   * animation nền liên tục, không phải phản hồi thao tác. */
+  --duration-marquee: 30s;
 
   /* Giảm tốc mềm ở cuối — chuyển động "đặt xuống" thay vì phanh gấp. Dùng cho
    * mọi hiệu ứng vào/hiện; hover đổi màu thì không cần, ease mặc định là đủ. */
@@ -453,6 +495,10 @@
    * nhanh khối vẫn đang bay khi mắt đã tới nơi — cảm giác trang lag chứ không
    * mượt, ngược hẳn ý đồ. */
   --distance-reveal: 16px;
+  /* Quãng nổi lên khi hover một ô TrustStrip (variant panel) — tách biệt
+   * khỏi --distance-reveal vì đây là phản hồi hover (translateY liên tục khi
+   * rê chuột), không phải animation chạy một lần lúc cuộn vào khung nhìn. */
+  --distance-trust-strip-hover: 8px;
 
   /* Độ sâu phối cảnh cho card lật 3D (FlipCard) — giá trị càng nhỏ độ "phồng"
    * càng mạnh, càng lớn càng phẳng như xoay 2D. 1200px giữ chiều sâu vừa

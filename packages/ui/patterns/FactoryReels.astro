@@ -31,12 +31,11 @@ const { assets, label, video, poster, image, variant = "pill" } = Astro.props;
 {
   variant === "controls" ? (
     <section class="pb-10 md:pb-16" aria-label={label} data-reveal>
-      <div class="site-container">
-        <div
-          class="custom-video-player group relative mx-auto aspect-(--aspect-reel-pill) min-h-[300px] w-full max-w-(--width-reel-pill) overflow-hidden rounded-input border border-line-soft/40 bg-primary-ink shadow-xl"
-          data-custom-player
-          tabindex="0"
-        >
+      <div
+        class="custom-video-player group relative aspect-(--aspect-reel-cinematic) w-full overflow-hidden border border-line-soft/40 bg-primary-ink shadow-xl"
+        data-custom-player
+        tabindex="0"
+      >
           {video ? (
             <>
               <video
@@ -150,7 +149,6 @@ const { assets, label, video, poster, image, variant = "pill" } = Astro.props;
               class="h-full w-full object-cover"
             />
           )}
-        </div>
       </div>
     </section>
   ) : (

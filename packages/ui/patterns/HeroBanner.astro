@@ -143,8 +143,9 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
                   <Tag
                     href={s.href}
                     class:list={[
-                      "group flex h-full flex-col items-center justify-center gap-1.5 sm:gap-2.5 rounded-none border border-black/5 bg-white/95 px-1 py-2 sm:px-3 sm:py-4.5 text-center shadow-[0_4px_16px_rgba(0,0,0,0.06)] backdrop-blur-md transition-shadow duration-300 ease-out hover:shadow-[0_16px_32px_-4px_rgba(0,0,0,0.18)] hover:border-black/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                      s.href && "cursor-pointer"
+                      "group flex h-full flex-col items-center justify-center gap-1.5 sm:gap-2.5 rounded-none border border-black/5 bg-white/95 px-1 py-2 sm:px-3 sm:py-4.5 text-center shadow-(--shadow-hero-chip) backdrop-blur-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                      s.href &&
+                        "cursor-pointer transition-shadow duration-300 ease-out hover:shadow-(--shadow-hero-chip-hover) hover:border-black/10"
                     ]}
                   >
                     {/* Icon bao bì custom duotone — không dịch chuyển khi hover */}
@@ -160,7 +161,12 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
                     )}
 
                     {/* Tên danh mục */}
-                    <span class="font-display text-[9px] sm:text-xs lg:text-sm font-bold tracking-wider text-ink uppercase group-hover:text-primary transition-colors leading-tight">
+                    <span
+                      class:list={[
+                        "font-display text-[9px] sm:text-xs lg:text-sm font-bold tracking-wider text-ink uppercase leading-tight",
+                        s.href && "transition-colors group-hover:text-primary"
+                      ]}
+                    >
                       {s.label}
                     </span>
                   </Tag>

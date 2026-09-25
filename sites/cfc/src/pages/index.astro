@@ -25,6 +25,8 @@ import BestsellerGrid from "@ui/patterns/BestsellerGrid.astro";
 import NewsGrid from "@ui/patterns/NewsGrid.astro";
 import FactoryReels from "@ui/patterns/FactoryReels.astro";
 import PartnerStrip from "@ui/patterns/PartnerStrip.astro";
+import TrustStrip, { type TrustStripItem } from "@ui/patterns/TrustStrip.astro";
+import { BRANDS } from "@config/brands";
 
 // Danh sách đối tác CFC — thay file SVG trong /public/partners/ bằng logo thật.
 const PARTNERS = [
@@ -34,6 +36,32 @@ const PARTNERS = [
   { name: "Nutifood", logo: "/partners/nutifood.svg" },
   { name: "Vietnam Airlines", logo: "/partners/vietnam-airlines.svg" },
   { name: "VietinBank", logo: "/partners/vietinbank.svg" },
+];
+
+const cfc = BRANDS.cfc;
+const trustItems: TrustStripItem[] = [
+  {
+    icon: "lucide:truck",
+    title: "Giao hàng miễn phí",
+    sub: "Hoá đơn trên 3 triệu",
+  },
+  {
+    icon: "lucide:package-check",
+    title: "Đổi trả miễn phí",
+    sub: "Trong vòng 7 ngày",
+  },
+  {
+    icon: "lucide:hand-coins",
+    title: "100% Hoàn tiền",
+    sub: "Nếu sản phẩm lỗi",
+  },
+  {
+    icon: "lucide:phone-call",
+    title: `Hotline: ${cfc.hotline}`,
+    sub: "Hỗ trợ 24/7",
+    href: cfc.hotlineHref,
+    highlight: true,
+  },
 ];
 
 const home = parseHomepage(homeData);
@@ -64,6 +92,7 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft))
 const toCard = (p: (typeof products)[number]) => ({
   title: p.data.title,
   category: label(p.data.category),
+  categorySlug: p.data.category,
   href: `/products/${p.id}`,
   image: p.data.image,
   badge: p.data.badge,
@@ -75,29 +104,52 @@ const bestsellers = products
   .filter((p) => p.data.bestseller)
   .slice(0, home.bestsellers.limit)
   .map(toCard);
-const tabs = [...new Set(bestsellers.map((p) => p.category))];
+
+// Tab cố định theo yêu cầu — không tự sinh từ dữ liệu bestseller vì danh mục
+// sản phẩm thật (19 category CMS) chi tiết hơn nhóm hiển thị mong muốn ở đây.
+// Mỗi tab gom nhiều category slug; "coc-giay-ong-hut" (gộp cốc & ống hút)
+// được tính vào cả 2 tab Cốc giấy và Ống hút giấy.
+const bestsellerTabGroups = [
+  { label: "Túi giấy thực phẩm", slugs: ["tui-giay-thuc-pham"] },
+  { label: "Giấy gói thực phẩm", slugs: ["giay-goi-thuc-pham", "giay-goi-hamburger"] },
+  {
+    label: "Hộp đựng thức ăn giấy",
+    slugs: ["hop-dung-thuc-an", "hop-dung-xoi", "hop-dung-salad", "khay-do-chien"],
+  },
+  { label: "Cốc giấy", slugs: ["coc-giay-ong-hut", "coc-1-lop", "coc-2-lop"] },
+  { label: "Ống hút giấy", slugs: ["coc-giay-ong-hut", "ong-hut-giay"] },
+];
 ---
 
-<Layout title={home.seo.title} description={home.seo.description}>
-  <div class="flex flex-col gap-(--space-section-gap) pb-(--space-section-gap) md:gap-(--space-section-gap-lg) md:pb-(--space-section-gap-lg)">
-    <HeroBanner
-      {assets}
-      image={home.hero.image}
-      eyebrow={home.hero.eyebrow}
-      title={home.hero.title}
-      titleAccent={home.hero.titleAccent}
-      subtitle={home.hero.subtitle}
-      hashtag={home.hero.hashtag}
-      stats={home.hero.stats}
-    />
+<Layout title={home.seo.title} description={home.seo.description} overlapTrustStrip>
+  <HeroBanner
+    {assets}
+    image={home.hero.image}
+    eyebrow={home.hero.eyebrow}
+    title={home.hero.title}
+    titleAccent={home.hero.titleAccent}
+    subtitle={home.hero.subtitle}
+    hashtag={home.hero.hashtag}
+    stats={home.hero.stats}
+  />
 
+  <div class="py-(--space-section-gap) md:py-(--space-section-gap-lg)">
     <BestsellerGrid
       {assets}
-      {tabs}
+      tabGroups={bestsellerTabGroups}
       title={home.bestsellers.title}
       items={bestsellers}
     />
+  </div>
 
+  <!-- Nền xen kẽ (concept 2tprint.com): riêng khối Tin tức dùng nền be nhạt
+       hơn để tách khỏi khối Banner→Bán chạy phía trên và khối Video phía dưới
+       (cả hai đều nền mặc định) — Video quay lại nền mặc định để nhập cùng
+       dải màu với Đối tác/Cam kết dịch vụ theo sau, tạo bố cục 3 dải xen kẽ
+       dọc trang: surface → alt (chỉ Tin tức) → surface. Giữ tông kraft CFC —
+       chỉ đổi độ sáng be, không chuyển sang trắng/xám trung tính như bản gốc
+       2T Print. -->
+  <div class="bg-surface-section-alt py-(--space-section-gap) md:py-(--space-section-gap-lg)">
     <NewsGrid
       {assets}
       title={home.news.title}
@@ -110,11 +162,8 @@ const tabs = [...new Set(bestsellers.map((p) => p.category))];
         description: p.data.description,
       }))}
     />
-
   </div>
 
-  <!-- Nằm NGOÀI wrapper `gap-(--space-section-gap) pb-(--space-section-gap)`:
-       khối video không lấy khoảng cách chung của trang, dán thẳng vào Footer. -->
   <FactoryReels
     {assets}
     label={home.reels.label}
@@ -124,5 +173,12 @@ const tabs = [...new Set(bestsellers.map((p) => p.category))];
   />
 
   <!-- Dải logo đối tác — nằm ngay trên Footer -->
-  <PartnerStrip partners={PARTNERS} title="Đối tác tin cậy của CFC" />
+  <PartnerStrip partners={PARTNERS} title="Đối tác tin cậy của" accent="CFC" />
+
+  <!-- TrustStrip đè lên mép trên Footer ~2/3 chiều cao thẻ bằng margin âm.
+       `relative z-(--z-trust-strip-overlap)` để thẻ nổi trên nền tối của
+       Footer render ngay sau nó trong DOM. -->
+  <div class="site-container relative z-(--z-trust-strip-overlap) mt-(--space-trust-strip-top) -mb-(--overlap-trust-strip) md:mt-(--space-trust-strip-top-lg)">
+    <TrustStrip items={trustItems} variant="panel" />
+  </div>
 </Layout>
