@@ -44,15 +44,17 @@ const copy = b.footer;
         <BrandLogo brand={brand} variant="dark" />
       </div>
 
-      <div class="flex flex-wrap items-center gap-2.5">
-        {
-          b.certifications.map((c) => (
-            <span class="pill flex items-center gap-1.5 border border-white/15 bg-white/8 px-3.5 py-2 text-tiny text-white">
-              <Icon name="lucide:check" class="size-3.5" aria-hidden="true" /> {c}
-            </span>
-          ))
-        }
-      </div>
+      {
+        b.certifications.length > 0 && (
+          <div class="flex flex-wrap items-center gap-2.5">
+            {b.certifications.map((c) => (
+              <span class="pill flex items-center gap-1.5 border border-white/15 bg-white/8 px-3.5 py-2 text-tiny text-white">
+                <Icon name="lucide:check" class="size-3.5" aria-hidden="true" /> {c}
+              </span>
+            ))}
+          </div>
+        )
+      }
 
       <p class="text-nav leading-relaxed font-medium text-white/80">{b.legalName}</p>
 

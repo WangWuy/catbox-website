@@ -60,15 +60,17 @@ const trustItems: TrustStripItem[] = [
         <BrandLogo />
       </div>
 
-      <div class="flex flex-wrap items-center gap-2.5">
-        {
-          b.certifications.map((c) => (
-            <span class="pill flex items-center gap-1.5 border border-line bg-surface-alt px-3.5 py-2 text-tiny text-ink">
-              <Icon name="lucide:check" class="size-3.5 text-primary" aria-hidden="true" /> {c}
-            </span>
-          ))
-        }
-      </div>
+      {
+        b.certifications.length > 0 && (
+          <div class="flex flex-wrap items-center gap-2.5">
+            {b.certifications.map((c) => (
+              <span class="pill flex items-center gap-1.5 border border-line bg-surface-alt px-3.5 py-2 text-tiny text-ink">
+                <Icon name="lucide:check" class="size-3.5 text-primary" aria-hidden="true" /> {c}
+              </span>
+            ))}
+          </div>
+        )
+      }
 
       <p class="text-nav leading-relaxed font-medium text-ink-muted">{b.legalName}</p>
 

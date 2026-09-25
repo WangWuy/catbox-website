@@ -780,22 +780,24 @@ export function aboutFields(imageDir: string) {
         ...headingFields(),
         items: fields.array(
           fields.object({
+            num: fields.text({ label: "Số bước (vd: 01)" }),
             icon: fields.select({
-              label: "Icon",
+              label: "Icon (tùy chọn)",
               options: PAGE_ICON_OPTIONS,
-              defaultValue: "lucide:factory",
+              defaultValue: "lucide:workflow",
             }),
-            title: fields.text({ label: "Tiêu đề thẻ" }),
+            title: fields.text({ label: "Tiêu đề bước" }),
             desc: fields.text({ label: "Mô tả ngắn", multiline: true }),
             href: fields.text({ label: "Đường dẫn" }),
           }),
           {
-            label: "Thẻ liên kết",
-            itemLabel: (props) => props.fields.title.value || "Thẻ",
+            label: "Bước quy trình",
+            itemLabel: (props) =>
+              `${props.fields.num.value ? props.fields.num.value + ". " : ""}${props.fields.title.value || "Bước"}`,
           },
         ),
       },
-      { label: "Khối “Tìm hiểu thêm”" },
+      { label: "Khối “Quy trình làm việc”" },
     ),
   };
 }

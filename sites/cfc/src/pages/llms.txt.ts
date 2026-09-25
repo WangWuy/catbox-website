@@ -34,7 +34,7 @@ export async function GET(context: APIContext) {
     `**Pháp nhân:** ${b.legalName}`,
     ...b.locations.map((l) => `**${l.label}:** ${formatAddress(l)}`),
     `**Hotline:** ${b.hotline} · **Email:** ${b.email}`,
-    `**Chứng nhận:** ${b.certifications.join(", ")}`,
+    ...(b.certifications.length ? [`**Chứng nhận:** ${b.certifications.join(", ")}`] : []),
     "",
     `## ${page.sections.capacity}`,
     "",

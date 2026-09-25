@@ -148,7 +148,7 @@ const orbitalCoords = [
         </div>
 
         {/* Khung mô tả chi tiết dự phòng cho Mobile màn hình rất nhỏ */}
-        <div class="mt-4 block w-full rounded-panel bg-surface-alt/70 p-4 text-center sm:hidden" data-mobile-detail>
+        <div class="mt-4 block w-full bg-surface-alt/70 p-4 text-center sm:hidden" data-mobile-detail>
           <h4 class="font-display text-label font-bold text-ink uppercase" data-mobile-title>
             {values[0]?.title}
           </h4>
@@ -182,7 +182,7 @@ const orbitalCoords = [
               aria-controls={`core-value-panel-${i}`}
               aria-selected={i === 0 ? "true" : "false"}
               tabindex={i === 0 ? 0 : -1}
-              class="flex items-center gap-3 rounded-panel border-s-(length:--width-marker-active) border-transparent bg-surface px-4 py-3.5 text-start text-ink-muted transition-colors duration-(--duration-fast) hover:bg-surface-alt aria-selected:border-primary aria-selected:bg-surface-alt aria-selected:text-primary"
+              class="flex items-center gap-3 border-s-(length:--width-marker-active) border-transparent bg-surface px-4 py-3.5 text-start text-ink-muted transition-colors duration-(--duration-fast) hover:bg-surface-alt aria-selected:border-primary aria-selected:bg-surface-alt aria-selected:text-primary"
             >
               {v.icon && <Icon name={v.icon} class="size-(--size-icon-chip) flex-none" aria-hidden="true" />}
               <span class="text-label font-bold tracking-(--tracking-eyebrow) uppercase">
@@ -199,7 +199,7 @@ const orbitalCoords = [
             aria-labelledby={`core-value-tab-${i}`}
             tabindex="0"
             hidden={i !== 0}
-            class="relative flex min-h-(--min-height-values-panel) flex-col gap-4 overflow-hidden rounded-panel bg-surface-alt p-8 md:p-10 lg:col-start-2 lg:row-start-1"
+            class="relative flex min-h-(--min-height-values-panel) flex-col gap-4 overflow-hidden bg-surface-alt p-8 md:p-10 lg:col-start-2 lg:row-start-1"
           >
             {v.icon && (
               <>
@@ -208,7 +208,7 @@ const orbitalCoords = [
                   class="pointer-events-none absolute -top-6 -end-6 size-(--size-icon-watermark) text-primary opacity-(--opacity-watermark)"
                   aria-hidden="true"
                 />
-                <span class="flex size-(--size-icon-panel-box) items-center justify-center rounded-panel bg-surface text-primary">
+                <span class="flex size-(--size-icon-panel-box) items-center justify-center bg-surface text-primary">
                   <Icon name={v.icon} class="size-(--size-icon-panel)" aria-hidden="true" />
                 </span>
               </>

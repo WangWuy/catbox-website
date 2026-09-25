@@ -212,7 +212,8 @@ export const aboutSchema = z.object({
     items: z
       .array(
         z.object({
-          icon: z.string(),
+          num: z.string().optional(),
+          icon: z.string().optional(),
           title: z.string(),
           desc: z.string(),
           href: z.string(),

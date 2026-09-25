@@ -58,7 +58,7 @@ const gradientClass =
     data-flip-trigger
   >
     <span
-      class={`absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-image-soft ${gradientClass} p-8 text-center text-white [backface-visibility:hidden]`}
+      class={`absolute inset-0 flex flex-col items-center justify-center gap-3 ${gradientClass} p-8 text-center text-white [backface-visibility:hidden]`}
     >
       <Icon name={icon} class="size-(--size-icon-panel)" aria-hidden="true" />
       <span class="font-display text-2xl font-bold uppercase">{title}</span>
@@ -66,7 +66,7 @@ const gradientClass =
     </span>
 
     <span
-      class="absolute inset-0 flex flex-col items-center justify-center rounded-image-soft bg-surface-alt p-8 text-center [backface-visibility:hidden] [transform:rotateX(180deg)]"
+      class="absolute inset-0 flex flex-col items-center justify-center bg-surface-alt p-8 text-center [backface-visibility:hidden] [transform:rotateX(180deg)]"
     >
       <span class="leading-relaxed text-ink-muted">{body}</span>
     </span>

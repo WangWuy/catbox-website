@@ -98,26 +98,29 @@
     }
   },
   "sections": {
-    "title": "Tìm hiểu",
-    "accent": "thêm",
+    "title": "Quy trình",
+    "accent": "làm việc",
     "items": [
       {
-        "icon": "lucide:factory",
-        "title": "Năng lực sản xuất",
-        "desc": "Hai dây chuyền Offset và Flexo đặt tại KCN Đồng Văn, Hà Nam.",
-        "href": "/nang-luc-san-xuat"
-      },
-      {
+        "num": "01",
         "icon": "lucide:workflow",
-        "title": "Quy trình làm việc",
-        "desc": "Mua mẫu có sẵn hay đặt in riêng — kèm chính sách thiết kế.",
+        "title": "Tiếp nhận & tư vấn",
+        "desc": "Ghi nhận nhu cầu mua mẫu sẵn hoặc in thương hiệu riêng — tư vấn quy cách, định lượng và chất liệu giấy phù hợp.",
         "href": "/quy-trinh"
       },
       {
-        "icon": "lucide:file-text",
-        "title": "Chính sách công ty",
-        "desc": "Thanh toán, đổi trả & bảo hành, điều khoản sử dụng.",
-        "href": "/chinh-sach"
+        "num": "02",
+        "icon": "lucide:workflow",
+        "title": "Báo giá & duyệt file",
+        "desc": "Báo giá nhanh trong 30 phút. Hỗ trợ căn chỉnh file, dàn khuôn miễn phí hoặc in mẫu thật kiểm tra trước khi lên máy.",
+        "href": "/quy-trinh"
+      },
+      {
+        "num": "03",
+        "icon": "lucide:workflow",
+        "title": "Sản xuất & giao hàng",
+        "desc": "Dây chuyền in Flexo cuộn và gấp dán tự động, kiểm định chất lượng theo lô và giao hàng nhanh toàn quốc.",
+        "href": "/quy-trinh"
       }
     ]
   }

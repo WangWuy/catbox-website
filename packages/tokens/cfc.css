@@ -93,10 +93,8 @@
   --font-display: "Montserrat", sans-serif;
   --font-body:    "Montserrat", sans-serif;
 
-  /* Bo góc nhẹ riêng cho ảnh minh họa (vd. cặp ảnh "Tổng quan về công ty" ở
-   * about-us) — tách khỏi `--radius-panel` (0px, cố ý thẳng góc cho card/section
-   * của brand CFC) vì đây là khối ảnh độc lập, không phải panel/card. */
-  --radius-image-soft: 12px;
+  /* Bo góc ảnh minh họa ở CFC đặt về 0px (thẳng góc đồng bộ toàn brand) */
+  --radius-image-soft: 0px;
 
   /* Banner Hero gọn gàng chuẩn 1 màn hình cho CFC (theo mẫu 2T Print) */
   --height-hero-mobile: 360px;
