@@ -413,7 +413,7 @@ export function settingsFields() {
       {
         topbarLinks: fields.array(ctaFields("Liên kết"), {
           label: "Liên kết thanh trên cùng",
-          description: "Các mục nhỏ hiện ở topbar (ví dụ "Về Chúng Tôi", "Quy Trình").",
+          description: "Các mục nhỏ hiện ở topbar (ví dụ \"Về Chúng Tôi\", \"Quy Trình\").",
           itemLabel: (props) => props.fields.label.value || "Liên kết",
         }),
         entries: fields.array(
@@ -447,7 +447,7 @@ export function settingsFields() {
         }),
         newsletterDesc: fields.text({
           label: "Mô tả ô đăng ký nhận tin",
-          description: "Dòng nhỏ bên dưới tiêu đề, ví dụ "Bảng giá cập nhật theo chất liệu và số lượng đặt.".",
+          description: "Dòng nhỏ bên dưới tiêu đề, ví dụ \"Bảng giá cập nhật theo chất liệu và số lượng đặt.\".",
           multiline: true,
         }),
       },
