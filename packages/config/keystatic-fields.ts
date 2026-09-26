@@ -1056,6 +1056,42 @@ export function contactFields(imageDir: string) {
           "Địa chỉ, giờ làm việc và ảnh của từng cơ sở sửa trong mục Cài đặt, không sửa ở đây.",
       },
     ),
+    trust: fields.object(
+      {
+        eyebrow: fields.text({ label: "Tiêu đề phụ (eyebrow)", validation: { isRequired: false } }),
+        title: fields.text({ label: "Tiêu đề", multiline: true }),
+        titleColor: fields.text({
+          label: "Màu tiêu đề (Tailwind class, VD: text-[#1B365D])",
+          validation: { isRequired: false },
+        }),
+        image: fields.image({
+          label: "Ảnh minh hoạ",
+          ...asset(imageDir),
+          validation: { isRequired: false },
+        }),
+        imageAlt: fields.text({ label: "Mô tả ảnh", validation: { isRequired: false } }),
+        stats: fields.array(
+          fields.object({
+            num: fields.text({ label: "Số liệu (VD: 10+, 100%)" }),
+            label: fields.text({ label: "Nhãn số liệu" }),
+            color: fields.text({
+              label: "Màu chữ (Tailwind class, VD: text-[#0284C7])",
+              validation: { isRequired: false },
+            }),
+            highlight: fields.checkbox({ label: "Nổi bật", defaultValue: false }),
+          }),
+          { label: "Số liệu thống kê", itemLabel: (props) => props.fields.label.value || "Số liệu" },
+        ),
+        body: fields.array(fields.text({ label: "Đoạn văn", multiline: true }), {
+          label: "Nội dung đoạn văn",
+          itemLabel: (props) => props.value || "(chưa điền)",
+        }),
+      },
+      {
+        label: "Khối uy tín & kết nối (Trust)",
+        description: "Khối giới thiệu kinh nghiệm và số liệu năng lực trên trang liên hệ.",
+      },
+    ),
     form: fields.object({ title: fields.text({ label: "Tiêu đề khối" }) }, { label: "Form liên hệ" }),
     faq: fields.object(
       {
