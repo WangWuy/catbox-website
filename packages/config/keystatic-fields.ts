@@ -132,6 +132,9 @@ const ICON_OPTIONS = [
   { label: "Bát", value: "lucide:utensils" },
   { label: "Quà tặng", value: "lucide:gift" },
   { label: "Ngôi sao", value: "lucide:sparkles" },
+  { label: "Nhà máy", value: "lucide:factory" },
+  { label: "Báo / Tin tức", value: "lucide:newspaper" },
+  { label: "Điện thoại", value: "lucide:phone" },
   { label: "Không có icon", value: "" },
 ] as const;
 
