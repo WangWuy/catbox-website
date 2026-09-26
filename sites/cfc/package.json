@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist",
-    "build:vercel": "astro build",
+    "build:vercel": "KEYSTATIC_ADMIN=vercel astro build",
     "preview": "astro preview",
     "astro": "astro",
     "dev:admin": "KEYSTATIC_ADMIN=node astro dev",
@@ -38,6 +38,7 @@
   "devDependencies": {
     "@astrojs/cloudflare": "^14.2.5",
     "@astrojs/node": "11.1.4",
+    "@astrojs/vercel": "^11.0.11",
     "wrangler": "^4.127.1"
   }
 }

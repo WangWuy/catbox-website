@@ -5,6 +5,7 @@ import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 import node from '@astrojs/node';
 import cloudflare from '@astrojs/cloudflare';
+import vercel from '@astrojs/vercel';
 import keystatic from '@keystatic/astro';
 import icon from 'astro-icon';
 import tailwindcss from '@tailwindcss/vite';
@@ -24,6 +25,8 @@ const pkg = (/** @type {string} */ name) => fileURLToPath(new URL(`../../package
  *   Cloudflare, deploy thành Worker riêng ở admin.cfc.vn ("Cách B" trong
  *   plans/01-keystatic-cms-integration.md Task 0.4). Khách vào bằng URL,
  *   không phải cài Node hay chạy lệnh.
+ * - `KEYSTATIC_ADMIN=vercel pnpm build` → output:'server' + adapter Vercel,
+ *   deploy lên Vercel hỗ trợ route /keystatic.
  * - `KEYSTATIC_ADMIN=node pnpm dev` → chạy admin cục bộ bằng adapter Node,
  *   tiện khi dev không muốn đụng tới Cloudflare.
  *
@@ -35,12 +38,13 @@ const pkg = (/** @type {string} */ name) => fileURLToPath(new URL(`../../package
  * (`crypto.getRandomValues`) để sinh OAuth state. Lỗi cũ không còn áp dụng.
  */
 const adminMode = process.env.KEYSTATIC_ADMIN;
-const withAdmin = adminMode === 'true' || adminMode === 'node' || adminMode === 'cloudflare';
+const withAdmin = adminMode === 'true' || adminMode === 'node' || adminMode === 'cloudflare' || adminMode === 'vercel';
 
-const adminAdapter = () =>
-  adminMode === 'cloudflare'
-    ? cloudflare({ imageService: 'passthrough' })
-    : node({ mode: 'standalone' });
+const adminAdapter = () => {
+  if (adminMode === 'cloudflare') return cloudflare({ imageService: 'passthrough' });
+  if (adminMode === 'vercel' || (!adminMode && process.env.VERCEL)) return vercel();
+  return node({ mode: 'standalone' });
+};
 
 const siteUrl =
   process.env.SITE_URL ||
