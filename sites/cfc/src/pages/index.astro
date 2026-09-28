@@ -142,13 +142,11 @@ const bestsellerTabGroups = [
     />
   </div>
 
-  <!-- Nền xen kẽ (concept 2tprint.com): riêng khối Tin tức dùng nền be nhạt
-       hơn để tách khỏi khối Banner→Bán chạy phía trên và khối Video phía dưới
+  <!-- Nền xen kẽ (kết hợp nền trắng và ghi theo concept 2T Print): riêng khối Tin tức dùng nền ghi nhạt
+       (bg-surface-section-alt) để tách khỏi khối Banner→Bán chạy phía trên (nền trắng surface) và khối Video phía dưới
        (cả hai đều nền mặc định) — Video quay lại nền mặc định để nhập cùng
        dải màu với Đối tác/Cam kết dịch vụ theo sau, tạo bố cục 3 dải xen kẽ
-       dọc trang: surface → alt (chỉ Tin tức) → surface. Giữ tông kraft CFC —
-       chỉ đổi độ sáng be, không chuyển sang trắng/xám trung tính như bản gốc
-       2T Print. -->
+       dọc trang: surface (trắng) → alt (ghi sáng) → surface (trắng). -->
   <div class="bg-surface-section-alt py-(--space-section-gap) md:py-(--space-section-gap-lg)">
     <NewsGrid
       {assets}

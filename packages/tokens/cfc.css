@@ -24,33 +24,26 @@
   --color-eco-border:    #86EFAC;  /* Viền xanh dịu */
   --color-eco-deep:      #14532D;  /* Xanh rừng sâu — phối gradient mặt thẻ */
 
-  --color-surface:       #F2EFEA;
-  --color-surface-alt:   #EBE6DE;  /* Beige-gray công nghiệp */
-  --color-surface-tint:  #F6EFE4;  /* Kem kraft — nền ảnh, logo box */
-  /* Nền xen kẽ giữa các section trang chủ (concept 2tprint.com: xen kẽ nhẹ
-   * trắng/xám nhạt để phân tách bố cục từng đoạn). CFC giữ tông kraft nên
-   * không dùng trắng/xám trung tính như 2T Print — đây là be nhạt hơn hẳn
-   * `--color-surface` (#F2EFEA), cùng họ màu nhưng đủ tương phản để mắt nhận
-   * ra ranh giới section mà không lệch bản sắc thương hiệu. */
-  --color-surface-section-alt: #EAE4DA;
+  --color-surface:       #FFFFFF;  /* Nền trang chính: Trắng sáng tinh tế, sạch sẽ */
+  --color-surface-alt:   #F8F9FA;  /* Xám nhạt công nghiệp (StatsBar, panel phụ) */
+  --color-surface-tint:  #F1F3F5;  /* Ghi sáng — nền ảnh, placeholder box */
+  /* Nền xen kẽ giữa các section trang chủ (kết hợp trắng/ghi theo concept 2T Print):
+   * Khối Tin tức dùng ghi sáng (#F4F5F7) phân tách với khối Bán chạy (#FFFFFF). */
+  --color-surface-section-alt: #F4F5F7;
 
   --color-ink:           #191C1D;  /* Đen xám */
-  --color-ink-muted:     #564337;  /* Xám tro */
-  --color-ink-faint:     #9A938B;
+  --color-ink-muted:     #4B5563;  /* Xám ghi chữ phụ */
+  --color-ink-faint:     #9CA3AF;
 
-  /* Đường line ngăn cách — chỉnh sang tông xám kraft ấm để có độ tương phản
-   * tự nhiên trên nền `surface` beige (#F2EFEA) kèm texture; không dùng #EDEDED
-   * của nền trắng vì trùng độ sáng khiến viền bị chìm/tàng hình. */
-  --color-line:          #D5CDC2;
-  --color-line-soft:     #E2DDD5;
+  /* Đường line ngăn cách — xám trung tính sạch sẽ trên nền trắng/ghi */
+  --color-line:          #E5E7EB;
+  --color-line-soft:     #F3F4F6;
 
-  /* Nền phụ cho các thanh/pill của khung F&B. Tách thành token riêng vì CFC
-   * dùng xám trung tính (theo mockup Thái Dương), khác hẳn beige kraft của
-   * `surface-alt` — trước đây phải hardcode hex trong component kèm `isCfc`. */
+  /* Nền phụ cho các thanh/pill của khung F&B */
   --color-surface-topbar: #F4F4F4;  /* Nền TopbarSwitcher */
   --color-surface-chip:   #E0EAF0;  /* Pill khuyến mãi ở CategoryNav */
-  --color-surface-pill:   #E4E1DC;  /* Pill CTA ở MainHeader */
-  --color-surface-pill-hover: #D9D5CE;
+  --color-surface-pill:   #F1F3F5;  /* Pill CTA ở MainHeader */
+  --color-surface-pill-hover: #E5E7EB;
 
   /* Nền dải banner đầu trang (PageHero) — nâu giấy kraft, cùng màu
    * `--color-kraft` của badge/swatch nên banner ăn tông với ảnh sản phẩm.
@@ -118,9 +111,4 @@
   --duration-untype-char: 45ms;   /* Tốc độ xoá chữ */
   --duration-type-hold:   4500ms; /* Giữ chữ 4.5 giây để đọc thoải mái */
   --duration-type-pause:  500ms;  /* Quãng nghỉ 0.5s trước khi gõ từ mới */
-}
-
-body {
-  background-image: url("/background-image.png");
-  background-repeat: repeat;
 }
