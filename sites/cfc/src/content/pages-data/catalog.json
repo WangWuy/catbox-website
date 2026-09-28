@@ -1,23 +1,45 @@
 {
   "seo": {
     "title": "Danh mục sản phẩm",
-    "description": "Danh mục túi giấy, giấy gói và hộp đựng thực phẩm của xưởng CFC. Lọc theo chất liệu Kraft / MG và kiểu dáng."
+    "description": "Danh mục túi giấy, giấy gói, hộp đựng thực phẩm, cốc giấy và ống hút giấy của xưởng CFC."
   },
   "heroTitle": "Sản phẩm",
-  "heroImage": "products/tui-giay.png",
-  "categoryFallbackImage": "products/hop-giay-kraft.png",
+  "heroImage": "products/heroImage.png",
+  "categoryFallbackImage": "products/categoryFallbackImage.png",
   "collectionName": "Danh mục sản phẩm CFC",
-  "materialLabel": "Chất liệu",
+  "materialLabel": "Túi giấy thực phẩm",
   "materials": [
-    { "value": "kraft", "label": "Giấy Kraft" },
-    { "value": "mg-trang", "label": "Giấy MG trắng" }
+    {
+      "value": "Túi bánh mì/Bao bánh mì",
+      "label": "Túi bánh mì/Bao bánh mì"
+    },
+    {
+      "value": "Túi đựng xúc xích - lạp xưởng",
+      "label": "Túi đựng xúc xích - lạp xưởng"
+    },
+    {
+      "value": "Túi đựng bánh bao",
+      "label": "Túi đựng bánh bao"
+    }
   ],
-  "shapeLabel": "Kiểu dáng",
+  "shapeLabel": "Giấy gói thực phẩm",
   "shapes": [
-    { "value": "tui-det", "label": "Túi dẹt" },
-    { "value": "tui-quai", "label": "Túi có quai" },
-    { "value": "hop", "label": "Hộp giấy" },
-    { "value": "giay-goi", "label": "Giấy gói" }
+    {
+      "value": "giay-lot",
+      "label": "Giấy lót"
+    },
+    {
+      "value": "giay-goi-hamburger",
+      "label": "Giấy gói hamburger"
+    },
+    {
+      "value": "giay-lot-banh-bao",
+      "label": "Giấy lót bánh bao"
+    },
+    {
+      "value": "giay-goi",
+      "label": "Giấy gói"
+    }
   ],
   "swatchNote": "Kraft / MG"
 }
