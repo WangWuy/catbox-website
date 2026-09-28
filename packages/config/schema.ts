@@ -62,21 +62,33 @@ export const productSchema = z.object({
    */
   category: z.string(),
   /** Dùng cho filter island — lọc bằng URL query param */
-  material: z.array(z.string()).default([]),
-  shape: z.array(z.string()).default([]),
+  material: z
+    .array(z.string().nullable())
+    .transform((arr) => arr.filter((x): x is string => typeof x === "string" && x.trim().length > 0))
+    .default([]),
+  shape: z
+    .array(z.string().nullable())
+    .transform((arr) => arr.filter((x): x is string => typeof x === "string" && x.trim().length > 0))
+    .default([]),
   moq: z.string().optional(),
   /** Mã sản phẩm (SKU) hiển thị cạnh tên sản phẩm trên trang chi tiết */
   sku: z.string().optional(),
   badge: z.string().optional(),
   excerpt: z.string().optional(),
   image: imageField,
-  gallery: z.array(z.string()).default([]),
+  gallery: z
+    .array(z.string().nullable())
+    .transform((arr) => arr.filter((x): x is string => typeof x === "string" && x.trim().length > 0))
+    .default([]),
   swatches: z.array(swatchSchema).default([]),
   specs: z.array(specSchema).default([]),
   faq: z.array(faqSchema).default([]),
   bestseller: z.boolean().default(false),
   weeklyPick: z.boolean().default(false),
-  order: z.number().default(999),
+  order: z
+    .union([z.number(), z.nan()])
+    .transform((v) => (Number.isNaN(v) ? 999 : v))
+    .default(999),
   draft: z.boolean().default(false),
   ...seoFields,
 });
