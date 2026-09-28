@@ -1,20 +1,26 @@
 {
   "seo": {
     "title": "Về chúng tôi",
-    "description": "CFC là xưởng sản xuất bao bì giấy F&B trực tiếp tại KCN Đồng Văn, Hà Nam. 10+ năm kinh nghiệm, đạt chuẩn ATVSTP và HACCP, thành viên hệ sinh thái Catbox Packaging."
+    "description": "CFC là xưởng sản xuất bao bì giấy trong ngành F&B. 10+ năm kinh nghiệm, đạt chuẩn ATVSTP và HACCP, thành viên hệ sinh thái Catbox Packaging."
   },
   "hero": {
     "title": "Về chúng tôi",
-    "image": "brand/hero-banner.png",
+    "image": "brand/hero/image.png",
     "imageAlt": "Xưởng sản xuất bao bì giấy CFC"
   },
   "overview": {
     "title": "Tổng quan về",
     "accent": "công ty",
-    "body": "CFC — thương hiệu CFC Factory — là xưởng sản xuất bao bì giấy F&B, vận hành nhà máy riêng tại KCN Đồng Văn, Duy Tiên, Hà Nam. CFC phục vụ chuỗi bánh mì, quán ăn nhanh và thương hiệu F&B cần bao bì giấy in thương hiệu với số lượng lớn, đạt chuẩn ATVSTP và HACCP, là thành viên hệ sinh thái Catbox Packaging.",
+    "body": "CFC là nhà sản xuất bao bì giấy F&B thuộc hệ sinh thái Catbox Packaging, sở hữu nhà máy tại KCN Đồng Văn, Hà Nam. Chúng tôi cung cấp giải pháp bao bì giấy in thương hiệu cho chuỗi bánh mì, quán ăn nhanh và doanh nghiệp F&B với năng lực sản xuất số lượng lớn, đạt chuẩn HACCP và an toàn vệ sinh thực phẩm.",
     "images": [
-      { "src": "brand/hero-banner.png", "alt": "Xưởng sản xuất bao bì giấy CFC" },
-      { "src": "brand/about-trust.png", "alt": "Túi giấy in thương hiệu CFC" }
+      {
+        "src": "brand/overview/images/0/src.png",
+        "alt": "Xưởng sản xuất bao bì giấy CFC"
+      },
+      {
+        "src": "brand/overview/images/1/src.jpg",
+        "alt": "Túi giấy in thương hiệu CFC"
+      }
     ]
   },
   "purpose": {
@@ -24,13 +30,13 @@
       {
         "icon": "lucide:eye",
         "title": "Tầm nhìn",
-        "body": "Trở thành xưởng sản xuất bao bì giấy F&B được các chuỗi bánh mì, quán ăn nhanh tin chọn hàng đầu tại miền Bắc, nhờ sản xuất trực tiếp không qua trung gian.",
+        "body": "Trở thành nhà sản xuất bao bì giấy F&B hàng đầu Việt Nam, được khách hàng tin tưởng lựa chọn nhờ năng lực sản xuất quy mô lớn, không qua trung gian, chất lượng ổn định và khả năng đồng hành lâu dài cùng sự phát triển của thương hiệu.\n",
         "tone": "primary"
       },
       {
         "icon": "lucide:target",
         "title": "Sứ mệnh",
-        "body": "Cung cấp bao bì giấy đạt chuẩn an toàn thực phẩm với giá xưởng, giao đúng lịch và đồng hành cùng khách hàng xây dựng thương hiệu qua từng sản phẩm in ấn.",
+        "body": "Cung cấp các giải pháp bao bì giấy F&B chất lượng ổn định, giá tận xưởng và tiến độ đáng tin cậy. Bằng việc chuyên môn hóa sản xuất, chuẩn hóa quy trình và liên tục cải tiến năng lực vận hành, chúng tôi đồng hành cùng khách hàng trong việc xây dựng chuỗi cung ứng hiệu quả và phát triển bền vững.",
         "tone": "eco"
       }
     ]
@@ -40,50 +46,54 @@
     "accent": "cốt lõi",
     "items": [
       {
-        "title": "Đạo đức",
-        "tagline": "Nền móng của mọi hành động",
-        "desc": "Chúng tôi tin rằng sự tử tế không phải là sự lựa chọn — mà là nguyên tắc sống còn để tồn tại và phát triển bền vững."
-      },
-      {
         "title": "Trách nhiệm",
         "tagline": "Cam kết đến cùng trên từng sản phẩm",
-        "desc": "Chịu trách nhiệm trọn vẹn với chất lượng bao bì xuất xưởng, tiến độ giao hàng và sự an toàn thực phẩm của người tiêu dùng."
+        "desc": "Chịu trách nhiệm trọn vẹn về chất lượng sản phẩm, tiến độ giao hàng và an toàn bao bì thực phẩm.\n"
       },
       {
-        "title": "Danh dự",
-        "tagline": "Giữ trọn chữ tín với đối tác",
-        "desc": "Uy tín và danh dự của doanh nghiệp được xây dựng bằng sự tin cậy lâu dài của khách hàng và đối tác trong suốt chặng đường phát triển."
+        "title": "Đạo đức ",
+        "tagline": "Làm đúng từ những điều nhỏ nhất",
+        "desc": "Trung thực trong sản xuất, minh bạch trong phối hợp và đặt lợi ích lâu dài của khách hàng, đối tác lên hàng đầu."
       },
       {
         "title": "Chính trực",
-        "tagline": "Minh bạch trong mọi cam kết",
-        "desc": "Trung thực về định lượng giấy, xuất xứ nguyên liệu và luôn rõ ràng trong mọi thỏa thuận hợp tác, báo giá và chính sách bán hàng."
+        "tagline": "Nói đúng – làm đúng – chịu trách nhiệm",
+        "desc": "Tuân thủ cam kết, quy trình và tiêu chuẩn đã thống nhất; thẳng thắn nhận diện và xử lý vấn đề trong quá trình sản xuất."
+      },
+      {
+        "title": "Danh dự",
+        "tagline": "Giữ chữ tín bằng chất lượng",
+        "desc": "Mỗi sản phẩm xuất xưởng là một lời cam kết của CFC. Chúng tôi coi uy tín, chất lượng và sự tin tưởng của khách hàng là tài sản lâu dài."
       },
       {
         "title": "Đội ngũ",
-        "tagline": "Sức mạnh từ sự gắn kết",
-        "desc": "Xây dựng môi trường làm việc chuyên nghiệp, đồng lòng, phát huy tối đa năng lực của từng cá nhân vì mục tiêu chung."
+        "tagline": "Một đội ngũ – một mục tiêu",
+        "desc": "Phối hợp chủ động, hỗ trợ lẫn nhau và không ngừng nâng cao năng lực để xây dựng một tập thể kỷ luật, chuyên môn và hiệu quả."
       }
     ]
   },
   "strategicGoals": {
     "title": "Mục tiêu",
-    "accent": ["chiến lược", "phát triển", "bền vững"],
+    "accent": [
+      "chiến lược",
+      "phát triển",
+      "bền vững"
+    ],
     "label": "Mục tiêu",
     "items": [
       {
-        "title": "Mục tiêu 01",
-        "desc": "Mở rộng năng lực phục vụ hơn 5.000 đối tác chuỗi F&B với giá gốc trực tiếp từ xưởng.",
+        "title": "MỞ RỘNG NĂNG LỰC SẢN XUẤT",
+        "desc": "Đáp ứng nhu cầu bao bì thực phẩm của hàng nghìn cửa hàng và chuỗi F&B với năng lực sản xuất ổn định, sản lượng lớn và giá thành cạnh tranh.",
         "tone": "primary"
       },
       {
-        "title": "Mục tiêu 02",
-        "desc": "Tự động hóa dây chuyền in Offset và Flexo nhằm rút ngắn 30% thời gian giao hàng.",
+        "title": "TỰ ĐỘNG HÓA & CHUẨN HÓA",
+        "desc": "Đầu tư máy móc, tự động hóa các công đoạn sản xuất và chuẩn hóa quy trình nhằm nâng cao năng suất, rút ngắn thời gian giao hàng và kiểm soát chất lượng.",
         "tone": "primary"
       },
       {
-        "title": "Mục tiêu 03",
-        "desc": "Phát triển bền vững, 100% dòng sản phẩm bao bì giấy đạt chuẩn phân hủy sinh học và an toàn sức khỏe.",
+        "title": "PHÁT TRIỂN BỀN VỮNG",
+        "desc": "Phát triển các dòng bao bì giấy an toàn cho thực phẩm, tối ưu nguyên vật liệu và giảm lãng phí, hướng tới một nền sản xuất hiệu quả và thân thiện với môi trường.",
         "tone": "eco"
       }
     ]
