@@ -4,14 +4,17 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "normalize-images": "node scripts/normalize-images.mjs",
+    "predev": "node scripts/normalize-images.mjs",
     "dev": "astro dev",
+    "prebuild": "node scripts/normalize-images.mjs",
     "build": "astro build && pagefind --site dist",
-    "build:vercel": "KEYSTATIC_ADMIN=vercel astro build",
+    "build:vercel": "node scripts/normalize-images.mjs && KEYSTATIC_ADMIN=vercel astro build",
     "preview": "astro preview",
     "astro": "astro",
     "dev:admin": "KEYSTATIC_ADMIN=node astro dev",
-    "build:admin": "KEYSTATIC_ADMIN=cloudflare astro build",
-    "deploy:admin": "KEYSTATIC_ADMIN=cloudflare astro build && wrangler deploy"
+    "build:admin": "node scripts/normalize-images.mjs && KEYSTATIC_ADMIN=cloudflare astro build",
+    "deploy:admin": "node scripts/normalize-images.mjs && KEYSTATIC_ADMIN=cloudflare astro build && wrangler deploy"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.8",
