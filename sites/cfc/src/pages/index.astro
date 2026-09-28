@@ -170,13 +170,16 @@ const bestsellerTabGroups = [
     variant="controls"
   />
 
-  <!-- Dải logo đối tác — nằm ngay trên Footer -->
-  <PartnerStrip partners={PARTNERS} title="Đối tác tin cậy của" accent="CFC" />
+  <!-- Khối Đối tác + Cam kết dịch vụ dùng chung 1 nền xám (bg-surface-section-alt)
+       để tách khỏi nền trắng mặc định của trang và làm nổi card trắng của
+       TrustStrip. TrustStrip đè lên mép trên Footer ~2/3 chiều cao thẻ bằng
+       margin âm; `relative z-(--z-trust-strip-overlap)` để thẻ nổi trên nền
+       tối của Footer render ngay sau nó trong DOM. -->
+  <div class="bg-surface-section-alt">
+    <PartnerStrip partners={PARTNERS} title="Đối tác tin cậy của" accent="CFC" />
 
-  <!-- TrustStrip đè lên mép trên Footer ~2/3 chiều cao thẻ bằng margin âm.
-       `relative z-(--z-trust-strip-overlap)` để thẻ nổi trên nền tối của
-       Footer render ngay sau nó trong DOM. -->
-  <div class="site-container relative z-(--z-trust-strip-overlap) mt-(--space-trust-strip-top) -mb-(--overlap-trust-strip) md:mt-(--space-trust-strip-top-lg)">
-    <TrustStrip items={trustItems} variant="panel" />
+    <div class="site-container relative z-(--z-trust-strip-overlap) pt-(--space-trust-strip-top) -mb-(--overlap-trust-strip) md:pt-(--space-trust-strip-top-lg)">
+      <TrustStrip items={trustItems} variant="panel" />
+    </div>
   </div>
 </Layout>

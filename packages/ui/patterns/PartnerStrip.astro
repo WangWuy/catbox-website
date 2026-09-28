@@ -5,8 +5,8 @@
  * mạch bằng transform: translateX(-50%) — nửa đầu và nửa sau giống hệt nhau
  * nên lúc animation "reset" về 0% trông như đang trượt tiếp, không giật.
  *
- * Thiết kế: nền ghi nhạt (đồng bộ với khối Tin tức trên trang chủ, tách khỏi
- * khối TrustStrip nền trắng ngay sau), border trên/dưới mỏng, logo
+ * Thiết kế: nền trong suốt (kế thừa nền của wrapper bên ngoài — ví dụ khối
+ * xám bọc chung với TrustStrip ở trang chủ CFC), border trên/dưới mỏng, logo
  * grayscale → màu khi hover.
  *
  * Props:
@@ -38,7 +38,7 @@ const { title = "Đối tác tin cậy của", accent = "CFC", partners } = Astr
 const track = [...partners, ...partners];
 ---
 
-<div class="partner-strip-wrapper border-y border-border bg-surface-section-alt py-5">
+<div class="partner-strip-wrapper border-y border-border py-5">
   <div class="site-container flex items-center gap-4">
     {/* Label bên trái — ẩn trên mobile */}
     {
