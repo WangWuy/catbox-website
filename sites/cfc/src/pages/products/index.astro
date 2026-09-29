@@ -16,7 +16,7 @@ import catalogData from "../../content/pages-data/catalog.json";
 import PageHero from "@ui/patterns/PageHero.astro";
 import CatalogLayout from "@ui/patterns/CatalogLayout.astro";
 import ProductCard from "@ui/primitives/ProductCard.astro";
-import { type FilterGroup } from "@ui/primitives/ProductFilter.astro";
+import { type FilterGroup, type FilterOption } from "@ui/primitives/ProductFilter.astro";
 
 const catalog = parseCatalog(catalogData);
 
@@ -49,24 +49,25 @@ const countBy = (field: "material" | "shape", value: string) =>
 const ancestorSlugs = (categorySlug: string) =>
   categoryTrail(categories, categorySlug).map((c) => c.slug);
 
-/** Cây danh mục phẳng cha→con theo đúng thứ tự hiển thị (order), kèm `depth` để thụt lề. */
-const flattenTree = (nodes: CategoryNode[], depth = 0): (CategoryNode & { depth: number })[] =>
-  nodes.flatMap((n) => [{ ...n, depth }, ...flattenTree(n.children, depth + 1)]);
-const CATEGORY_NODES = flattenTree(buildCategoryTree(categories));
-
 const countByCategory = (slug: string) =>
   products.filter((p) => ancestorSlugs(p.data.category).includes(slug)).length;
+
+/** Cây danh mục → cây lựa chọn lọc, danh mục con lồng qua `children` (accordion gấp gọn). */
+const toFilterOptions = (nodes: CategoryNode[]): FilterOption[] =>
+  nodes
+    .map((n) => ({
+      value: n.slug,
+      label: n.label,
+      count: countByCategory(n.slug),
+      children: toFilterOptions(n.children),
+    }))
+    .filter((o) => o.count > 0);
 
 const groups: FilterGroup[] = [
   {
     key: "category",
     label: "Danh mục",
-    options: CATEGORY_NODES.map((c) => ({
-      value: c.slug,
-      label: c.label,
-      count: countByCategory(c.slug),
-      depth: c.depth,
-    })).filter((o) => o.count > 0),
+    options: toFilterOptions(buildCategoryTree(categories)),
   },
   {
     key: "material",

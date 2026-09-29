@@ -1,0 +1,65 @@
+---
+/**
+ * Một lựa chọn trong `ProductFilter` — tách riêng file để tự import chính mình
+ * và render đệ quy (Astro không cho định nghĩa component đệ quy ngay trong
+ * frontmatter của file gọi nó).
+ *
+ * Lựa chọn có `children` (ví dụ danh mục con) gấp lại trong `<details>`, bấm
+ * mũi tên mới xổ ra — tránh sidebar dài lê thê khi cây danh mục sâu.
+ */
+import { Icon } from "astro-icon/components";
+import FilterOptionField from "./FilterOptionField.astro";
+import type { FilterOption } from "./ProductFilter.astro";
+
+interface Props {
+  groupKey: string;
+  option: FilterOption;
+}
+
+const { groupKey, option } = Astro.props;
+const hasChildren = !!option.children?.length;
+---
+
+{
+  hasChildren ? (
+    <details class="[&[open]>summary_.chev]:rotate-180">
+      <summary class="flex cursor-pointer list-none items-center gap-1 [&::-webkit-details-marker]:hidden">
+        <label class="flex flex-1 cursor-pointer items-center gap-2.5 text-sm">
+          <input
+            type="checkbox"
+            name={groupKey}
+            value={option.value}
+            class="size-(--size-filter-checkbox) accent-(--color-primary)"
+          />
+          <span class="flex-1 text-ink-muted">{option.label}</span>
+          {option.count !== undefined && (
+            <span class="text-(length:--text-micro) text-ink-faint">({option.count})</span>
+          )}
+        </label>
+        <Icon
+          name="lucide:chevron-down"
+          class="chev size-3.5 shrink-0 text-ink-faint transition-transform duration-(--duration-fast)"
+          aria-hidden="true"
+        />
+      </summary>
+      <div class="mt-2 flex flex-col gap-2.5 border-l border-line pl-(--space-filter-indent-step)">
+        {option.children!.map((c) => (
+          <FilterOptionField groupKey={groupKey} option={c} />
+        ))}
+      </div>
+    </details>
+  ) : (
+    <label class="flex cursor-pointer items-center gap-2.5 text-sm">
+      <input
+        type="checkbox"
+        name={groupKey}
+        value={option.value}
+        class="size-(--size-filter-checkbox) accent-(--color-primary)"
+      />
+      <span class="flex-1 text-ink-muted">{option.label}</span>
+      {option.count !== undefined && (
+        <span class="text-(length:--text-micro) text-ink-faint">({option.count})</span>
+      )}
+    </label>
+  )
+}

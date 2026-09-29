@@ -11,12 +11,21 @@
  *    bộ qua `history.replaceState` → khách share được link đã lọc, back/forward
  *    hoạt động, và khi tải lại trang bộ lọc vẫn giữ nguyên.
  */
+import FilterOptionField from "./FilterOptionField.astro";
+
+export interface FilterOption {
+  value: string;
+  label: string;
+  count?: number;
+  /** Lựa chọn con — ví dụ danh mục con của "Danh mục". Gấp lại mặc định qua <details>. */
+  children?: FilterOption[];
+}
+
 export interface FilterGroup {
   /** Khoá dùng trong query param và data-attribute của card */
   key: string;
   label: string;
-  /** `depth` (mặc định 0) thụt lề option để thể hiện nhóm phân cấp cha/con — ví dụ "Danh mục" */
-  options: { value: string; label: string; count?: number; depth?: number }[];
+  options: FilterOption[];
 }
 
 interface Props {
@@ -32,21 +41,7 @@ const { groups } = Astro.props;
       <fieldset class="flex flex-col gap-2.5 border-0 p-0">
         <legend class="mb-1 text-meta font-bold tracking-wide uppercase">{g.label}</legend>
         {g.options.map((o) => (
-          <label
-            class="flex cursor-pointer items-center gap-2.5 text-sm"
-            style={o.depth ? `padding-inline-start: calc(var(--space-filter-indent-step) * ${o.depth})` : undefined}
-          >
-            <input
-              type="checkbox"
-              name={g.key}
-              value={o.value}
-              class="size-(--size-filter-checkbox) accent-(--color-primary)"
-            />
-            <span class="flex-1 text-ink-muted">{o.label}</span>
-            {o.count !== undefined && (
-              <span class="text-(length:--text-micro) text-ink-faint">({o.count})</span>
-            )}
-          </label>
+          <FilterOptionField groupKey={g.key} option={o} />
         ))}
       </fieldset>
     ))
