@@ -30,13 +30,13 @@
       {
         "icon": "lucide:eye",
         "title": "Tầm nhìn",
-        "body": "Trở thành nhà sản xuất bao bì giấy F&B hàng đầu Việt Nam, được khách hàng tin tưởng lựa chọn nhờ năng lực sản xuất quy mô lớn, không qua trung gian, chất lượng ổn định và khả năng đồng hành lâu dài cùng sự phát triển của thương hiệu.\n",
+        "body": "Trở thành biểu tượng hàng đầu trong ngành bao bì giấy F&B hàng đầu Việt Nam, không chỉ là một nhà cung cấp sản phẩm mà còn là một tên tuổi trong tâm trí khách hàng, trở thành cái tên gắn liền với sự tin cậy, duy mỹ và chỉn chu với từng sản phẩm.",
         "tone": "primary"
       },
       {
         "icon": "lucide:target",
         "title": "Sứ mệnh",
-        "body": "Cung cấp các giải pháp bao bì giấy F&B chất lượng ổn định, giá tận xưởng và tiến độ đáng tin cậy. Bằng việc chuyên môn hóa sản xuất, chuẩn hóa quy trình và liên tục cải tiến năng lực vận hành, chúng tôi đồng hành cùng khách hàng trong việc xây dựng chuỗi cung ứng hiệu quả và phát triển bền vững.",
+        "body": "CFC không chỉ cung cấp bao bì mà còn trở thành đối tác chiến lược của khách hàng, đồng hành trong việc kiến tạo hình ảnh thương hiệu mạnh mẽ, nâng tầm giá trị sản phẩm, và thúc đẩy sự phát triển bền vững của doanh nghiệp.",
         "tone": "eco"
       }
     ]
@@ -46,29 +46,29 @@
     "accent": "cốt lõi",
     "items": [
       {
+        "title": "Kỷ luật",
+        "tagline": "Kỷ luật lao động là nền tảng tạo nên sự chuyên nghiệp và công bằng",
+        "desc": "- Tôn trọng kỷ luật tập thể\n- Tinh thần trách nhiệm và cam kết với công việc\n- Tuân thủ nội quy, quy trình làm việc\n- Chấp hành đúng giờ giấc làm việc"
+      },
+      {
+        "title": "Trung thực ",
+        "tagline": "Minh bạch là nền tảng – Đạo đức là nguyên tắc",
+        "desc": "- Trong kinh doanh, CFC tin rằng: “Không nhất thiết cần thật, nhưng phải trung thực.”\n- Trung thực trong mọi hoạt động, đặc biệt là các vấn đề liên quan đến tài chính và thông tin với khách hàng.\n- Luôn minh bạch với đồng đội, với công ty và với đối tác."
+      },
+      {
         "title": "Trách nhiệm",
-        "tagline": "Cam kết đến cùng trên từng sản phẩm",
-        "desc": "Chịu trách nhiệm trọn vẹn về chất lượng sản phẩm, tiến độ giao hàng và an toàn bao bì thực phẩm.\n"
+        "tagline": "Nói là làm – Làm đến nơi đến chốn",
+        "desc": "- Trước mọi việc nhận lỗi sai về mình trước tiên, biết chịu trách nhiệm cho quyết định và hành động của mình.\n- Trách nhiệm với những câu nói, quyết định của bản thân.\n- Lời nói đi đôi với hành động, không viện cớ, không bỏ cuộc, nói là làm và làm thì đến nơi."
       },
       {
-        "title": "Đạo đức ",
-        "tagline": "Làm đúng từ những điều nhỏ nhất",
-        "desc": "Trung thực trong sản xuất, minh bạch trong phối hợp và đặt lợi ích lâu dài của khách hàng, đối tác lên hàng đầu."
+        "title": "Sẵn sàng",
+        "tagline": "Sẵn sàng chủ động, sẵn sàng hành động",
+        "desc": "- Sẵn sàng chủ động trong mọi tình huống, đặc biệt là các tình huống khẩn cấp, phát sinh bất ngờ.\n- Không trì hoãn, không đổ lỗi, luôn giữ trạng thái Online, Oncall\n- Tích cực tiếp thu cái mới để liên tục cải tiến và phát triển."
       },
       {
-        "title": "Chính trực",
-        "tagline": "Nói đúng – làm đúng – chịu trách nhiệm",
-        "desc": "Tuân thủ cam kết, quy trình và tiêu chuẩn đã thống nhất; thẳng thắn nhận diện và xử lý vấn đề trong quá trình sản xuất."
-      },
-      {
-        "title": "Danh dự",
-        "tagline": "Giữ chữ tín bằng chất lượng",
-        "desc": "Mỗi sản phẩm xuất xưởng là một lời cam kết của CFC. Chúng tôi coi uy tín, chất lượng và sự tin tưởng của khách hàng là tài sản lâu dài."
-      },
-      {
-        "title": "Đội ngũ",
-        "tagline": "Một đội ngũ – một mục tiêu",
-        "desc": "Phối hợp chủ động, hỗ trợ lẫn nhau và không ngừng nâng cao năng lực để xây dựng một tập thể kỷ luật, chuyên môn và hiệu quả."
+        "title": "Đồng hành",
+        "tagline": "Cùng khách hàng phát triển – Cùng CPS lớn mạnh",
+        "desc": "- Luôn lấy sự phát triển của khách hàng làm kim chỉ nam cho sự phát triển của chính mình và công ty.\n- Hiểu khách hàng, sử dụng sản phẩm/dịch vụ của kh\n- Khách hàng để thấu cảm và phục vụ tốt hơn.\n- Đồng hành cùng CPS chinh phục các mục tiêu lớn vì một hành trình phát triển bản thân bền vững."
       }
     ]
   },
