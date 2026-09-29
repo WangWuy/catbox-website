@@ -1,7 +1,9 @@
 ---
 /**
  * Footer 3 cột theo mockup: pháp nhân + chứng nhận + liên hệ | tư vấn bán
- * hàng + hotline | policy + social. Kèm copyright bar + scroll-top.
+ * hàng + hotline | policy + social. Kèm copyright bar.
+ * (Nút "lên đầu trang" nay là FloatingCta dạng nổi, hiện khi cuộn — không
+ * còn nằm tĩnh trong Footer.)
  */
 import { Icon } from "astro-icon/components";
 import { BRANDS, POLICY_LINKS, type FnbBrandId } from "@config/brands";
@@ -180,17 +182,10 @@ const copy = b.footer;
   </div>
 
   <div class="border-t border-white/12">
-    <div class="site-container flex items-center justify-between gap-4 py-5">
+    <div class="site-container py-5">
       <p class="text-meta text-white/50">
         © {new Date().getFullYear()} {b.short}{b.legalName && b.legalName !== b.short ? ` — ${b.legalName}` : ""}
       </p>
-      <a
-        href="#top"
-        aria-label="Lên đầu trang"
-        class="grid size-(--size-back-to-top) flex-none place-items-center rounded-full bg-primary text-white transition-colors hover:bg-primary-hover"
-      >
-        <Icon name="lucide:arrow-up" class="size-5" aria-hidden="true" />
-      </a>
     </div>
   </div>
 </footer>

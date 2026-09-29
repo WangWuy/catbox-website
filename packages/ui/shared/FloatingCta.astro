@@ -1,40 +1,32 @@
 ---
 /**
- * Nút nổi Zalo + Hotline góc phải dưới (theo mockup CFC).
- * 0 KB JS — chỉ là 2 thẻ <a>. Có data-analytics cho GA4 (§12.12).
+ * Nút nổi "Lên đầu trang" góc phải dưới — chỉ hiện khi cuộn xuống quá
+ * `--scroll-top-threshold`. Thay cho cặp nút Zalo + hotline cũ (đã bỏ theo
+ * yêu cầu thiết kế mới) và nút back-to-top tĩnh từng nằm trong Footer.
  */
 import { Icon } from "astro-icon/components";
-import { BRANDS, type BrandId } from "@config/brands";
-
-interface Props {
-  brand: BrandId;
-}
-
-const { brand } = Astro.props;
-const b = BRANDS[brand];
 ---
 
-{/* Nhỏ lại ở mobile: hai nút 56px xếp dọc chiếm một mảng đáng kể của màn hẹp
-    và đè lên nội dung/CTA trong Footer khi cuộn tới cuối trang. */}
-<div
-  class="fixed right-3 bottom-4 z-(--z-floating) flex flex-col gap-2.5 print:hidden md:right-4 md:bottom-5 md:gap-3"
+<a
+  href="#top"
+  aria-label="Lên đầu trang"
+  data-scroll-top-btn
+  class="fixed right-3 bottom-4 z-(--z-floating) grid size-(--size-back-to-top) translate-y-2 place-items-center rounded-full bg-primary text-white opacity-0 shadow-lg transition-[opacity,translate] duration-(--duration-base) ease-(--ease-out-soft) pointer-events-none print:hidden md:right-4 md:bottom-5 [&.is-visible]:translate-y-0 [&.is-visible]:opacity-100 [&.is-visible]:pointer-events-auto"
 >
-  <a
-    href={`https://zalo.me/${b.zalo}`}
-    target="_blank"
-    rel="noopener"
-    aria-label="Chat Zalo"
-    data-analytics="click_zalo"
-    class="grid size-12 place-items-center rounded-full bg-zalo text-xs font-extrabold text-white transition-transform duration-(--duration-fast) hover:scale-105 md:size-14"
-  >
-    Zalo
-  </a>
-  <a
-    href={`tel:${b.hotline.replace(/\D/g, "")}`}
-    aria-label={`Gọi hotline ${b.hotline}`}
-    data-analytics="click_hotline"
-    class="grid size-12 place-items-center rounded-full bg-primary transition-transform duration-(--duration-fast) hover:scale-105 md:size-14"
-  >
-    <Icon name="lucide:phone" class="size-5 text-white md:size-6" aria-hidden="true" />
-  </a>
-</div>
+  <Icon name="lucide:arrow-up" class="size-5" aria-hidden="true" />
+</a>
+
+<script>
+  const btn = document.querySelector<HTMLAnchorElement>("[data-scroll-top-btn]");
+
+  if (btn) {
+    const threshold = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--scroll-top-threshold")) || 400;
+
+    const onScroll = () => {
+      btn.classList.toggle("is-visible", window.scrollY > threshold);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
+</script>

@@ -168,10 +168,13 @@
   --size-icon-contact-box: 34px;   /* khung bọc icon đó ở footer Catbox */
   --text-footer-contact: 0.875rem; /* 14px — số điện thoại, địa chỉ */
 
-  /* Nút mạng xã hội và nút "lên đầu trang" ở chân Footer */
+  /* Nút mạng xã hội ở chân Footer */
   --size-social-btn: 38px;
   --radius-social-btn: 11px;
+  /* Nút nổi "lên đầu trang" (FloatingCta) — kích thước nút và ngưỡng cuộn
+   * (px) để nút bắt đầu hiện ra. */
   --size-back-to-top: 42px;
+  --scroll-top-threshold: 400;
 
   /* Tỉ lệ 3 cột Footer. Trước đây chép nguyên chuỗi `1.25fr_1.1fr_0.95fr` ở cả
    * fnb/Footer lẫn catbox/SiteFooter — sửa một bên là hai footer lệch nhau. */
@@ -359,7 +362,7 @@
   --z-trust-strip-overlap: 1; /* TrustStrip đè margin âm lên mép trên Footer */
   --z-catnav: 30; /* thanh danh mục + panel mega menu xổ xuống từ nó */
   --z-header: 40; /* header dính — phải nằm trên nội dung cuộn bên dưới */
-  --z-floating: 50; /* FloatingCta (Zalo + hotline) */
+  --z-floating: 50; /* FloatingCta (nút lên đầu trang) */
   --z-skiplink: 100; /* link "bỏ qua tới nội dung", luôn trên cùng khi focus */
 
   /* Logo CFC (file ảnh thật, hiển thị theo tỉ lệ gốc — xem BrandLogo.astro). */
