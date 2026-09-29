@@ -5,39 +5,46 @@
   },
   "hero": {
     "title": "Liên hệ",
-    "image": "products/heroImage.png",
+    "image": "products/hero/image.webp",
     "imageAlt": "Bao bì giấy CFC"
   },
   "places": {
     "hotlineLabel": "Hotline",
-    "salesLabels": ["Khách lẻ", "Khách sỉ"]
+    "salesLabels": [
+      "Khách lẻ",
+      "Khách sỉ"
+    ]
   },
   "trust": {
     "eyebrow": "Kết nối & Hợp tác",
     "title": "<span class=\"text-[#0284C7]\">CFC Factory</span> – Giải pháp Thiết kế & In ấn toàn diện cho Doanh nghiệp",
     "titleColor": "text-[#1B365D]",
-    "image": "products/hero-trust.png",
+    "image": "products/trust/image.jpg",
     "imageAlt": "CFC Factory — Đội ngũ và giải pháp in ấn toàn diện",
     "stats": [
       {
-        "num": "10+",
+        "num": "8+",
         "label": "Năm kinh nghiệm",
-        "color": "text-[#0284C7]"
+        "color": "text-[#0284C7]",
+        "highlight": false
       },
       {
         "num": "5.000+",
         "label": "Khách hàng, đối tác",
-        "color": "text-[#D97706]"
+        "color": "text-[#D97706]",
+        "highlight": false
       },
       {
         "num": "20.000+",
         "label": "Đơn hàng thành phẩm",
-        "color": "text-[#E11D48]"
+        "color": "text-[#E11D48]",
+        "highlight": false
       },
       {
         "num": "100%",
         "label": "Đảm bảo chất lượng",
-        "color": "text-[#EA580C]"
+        "color": "text-[#EA580C]",
+        "highlight": false
       }
     ],
     "body": [
@@ -119,6 +126,13 @@
   },
   "business": {
     "priceRange": "$$",
-    "openingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    "openingDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ]
   }
 }
