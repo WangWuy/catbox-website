@@ -40,6 +40,16 @@ const ttSocial = b.social.find(
 );
 const fbHref = fbSocial?.href && fbSocial.href !== "#" ? fbSocial.href : "https://facebook.com";
 const ttHref = ttSocial?.href && ttSocial.href !== "#" ? ttSocial.href : "https://tiktok.com";
+
+// Định dạng số điện thoại tách cụm 4 - 2 - 4 (vd: 0947 89 5599)
+const formatHotline = (phone: string) => {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 10) {
+    return `${digits.slice(0, 4)} ${digits.slice(4, 6)} ${digits.slice(6)}`;
+  }
+  return phone;
+};
+const displayHotline = formatHotline(b.hotline);
 ---
 
 <header
@@ -48,7 +58,7 @@ const ttHref = ttSocial?.href && ttSocial.href !== "#" ? ttSocial.href : "https:
     "transition-colors",
     isStickyClone
       ? "fixed top-0 left-0 right-0 z-(--z-header) -translate-y-full bg-primary-deep text-white shadow-(--shadow-header) transition-transform duration-(--duration-base) ease-(--ease-out-soft)"
-      : "relative z-(--z-header) bg-surface",
+      : "sticky top-0 z-(--z-header) w-full",
   ]}
 >
   {
@@ -59,16 +69,16 @@ const ttHref = ttSocial?.href && ttSocial.href !== "#" ? ttSocial.href : "https:
   {
     !isStickyClone ? (
       <>
-        {/* DÒNG TRÊN: Logo bên trái + Hotline & Mạng xã hội bên phải */}
-        <div class="hidden border-b border-line-soft bg-surface py-2.5 md:block">
-          <div class="site-container flex items-center justify-between gap-4">
+        {/* DÒNG TRÊN: Logo bên trái + Hotline & Mạng xã hội bên phải (Chiều cao 70px, nền trắng trong suốt nhẹ) */}
+        <div class="hidden h-[70px] border-b border-black/5 bg-white/92 md:flex md:items-center">
+          <div class="site-container flex w-full items-center justify-between gap-4">
             {/* Logo */}
             <a
               href="/"
-              class="flex flex-none items-center gap-3 transition-opacity hover:opacity-95"
+              class="flex flex-none items-center gap-3 transition-opacity hover:opacity-95 [&_img]:max-h-[52px] [&_img]:w-auto"
               aria-label={`${b.name} — trang chủ`}
             >
-              <BrandLogo brand="cfc" />
+              <BrandLogo brand="cfc" transparent />
             </a>
 
             {/* Bên phải: Hotline + Biểu tượng Facebook / TikTok */}
@@ -79,8 +89,8 @@ const ttHref = ttSocial?.href && ttSocial.href !== "#" ? ttSocial.href : "https:
                 data-analytics="click_hotline"
                 class="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-white shadow-xs transition-all hover:bg-primary-hover hover:scale-[1.02]"
               >
-                <Icon name="lucide:phone-call" class="size-4 animate-pulse" aria-hidden="true" />
-                <span>{b.hotline}</span>
+                <Icon name="lucide:phone" class="size-3.5 fill-current" aria-hidden="true" />
+                <span>{displayHotline}</span>
               </a>
 
               {/* Biểu tượng Facebook / TikTok */}
@@ -325,8 +335,8 @@ const ttHref = ttSocial?.href && ttSocial.href !== "#" ? ttSocial.href : "https:
             href={b.hotlineHref || `tel:${b.hotline.replace(/\D/g, "")}`}
             class="hidden items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-white transition-colors hover:bg-white/20 lg:inline-flex"
           >
-            <Icon name="lucide:phone-call" class="size-3 text-primary" aria-hidden="true" />
-            <span>{b.hotline}</span>
+            <Icon name="lucide:phone" class="size-3 fill-current text-primary" aria-hidden="true" />
+            <span>{displayHotline}</span>
           </a>
 
           <form

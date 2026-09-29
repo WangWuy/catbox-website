@@ -105,14 +105,13 @@ const navEntries = buildNavEntries(brand, categories, products);
 
     {/* Mốc cho IntersectionObserver: nằm SAU header tĩnh. Khi người dùng cuộn
         qua hết cụm header tĩnh, thanh sticky compact clone sẽ trượt êm ái xuống
-        từ mép trên theo chuẩn cấu trúc Woodmart */}
-    <div data-header-sentinel aria-hidden="true" class="h-px -mt-px pointer-events-none"></div>
-
-    {/* Thanh Header Sticky Thu Gọn (Clone chuẩn Woodmart / lygiaythaiduong.com) */}
-    {brand === "cfc" ? (
-      <CfcHeader items={navEntries} {current} isStickyClone />
-    ) : (
-      <MainHeader {brand} items={navEntries} {current} isStickyClone />
+        từ mép trên theo chuẩn cấu trúc Woodmart (áp dụng cho site Tetta; site CFC
+        giữ nguyên toàn bộ 2 dòng header khi cuộn) */}
+    {brand !== "cfc" && (
+      <>
+        <div data-header-sentinel aria-hidden="true" class="h-px -mt-px pointer-events-none"></div>
+        <MainHeader {brand} items={navEntries} {current} isStickyClone />
+      </>
     )}
 
     <main id="main" data-pagefind-body>

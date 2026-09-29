@@ -18,9 +18,10 @@ interface Props {
   brand: FnbBrandId;
   variant?: "light" | "dark";
   compact?: boolean;
+  transparent?: boolean;
 }
 
-const { brand, variant = "light", compact = false } = Astro.props;
+const { brand, variant = "light", compact = false, transparent = false } = Astro.props;
 const b = BRANDS[brand];
 
 const wordmark: Record<FnbBrandId, { head: string; tail: string }> = {
@@ -40,7 +41,7 @@ const subClass = variant === "dark" ? "text-white/50" : "text-ink-faint";
 {
   brand === "cfc" ? (
     <img
-      src="/logo.png"
+      src={transparent ? "/logo-transparent.png" : "/logo.png"}
       alt={b.name}
       width="820"
       height="462"
