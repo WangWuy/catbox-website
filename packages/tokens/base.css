@@ -54,12 +54,16 @@
   /* Cỡ tiêu đề section trên mobile — nhỏ hơn hẳn --text-section vì màn hẹp
    * không đủ chỗ cho 38px in hoa đậm; từ `md:` trở lên đổi sang --text-section. */
   --text-section-mobile: 1.5rem; /* 24px */
+  /* Tiêu đề khối trong SectionHeader ("BÁN CHẠY", "TIN TỨC – XU HƯỚNG THIẾT KẾ", các khối about-us) từ `md:` —
+   * nhẹ hơn --text-section vì đứng làm nhãn cho lưới bên dưới chứ không phải tiêu đề trang. */
+  --text-section-title: 2rem; /* 32px */
 
   /* Các cỡ chữ nhỏ lặp lại khắp mockup. Đặt tên theo VAI TRÒ, không theo số px,
    * để đổi một chỗ là đổi toàn hệ — trước đây rải rác `text-[12.5px]` v.v.
    * trong component nên không thể chỉnh tập trung. */
   --text-body:  0.9375rem;    /* 15px — đoạn văn, mô tả */
   --text-nav:   0.90625rem;   /* 14.5px — menu chính, input search */
+  --text-header-nav: 0.8125rem; /* 13px — chữ in hoa trên thanh nâu header CFC (SẢN PHẨM, TRANG CHỦ...) */
   --text-meta:  0.8125rem;    /* 13px — hotline, dòng phụ */
   --text-label: 0.84375rem;   /* 13.5px — nhãn tab, nút pill */
   --text-micro: 0.78125rem;   /* 12.5px — topbar, chip khuyến mãi */

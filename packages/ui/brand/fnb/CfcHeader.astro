@@ -121,7 +121,7 @@ const ttHref = ttSocial?.href && ttSocial.href !== "#" ? ttSocial.href : "https:
               <div class="group/prod-nav relative flex h-full items-center">
                 <a
                   href="/products"
-                  class="flex h-full items-center gap-2.5 bg-primary px-5 text-sm font-bold tracking-wider text-white uppercase select-none transition-colors hover:bg-primary-hover"
+                  class="flex h-full items-center gap-2.5 bg-primary px-5 text-(length:--text-header-nav) font-semibold tracking-wider text-white uppercase select-none transition-colors hover:bg-primary-hover"
                 >
                   <Icon name="lucide:layout-grid" class="size-4" aria-hidden="true" />
                   <span>SẢN PHẨM</span>
@@ -236,9 +236,9 @@ const ttHref = ttSocial?.href && ttSocial.href !== "#" ? ttSocial.href : "https:
                   <a
                     href={item.href}
                     class:list={[
-                      "relative flex h-full select-none items-center px-3.5 text-sm font-bold tracking-wider uppercase transition-colors lg:px-4",
+                      "relative flex h-full select-none items-center px-3.5 text-(length:--text-header-nav) font-semibold tracking-wider uppercase transition-colors lg:px-4",
                       isActive(item.href)
-                        ? "text-primary font-extrabold after:absolute after:bottom-0 after:left-3.5 after:right-3.5 after:h-0.75 after:bg-primary"
+                        ? "text-primary font-bold after:absolute after:bottom-0 after:left-3.5 after:right-3.5 after:h-0.75 after:bg-primary"
                         : "text-white/90 hover:bg-white/5 hover:text-white",
                     ]}
                   >
@@ -295,7 +295,7 @@ const ttHref = ttSocial?.href && ttSocial.href !== "#" ? ttSocial.href : "https:
 
           <a
             href="/products"
-            class="flex h-full items-center gap-2 bg-primary px-4 text-xs font-bold tracking-wider text-white uppercase transition-colors hover:bg-primary-hover"
+            class="flex h-full items-center gap-2 bg-primary px-4 text-xs font-semibold tracking-wider text-white uppercase transition-colors hover:bg-primary-hover"
           >
             <Icon name="lucide:layout-grid" class="size-3.5" aria-hidden="true" />
             <span>SẢN PHẨM</span>
@@ -307,9 +307,9 @@ const ttHref = ttSocial?.href && ttSocial.href !== "#" ? ttSocial.href : "https:
               <a
                 href={item.href}
                 class:list={[
-                  "flex h-full select-none items-center px-2.5 text-xs font-bold tracking-wider uppercase transition-colors",
+                  "flex h-full select-none items-center px-2.5 text-xs font-semibold tracking-wider uppercase transition-colors",
                   isActive(item.href)
-                    ? "text-primary font-extrabold"
+                    ? "text-primary font-bold"
                     : "text-white/90 hover:text-white",
                 ]}
               >
