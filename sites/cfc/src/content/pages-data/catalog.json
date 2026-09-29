@@ -4,41 +4,33 @@
     "description": "Danh mục túi giấy, giấy gói, hộp đựng thực phẩm, cốc giấy và ống hút giấy của xưởng CFC."
   },
   "heroTitle": "Sản phẩm",
-  "heroImage": "products/heroImage.png",
+  "heroImage": "products/hero/image.webp",
   "categoryFallbackImage": "products/categoryFallbackImage.png",
   "collectionName": "Danh mục sản phẩm CFC",
-  "materialLabel": "Túi giấy thực phẩm",
+  "materialLabel": "Chất liệu",
   "materials": [
     {
-      "value": "Túi bánh mì/Bao bánh mì",
-      "label": "Túi bánh mì/Bao bánh mì"
+      "value": "kraft",
+      "label": "Kraft"
     },
     {
-      "value": "Túi đựng xúc xích - lạp xưởng",
-      "label": "Túi đựng xúc xích - lạp xưởng"
-    },
-    {
-      "value": "Túi đựng bánh bao",
-      "label": "Túi đựng bánh bao"
+      "value": "mg-trang",
+      "label": "MG trắng"
     }
   ],
-  "shapeLabel": "Giấy gói thực phẩm",
+  "shapeLabel": "Hình dáng",
   "shapes": [
     {
-      "value": "giay-lot",
-      "label": "Giấy lót"
-    },
-    {
-      "value": "giay-goi-hamburger",
-      "label": "Giấy gói hamburger"
-    },
-    {
-      "value": "giay-lot-banh-bao",
-      "label": "Giấy lót bánh bao"
+      "value": "hop",
+      "label": "Hộp"
     },
     {
       "value": "giay-goi",
       "label": "Giấy gói"
+    },
+    {
+      "value": "tui-det",
+      "label": "Túi dẹt"
     }
   ],
   "swatchNote": "Kraft / MG"

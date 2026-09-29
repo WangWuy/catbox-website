@@ -4,7 +4,7 @@
     "description": "Cẩm nang bao bì giấy cho chuỗi F&B: so sánh chất liệu, kích thước chuẩn, kinh nghiệm đặt in và bảng giá tham khảo."
   },
   "heroTitle": "Tin tức & Cẩm nang",
-  "heroImage": "products/heroImage.png",
+  "heroImage": "products/hero/image.webp",
   "crumbLabel": "Tin tức",
   "tagTitleTemplate": "Tin tức về {tag}",
   "tagDescriptionTemplate": "{count} bài viết về “{tag}” — cẩm nang bao bì giấy cho chuỗi F&B.",
