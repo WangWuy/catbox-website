@@ -9,7 +9,7 @@
     "dev": "astro dev",
     "prebuild": "node scripts/normalize-images.mjs",
     "build": "astro build && pagefind --site dist",
-    "build:vercel": "node scripts/normalize-images.mjs && KEYSTATIC_ADMIN=vercel astro build",
+    "build:vercel": "node scripts/normalize-images.mjs && KEYSTATIC_ADMIN=vercel astro build && pagefind --site dist/client && cp -r dist/client/pagefind .vercel/output/static/pagefind",
     "preview": "astro preview",
     "astro": "astro",
     "dev:admin": "KEYSTATIC_ADMIN=node astro dev",
