@@ -410,6 +410,8 @@
   --offset-catalog-sidebar-sticky: 1.5rem;
   /* Ô chọn (checkbox) trong bộ lọc */
   --size-filter-checkbox: 16px;
+  /* Thụt lề mỗi cấp con trong nhóm lọc phân cấp (ví dụ "Danh mục" cha/con) */
+  --space-filter-indent-step: 1rem;
 
   /* Dải khuyến mãi 2 cột (PromoBanner): ảnh vuông bên trái, khối chữ nền đậm
    * bên phải. Tiêu đề nhỏ hơn --text-section vì đứng trong khối màu chật. */

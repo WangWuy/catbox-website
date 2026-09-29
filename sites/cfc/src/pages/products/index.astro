@@ -9,7 +9,7 @@ export const prerender = true;
  */
 import type { ImageMetadata } from "astro";
 import { getCollection } from "astro:content";
-import { categoryTitle } from "@config/categories";
+import { buildCategoryTree, categoryTitle, categoryTrail, type CategoryNode } from "@config/categories";
 import { labelMap, parseCatalog } from "@config/pages";
 import Layout from "../../layouts/Layout.astro";
 import catalogData from "../../content/pages-data/catalog.json";
@@ -41,7 +41,33 @@ const SHAPE_LABEL = labelMap(catalog.shapes);
 const countBy = (field: "material" | "shape", value: string) =>
   products.filter((p) => p.data[field].includes(value)).length;
 
+/**
+ * Với mỗi sản phẩm, chuỗi tổ tiên (gồm cả chính category của nó) — để chọn
+ * danh mục cha vẫn khớp sản phẩm gắn vào danh mục con bên trong (giống cách
+ * `/danh-muc/<slug>` gom cả nhánh qua `descendantSlugs`).
+ */
+const ancestorSlugs = (categorySlug: string) =>
+  categoryTrail(categories, categorySlug).map((c) => c.slug);
+
+/** Cây danh mục phẳng cha→con theo đúng thứ tự hiển thị (order), kèm `depth` để thụt lề. */
+const flattenTree = (nodes: CategoryNode[], depth = 0): (CategoryNode & { depth: number })[] =>
+  nodes.flatMap((n) => [{ ...n, depth }, ...flattenTree(n.children, depth + 1)]);
+const CATEGORY_NODES = flattenTree(buildCategoryTree(categories));
+
+const countByCategory = (slug: string) =>
+  products.filter((p) => ancestorSlugs(p.data.category).includes(slug)).length;
+
 const groups: FilterGroup[] = [
+  {
+    key: "category",
+    label: "Danh mục",
+    options: CATEGORY_NODES.map((c) => ({
+      value: c.slug,
+      label: c.label,
+      count: countByCategory(c.slug),
+      depth: c.depth,
+    })).filter((o) => o.count > 0),
+  },
   {
     key: "material",
     label: catalog.materialLabel,
@@ -103,6 +129,7 @@ const jsonLd = [
           swatchNote={catalog.swatchNote}
           variant={i + 1}
           filterData={{
+            category: ancestorSlugs(p.data.category).join(","),
             material: p.data.material.join(","),
             shape: p.data.shape.join(","),
           }}

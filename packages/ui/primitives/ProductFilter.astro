@@ -15,7 +15,8 @@ export interface FilterGroup {
   /** Khoá dùng trong query param và data-attribute của card */
   key: string;
   label: string;
-  options: { value: string; label: string; count?: number }[];
+  /** `depth` (mặc định 0) thụt lề option để thể hiện nhóm phân cấp cha/con — ví dụ "Danh mục" */
+  options: { value: string; label: string; count?: number; depth?: number }[];
 }
 
 interface Props {
@@ -31,7 +32,10 @@ const { groups } = Astro.props;
       <fieldset class="flex flex-col gap-2.5 border-0 p-0">
         <legend class="mb-1 text-meta font-bold tracking-wide uppercase">{g.label}</legend>
         {g.options.map((o) => (
-          <label class="flex cursor-pointer items-center gap-2.5 text-sm">
+          <label
+            class="flex cursor-pointer items-center gap-2.5 text-sm"
+            style={o.depth ? `padding-inline-start: calc(var(--space-filter-indent-step) * ${o.depth})` : undefined}
+          >
             <input
               type="checkbox"
               name={g.key}
