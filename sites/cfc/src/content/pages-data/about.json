@@ -103,8 +103,8 @@
     "accent": "công ty",
     "reels": {
       "label": "Giới thiệu về công ty CFC",
-      "video": "/video/tui-banh-mi-in-mau.mp4",
-      "poster": "/video/tui-banh-mi-in-mau-poster.jpg"
+      "video": "nha-may.mp4",
+      "poster": "nha-may-poster.png"
     }
   },
   "sections": {
