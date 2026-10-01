@@ -2,9 +2,9 @@
 /**
  * Island #1 — Search box (TECH_STACK_v2 §3).
  *
- * Pagefind index sinh lúc build (`pagefind --site dist`), UI ~30 KB nhưng chỉ
- * tải khi người dùng thật sự focus vào ô tìm kiếm → 0 KB trên first load.
- * Trong `astro dev` chưa có index, ô search vẫn hiện nhưng báo cần build.
+ * Form GET thuần sang `/search?q=...`; trang đó dựng Pagefind UI và đọc `q`.
+ * Không thay thế ô nhập tại chỗ (từng làm ô search biến mất khi focus).
+ * Index Pagefind sinh lúc build (`pagefind --site dist`), dev chưa có index.
  */
 interface Props {
   placeholder: string;
@@ -19,7 +19,6 @@ const { placeholder, class: className } = Astro.props;
   action="/search"
   method="get"
   class={`flex h-(--height-search) items-center gap-2.5 rounded-input border border-line bg-surface-input px-5 ${className ?? ""}`}
-  data-pagefind-box
 >
   <svg width="17" height="17" viewBox="0 0 17 17" aria-hidden="true" class="flex-none">
     <circle cx="7" cy="7" r="5.4" fill="none" stroke="currentColor" stroke-width="1.6" class="text-ink-faint"></circle>
@@ -35,46 +34,3 @@ const { placeholder, class: className } = Astro.props;
     class="w-full flex-1 border-0 bg-transparent text-nav text-ink outline-none placeholder:text-ink-faint"
   />
 </form>
-
-<script>
-  // Lazy-load Pagefind UI lần đầu người dùng chạm vào ô search.
-  const boxes = document.querySelectorAll<HTMLElement>("[data-pagefind-box]");
-  let loading = false;
-
-  async function boot(box: HTMLElement) {
-    if (loading) return;
-    loading = true;
-    try {
-      // Đường dẫn để trong biến + @vite-ignore: file này do `pagefind --site dist`
-      // sinh ra SAU khi build, Rollup không được phép cố resolve lúc bundle.
-      const src = "/pagefind/pagefind-ui.js";
-      if (!document.querySelector("link[data-pagefind-css]")) {
-        const css = document.createElement("link");
-        css.rel = "stylesheet";
-        css.href = "/pagefind/pagefind-ui.css";
-        css.dataset.pagefindCss = "";
-        document.head.append(css);
-      }
-      const { PagefindUI } = await import(/* @vite-ignore */ src);
-      const mount = document.createElement("div");
-      mount.id = "pagefind-ui";
-      box.replaceWith(mount);
-      new PagefindUI({ element: "#pagefind-ui", showSubResults: true, translations: {
-        placeholder: box.querySelector("input")?.placeholder ?? "Tìm kiếm",
-        clear_search: "Xoá",
-        load_more: "Xem thêm kết quả",
-        search_label: "Tìm kiếm trang này",
-        zero_results: "Không tìm thấy kết quả cho [SEARCH_TERM]",
-        many_results: "[COUNT] kết quả cho [SEARCH_TERM]",
-        one_result: "1 kết quả cho [SEARCH_TERM]",
-      } });
-      (document.querySelector("#pagefind-ui input") as HTMLInputElement | null)?.focus();
-    } catch {
-      loading = false; // dev mode: chưa có index → để form submit sang /search
-    }
-  }
-
-  boxes.forEach((box) => {
-    box.querySelector("input")?.addEventListener("focus", () => boot(box), { once: true });
-  });
-</script>
