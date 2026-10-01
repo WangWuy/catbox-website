@@ -21,6 +21,7 @@ import ProductCard from "@ui/primitives/ProductCard.astro";
 import type { FilterGroup } from "@ui/primitives/ProductFilter.astro";
 import {
   categoryHref,
+  categoryOrderIndex,
   categoryTitle,
   categoryTrail,
   descendantSlugs,
@@ -35,6 +36,8 @@ export async function getStaticPaths() {
   const categories = await getCollection("categories");
   const products = await getCollection("products", ({ data }) => !data.draft);
   const live = categories.filter((c) => !c.data.draft);
+  const catPos = categoryOrderIndex(categories);
+  const pos = (slug: string) => catPos.get(slug) ?? Number.MAX_SAFE_INTEGER;
 
   return live.map((c) => {
     // Gom cả danh mục con: trang "Túi giấy thực phẩm" phải hiện luôn sản phẩm
@@ -62,7 +65,12 @@ export async function getStaticPaths() {
           })),
         items: products
           .filter((p) => branch.has(p.data.category))
-          .sort((a, z) => a.data.order - z.data.order)
+          .sort(
+            (a, z) =>
+              pos(a.data.category) - pos(z.data.category) ||
+              a.data.order - z.data.order ||
+              a.data.title.localeCompare(z.data.title, "vi"),
+          )
           .map((p) => ({ ...p, categoryLabel: categoryTitle(categories, p.data.category) })),
       },
     };

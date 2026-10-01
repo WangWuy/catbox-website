@@ -237,6 +237,25 @@ export function descendantSlugs(entries: CategoryEntryLike[], slug: string): str
 }
 
 /**
+ * Slug → vị trí khi duyệt cây danh mục theo thứ tự hiển thị (cha trước, rồi lần
+ * lượt từng nhánh con). `product.order` chỉ có nghĩa TRONG một danh mục — gom
+ * cả nhánh rồi sắp theo `order` thì "số 1" của mọi danh mục con chen lẫn nhau
+ * (túi bánh mì, túi bánh bao, túi xúc xích xen kẽ). Sắp theo vị trí này trước,
+ * `order` sau, thì sản phẩm cùng danh mục con luôn đứng liền một cụm.
+ */
+export function categoryOrderIndex(entries: CategoryEntryLike[]): Map<string, number> {
+  const index = new Map<string, number>();
+  const walk = (nodes: CategoryNode[]) => {
+    for (const n of nodes) {
+      index.set(n.slug, index.size);
+      walk(n.children);
+    }
+  };
+  walk(buildCategoryTree(entries));
+  return index;
+}
+
+/**
  * Xây dựng cây Mega Menu 3 cấp hoàn chỉnh theo chuẩn E-commerce:
  * Cấp 1: Danh mục cha (Parent) — Cột trái sidebar
  * Cấp 2: Danh mục con (Subcategory Header) — Tiêu đề từng cột ở khung phải
