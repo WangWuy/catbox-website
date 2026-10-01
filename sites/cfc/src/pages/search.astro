@@ -2,9 +2,8 @@
 export const prerender = true;
 
 /**
- * Trang kết quả tìm kiếm — Pagefind UI dựng đầy đủ tại đây.
- * Header search box lazy-load UI ngay tại chỗ; ai submit form (hoặc tắt JS)
- * thì rơi về trang này.
+ * Trang kết quả tìm kiếm — lọc phía client trên `/search-index.json`
+ * (sản phẩm + bài viết), đọc `?q=` từ ô search ở header.
  */
 import Layout from "../layouts/Layout.astro";
 ---
@@ -12,7 +11,20 @@ import Layout from "../layouts/Layout.astro";
 <Layout title="Tìm kiếm" description="Tìm kiếm sản phẩm và bài viết." noindex>
   <section class="site-container py-14">
     <h1 class="mb-6 text-(length:--text-section-mobile) font-extrabold tracking-tight uppercase md:text-section">Tìm kiếm</h1>
-    <div id="search-results"></div>
+    <form role="search" action="/search" method="get" class="mb-6 flex border border-line">
+      <label for="search-page-input" class="sr-only">Từ khoá</label>
+      <input
+        id="search-page-input"
+        type="search"
+        name="q"
+        placeholder="Nhập từ khoá…"
+        autocomplete="off"
+        class="w-full bg-white px-4 py-3 text-ink focus:outline-none"
+      />
+      <button type="submit" class="bg-primary px-6 font-semibold text-white hover:bg-primary-hover">Tìm</button>
+    </form>
+    <p id="search-status" class="mb-4 text-ink-muted" aria-live="polite"></p>
+    <ul id="search-results" class="divide-y divide-line"></ul>
     <noscript>
       <p class="text-ink-muted">
         Tìm kiếm cần JavaScript. Bạn có thể duyệt theo
@@ -23,40 +35,63 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <script>
-  const params = new URLSearchParams(location.search);
-  const css = document.createElement("link");
-  css.rel = "stylesheet";
-  css.href = "/pagefind/pagefind-ui.css";
-  document.head.append(css);
+  type Item = { type: string; title: string; url: string; text: string };
 
-  const src = "/pagefind/pagefind-ui.js";
-  import(/* @vite-ignore */ src)
-    .then(({ PagefindUI }) => {
-      new PagefindUI({
-        element: "#search-results",
-        showSubResults: true,
-        translations: {
-          placeholder: "Nhập từ khoá…",
-          clear_search: "Xoá",
-          load_more: "Xem thêm kết quả",
-          search_label: "Tìm kiếm trang này",
-          zero_results: "Không tìm thấy kết quả cho [SEARCH_TERM]",
-          many_results: "[COUNT] kết quả cho [SEARCH_TERM]",
-          one_result: "1 kết quả cho [SEARCH_TERM]",
-        },
-      });
-      const input = document.querySelector<HTMLInputElement>("#search-results input");
-      const q = params.get("q");
-      if (input && q) {
-        input.value = q;
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-      }
-      input?.focus();
+  // Bỏ dấu + chữ thường để "banh mi" khớp "Bánh mì".
+  const norm = (s: string) =>
+    s.normalize("NFD").replace(/\p{M}/gu, "").replace(/đ/g, "d").toLowerCase();
+
+  const input = document.querySelector<HTMLInputElement>("#search-page-input")!;
+  const status = document.querySelector<HTMLElement>("#search-status")!;
+  const list = document.querySelector<HTMLElement>("#search-results")!;
+  let items: Item[] = [];
+
+  function render() {
+    const q = input.value.trim();
+    list.replaceChildren();
+    if (!q) {
+      status.textContent = "Nhập từ khoá để tìm sản phẩm và bài viết.";
+      return;
+    }
+    const words = norm(q).split(/\s+/);
+    const hits = items
+      .map((it) => {
+        const title = norm(it.title);
+        const all = `${title} ${norm(it.text)}`;
+        if (!words.every((w) => all.includes(w))) return null;
+        return { it, score: words.filter((w) => title.includes(w)).length };
+      })
+      .filter((h): h is { it: Item; score: number } => h !== null)
+      .sort((a, z) => z.score - a.score);
+
+    status.textContent = hits.length
+      ? `${hits.length} kết quả cho "${q}"`
+      : `Không tìm thấy kết quả cho "${q}"`;
+    for (const { it } of hits) {
+      const li = document.createElement("li");
+      li.className = "py-4";
+      const a = document.createElement("a");
+      a.href = it.url;
+      a.className = "font-semibold text-ink hover:text-primary";
+      a.textContent = it.title;
+      const meta = document.createElement("span");
+      meta.className = "ml-2 text-ink-muted";
+      meta.textContent = it.type;
+      li.append(a, meta);
+      list.append(li);
+    }
+  }
+
+  input.value = new URLSearchParams(location.search).get("q") ?? "";
+  input.addEventListener("input", render);
+  fetch("/search-index.json")
+    .then((r) => r.json())
+    .then((data: Item[]) => {
+      items = data;
+      render();
     })
     .catch(() => {
-      const el = document.querySelector("#search-results");
-      if (el)
-        el.innerHTML =
-          '<p>Chỉ mục tìm kiếm sinh ra khi build. Chạy <code>pnpm build</code> rồi <code>pnpm preview</code> để thử.</p>';
+      status.textContent = "Không tải được dữ liệu tìm kiếm. Vui lòng thử lại.";
     });
+  input.focus();
 </script>
