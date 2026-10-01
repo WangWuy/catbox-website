@@ -437,8 +437,8 @@
   --aspect-reel-framed: 16 / 9;
 
   /* Player video full-bleed (FactoryReels mặc định ở Trang chủ) — tràn hết
-   * chiều ngang viewport, tỉ lệ điện ảnh 21:9 rộng hơn 16:9 thường. */
-  --aspect-reel-cinematic: 21 / 9;
+   * chiều ngang viewport, tỉ lệ 16:9 chuẩn video (trước là 21:9 điện ảnh). */
+  --aspect-reel-full: 16 / 9;
 
   /* Mũi tam giác trong nút play (WhyChooseUs) — vẽ bằng border nên cần cả bề
    * ngang lẫn nửa chiều cao, không dùng được --size-* vuông. */
