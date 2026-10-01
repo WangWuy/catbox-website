@@ -153,7 +153,7 @@ const allGroups: TabGroup[] = [
         btn.dataset.bsPage = String(i);
         btn.setAttribute("aria-label", `Trang ${i + 1}`);
         btn.textContent = String(i + 1);
-        btn.addEventListener("click", () => showPage(i, true));
+        btn.addEventListener("click", () => showPage(i, true, true));
         pagination.appendChild(btn);
       }
 
@@ -163,7 +163,7 @@ const allGroups: TabGroup[] = [
       nextBtn.setAttribute("aria-label", "Trang tiếp theo");
       nextBtn.innerHTML =
         '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-      nextBtn.addEventListener("click", () => showPage(current + 1, true));
+      nextBtn.addEventListener("click", () => showPage(current + 1, true, true));
       pagination.appendChild(nextBtn);
     }
 
@@ -195,7 +195,12 @@ const allGroups: TabGroup[] = [
       }
     }
 
-    function showPage(page: number, shouldScroll = false) {
+    // Số thẻ mỗi hàng ở lưới rộng nhất (lg:grid-cols-5): độ trễ so le tính theo
+    // cột chứ không theo thứ tự cả trang, để thẻ cuối trang 2 hàng không phải
+    // chờ 9 × stagger rồi mới hiện.
+    const STAGGER_COLS = 5;
+
+    function showPage(page: number, shouldScroll = false, animate = false) {
       const filtered = cards.filter(matchesTab);
       const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
       current = Math.max(0, Math.min(page, totalPages - 1));
@@ -203,14 +208,28 @@ const allGroups: TabGroup[] = [
       const end = start + perPage;
 
       let visibleIdx = 0;
+      const entering: HTMLElement[] = [];
       cards.forEach((card) => {
+        card.removeAttribute("data-bs-enter");
         if (!matchesTab(card)) {
           card.hidden = true;
           return;
         }
         card.hidden = visibleIdx < start || visibleIdx >= end;
+        if (!card.hidden) entering.push(card);
         visibleIdx++;
       });
+
+      // `hidden` → hiện lại không chạy transition (display:none không có
+      // trạng thái đầu), nên dùng keyframe, gắn sau một lần reflow để animation
+      // chạy lại dù thẻ vừa có thuộc tính này ở lần bấm trước.
+      if (animate) {
+        void grid.offsetWidth;
+        entering.forEach((card, i) => {
+          card.style.setProperty("--bs-enter-index", String(i % STAGGER_COLS));
+          card.setAttribute("data-bs-enter", "");
+        });
+      }
 
       if (emptyMsg) emptyMsg.hidden = filtered.length > 0;
 
@@ -227,7 +246,7 @@ const allGroups: TabGroup[] = [
         const rawSlugs = btn.dataset.bsTabSlugs ?? "[]";
         activeSlugs = JSON.parse(rawSlugs) as string[];
         tabButtons.forEach((b) => b.setAttribute("aria-selected", String(b === btn)));
-        showPage(0, false);
+        showPage(0, false, true);
       });
     });
 
@@ -235,3 +254,20 @@ const allGroups: TabGroup[] = [
     showPage(0, false);
   });
 </script>
+
+<style is:global>
+  /* Thẻ hiện lại sau khi đổi tab / sang trang: trồi lên + mờ dần, so le theo
+     cột. Dùng đúng token của khối reveal khi cuộn để hai hiệu ứng cùng nhịp.
+     Khối prefers-reduced-motion ở base.css đã rút animation-duration về gần 0. */
+  @keyframes bs-enter {
+    from {
+      opacity: 0;
+      transform: translateY(var(--distance-reveal));
+    }
+  }
+
+  [data-bs-grid] > [data-bs-enter] {
+    animation: bs-enter var(--duration-base) var(--ease-out-soft) backwards;
+    animation-delay: calc(var(--bs-enter-index, 0) * var(--stagger-reveal));
+  }
+</style>
