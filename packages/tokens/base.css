@@ -430,13 +430,14 @@
   --cols-weekly-choice: 1.6fr 1fr;
   --offset-tooltip: 10px; /* khoảng hở giữa tooltip và phần tử neo */
 
-  /* Khung video giới thiệu (FactoryReels variant="framed" ở Về chúng tôi) —
-   * không chạy hết bề ngang site-container mà thu về một cửa sổ hẹp hơn, góc
-   * vuông, cùng tỉ lệ --aspect-reel-cinematic với player Trang chủ. */
+  /* Khung video giới thiệu (FactoryReels `framed` ở Về chúng tôi) — không chạy
+   * hết bề ngang site-container mà thu về một cửa sổ hẹp hơn, góc vuông, tỉ lệ
+   * 16:9 chuẩn video. */
   --width-reel-framed: 1000px;
+  --aspect-reel-framed: 16 / 9;
 
-  /* Tỉ lệ điện ảnh 21:9 (rộng hơn 16:9 thường) dùng chung cho cả player
-   * full-bleed ở Trang chủ (variant="controls") lẫn khung "framed" ở Về chúng tôi. */
+  /* Player video full-bleed (FactoryReels mặc định ở Trang chủ) — tràn hết
+   * chiều ngang viewport, tỉ lệ điện ảnh 21:9 rộng hơn 16:9 thường. */
   --aspect-reel-cinematic: 21 / 9;
 
   /* Mũi tam giác trong nút play (WhyChooseUs) — vẽ bằng border nên cần cả bề

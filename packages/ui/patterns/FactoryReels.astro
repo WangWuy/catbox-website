@@ -1,9 +1,9 @@
 ---
 /**
- * Khối video xưởng / giới thiệu — player tương tác độc lập, tỉ lệ 21:9, đủ nút
+ * Khối video xưởng / giới thiệu — player tương tác độc lập, đủ nút
  * Play/Pause, thanh tiến trình, Bật/Tắt âm thanh, volume và Fullscreen; tự phát
- * khi cuộn tới. Mặc định tràn viền (Trang chủ); `framed` thu về khung giữa trang
- * tối đa --width-reel-framed (Về chúng tôi).
+ * khi cuộn tới. Mặc định tràn viền (Trang chủ, 21:9); `framed` thu về khung giữa trang
+ * 16:9, tối đa --width-reel-framed (Về chúng tôi).
  */
 import { Icon } from "astro-icon/components";
 import type { AssetMap } from "../lib/images";
@@ -32,8 +32,10 @@ const { assets, label, video, poster, image, framed = false } = Astro.props;
       <div class={framed ? "site-container" : undefined}>
       <div
         class:list={[
-          "custom-video-player group relative aspect-(--aspect-reel-cinematic) w-full overflow-hidden border border-line-soft/40 bg-primary-ink shadow-xl",
-          framed && "mx-auto max-w-(--width-reel-framed)",
+          "custom-video-player group relative w-full overflow-hidden border border-line-soft/40 bg-primary-ink shadow-xl",
+          framed
+            ? "mx-auto aspect-(--aspect-reel-framed) max-w-(--width-reel-framed)"
+            : "aspect-(--aspect-reel-cinematic)",
         ]}
         data-custom-player
         tabindex="0"
