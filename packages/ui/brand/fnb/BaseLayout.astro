@@ -159,6 +159,33 @@ const navEntries = buildNavEntries(brand, categories, products);
     </script>
 
     <script is:inline>
+      // Header CFC dính + hiệu ứng bật xuống: đánh dấu data-stuck khi cuộn khỏi
+      // đầu trang (CSS lo animation). Hai ngưỡng khác nhau để không nhấp nháy
+      // khi dừng quanh mốc: bật ở >24px, tắt chỉ khi về hẳn 0.
+      (() => {
+        const header = document.querySelector("[data-header-drop]");
+        if (!header) return;
+        let ticking = false;
+        const update = () => {
+          ticking = false;
+          const y = window.scrollY;
+          if (y > 24) header.setAttribute("data-stuck", "");
+          else if (y <= 0) header.removeAttribute("data-stuck");
+        };
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(update);
+          },
+          { passive: true },
+        );
+        update();
+      })();
+    </script>
+
+    <script is:inline>
       // Reveal khi cuộn — IntersectionObserver thuần, không thư viện.
       // Bọc IIFE theo đúng quy ước của dự án (Astro gộp script inline của một
       // trang vào chung một scope, xem chú thích trong ProductFilter.astro).

@@ -2,12 +2,11 @@
 /**
  * Thẻ sản phẩm — dùng ở BÁN CHẠY, LỰA CHỌN CỦA TUẦN và trang catalog.
  *
- * Hai kiểu hiển thị:
- * - `full` (mặc định, trang catalog): khung viền + badge, tên, danh mục,
- *   swatches.
- * - `minimal` (lưới BÁN CHẠY ở trang chủ): chỉ ảnh vuông không viền + tên căn
- *   giữa bên dưới. Mọi thông tin phụ (badge/danh mục/swatch) bị lược bỏ để
- *   lưới đọc nhanh như mockup.
+ * Hai kiểu hiển thị, cả hai kiểu dùng chung khung: ảnh vuông bo góc không viền + tên căn trái
+ * bên dưới + overlay "Xem nhanh" khi hover.
+ * - `full` (mặc định, trang catalog): thêm badge, danh mục, swatches.
+ * - `minimal` (lưới BÁN CHẠY ở trang chủ): lược bỏ mọi thông tin phụ để lưới
+ *   đọc nhanh như mockup.
  *
  * Không hiển thị giá: site chạy mô hình báo giá theo yêu cầu, giá nằm ở trang
  * liên hệ / form báo giá chứ không lên thẻ sản phẩm.
@@ -31,7 +30,7 @@ interface Props extends ProductCardData {
   variant?: number;
   /** Thuộc tính lọc cho island filter — render sẵn trong HTML để crawler thấy */
   filterData?: Record<string, string>;
-  /** `minimal` = chỉ ảnh + tên căn giữa (lưới trang chủ) */
+  /** `minimal` = chỉ ảnh + tên căn trái (lưới trang chủ) */
   layout?: "full" | "minimal";
 }
 
@@ -53,13 +52,11 @@ const minimal = layout === "minimal";
 ---
 
 <article
-  class={`group flex flex-col transition-shadow duration-(--duration-base) hover:shadow-(--shadow-media-hover) ${
-    minimal ? "" : "overflow-hidden rounded-card border border-line bg-surface"
-  }`}
+  class="group flex flex-col"
   data-product
   {...Object.fromEntries(Object.entries(filterData).map(([k, v]) => [`data-${k.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`, v]))}
 >
-  <a href={href} class={`relative block overflow-hidden bg-surface ${minimal ? "rounded-card" : ""}`}>
+  <a href={href} class="relative block overflow-hidden rounded-card bg-surface">
     <SmartImage
       {assets}
       src={image}
@@ -77,8 +74,8 @@ const minimal = layout === "minimal";
         </span>
       )
     }
-    {/* Overlay "Xem nhanh" — chỉ hiện ở layout minimal khi hover */}
-    {minimal && (
+    {/* Overlay "Xem nhanh" — hiện khi hover, dùng chung cho cả hai layout */}
+    {(
       <span
         aria-hidden="true"
         class="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center bg-(--color-overlay-quickview) py-3 text-xs font-bold uppercase tracking-widest text-white transition-transform duration-(--duration-base) ease-out group-hover:translate-y-0"
@@ -90,14 +87,14 @@ const minimal = layout === "minimal";
 
   {
     minimal ? (
-      <h3 class="px-2 pt-3.5 text-center text-body leading-snug font-medium text-balance">
+      <h3 class="px-2 pt-3.5 text-left text-body leading-snug font-medium text-balance">
         <a href={href} class="transition-colors hover:text-primary">
           {title}
         </a>
       </h3>
     ) : (
-      <div class="flex flex-1 flex-col gap-2 p-4">
-        <h3 class="text-body leading-snug font-bold">
+      <div class="flex flex-1 flex-col items-start gap-2 px-2 pt-3.5 text-left">
+        <h3 class="text-body leading-snug font-medium text-balance">
           <a href={href} class="transition-colors hover:text-primary">
             {title}
           </a>

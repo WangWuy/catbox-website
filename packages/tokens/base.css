@@ -413,6 +413,7 @@
   --width-catalog-sidebar: 240px;
   /* Khoảng cách giữa sidebar và cột nội dung */
   --space-catalog-gutter: 2.5rem;
+  --space-catalog-row-gap: 2.5rem;  /* 40px — khoảng cách dọc giữa các hàng card sản phẩm trong lưới catalog */
   /* Khoảng cách từ mép trên viewport khi sidebar dính (sticky) lúc cuộn */
   --offset-catalog-sidebar-sticky: 1.5rem;
   /* Ô chọn (checkbox) trong bộ lọc */
@@ -492,6 +493,15 @@
   /* Giảm tốc mềm ở cuối — chuyển động "đặt xuống" thay vì phanh gấp. Dùng cho
    * mọi hiệu ứng vào/hiện; hover đổi màu thì không cần, ease mặc định là đủ. */
   --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* Header rơi xuống khi bắt đầu cuộn trang: vượt quá đích một chút rồi nảy
+   * về (y > 1) để tạo cảm giác "bật xuống". Chỉ dùng cho chuyển động vào của
+   * header; thời lượng dài hơn --duration-base để thấy được nhịp nảy. */
+  --ease-header-drop: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --duration-header-drop: 800ms;
+  /* Quãng header CFC trượt xuống lúc bắt đầu cuộn. 100% = chạy từ ngay trên
+   * mép màn hình xuống chỗ đứng; đặt số px nhỏ hơn nếu muốn trượt ngắn lại. */
+  --distance-header-drop: 100%;
 
   /* Quãng trồi lên của khối reveal. Giữ nhỏ có chủ đích: trồi xa thì lúc cuộn
    * nhanh khối vẫn đang bay khi mắt đã tới nơi — cảm giác trang lag chứ không
@@ -746,6 +756,20 @@
  * dòng để tiêu đề không nhảy khi chữ bắt đầu chạy. */
 [data-typing]:empty::before {
   content: "\200b";
+}
+
+/* Header CFC (luôn dính, giữ nguyên 2 dòng): script thêm data-stuck khi trang
+ * bắt đầu cuộn → header trượt từ trên xuống chỗ đứng (giữ nguyên độ đậm, không nảy), kèm bóng đổ.
+ * Gỡ data-stuck khi về đầu trang thì không chạy animation ngược. */
+@keyframes header-drop {
+  from {
+    transform: translateY(calc(var(--distance-header-drop) * -1));
+  }
+}
+
+[data-header-drop][data-stuck] {
+  animation: header-drop var(--duration-header-drop) var(--ease-out-soft);
+  box-shadow: var(--shadow-header);
 }
 
 /* Khung CUỐI phải là khung có con trỏ: người bật "giảm chuyển động" bị rút
