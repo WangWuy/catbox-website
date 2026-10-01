@@ -43,7 +43,7 @@
     "limit": 50
   },
   "news": {
-    "title": "Tin tức – Xu hướng thiết kế",
+    "title": "Tin tức",
     "action": {
       "label": "Khám phá thêm ›",
       "href": "/blog"
