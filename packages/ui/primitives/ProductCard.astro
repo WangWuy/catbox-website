@@ -57,7 +57,7 @@ const minimal = layout === "minimal";
     minimal ? "" : "overflow-hidden rounded-card border border-line bg-surface"
   }`}
   data-product
-  {...Object.fromEntries(Object.entries(filterData).map(([k, v]) => [`data-${k}`, v]))}
+  {...Object.fromEntries(Object.entries(filterData).map(([k, v]) => [`data-${k.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`, v]))}
 >
   <a href={href} class={`relative block overflow-hidden bg-surface ${minimal ? "rounded-card" : ""}`}>
     <SmartImage
