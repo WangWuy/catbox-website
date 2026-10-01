@@ -11,11 +11,31 @@
     "subtitle": "Túi giấy, giấy gói và hộp đựng thực phẩm in theo yêu cầu. Không qua trung gian, báo giá trong 30 phút.",
     "hashtag": "ưu đãi cho chuỗi",
     "stats": [
-      { "icon": "lucide:shopping-bag", "label": "Túi giấy", "href": "/danh-muc/tui-giay-thuc-pham" },
-      { "icon": "lucide:scroll", "label": "Giấy gói", "href": "/danh-muc/giay-goi-thuc-pham" },
-      { "icon": "lucide:package", "label": "Hộp giấy", "href": "/danh-muc/hop-dung-thuc-an" },
-      { "icon": "lucide:cup-soda", "label": "Cốc giấy", "href": "/danh-muc/coc-1-lop" },
-      { "icon": "straw", "label": "Ống hút giấy", "href": "/danh-muc/ong-hut-giay" }
+      {
+        "icon": "lucide:shopping-bag",
+        "label": "Túi giấy",
+        "href": "/danh-muc/tui-giay-thuc-pham"
+      },
+      {
+        "icon": "lucide:scroll",
+        "label": "Giấy gói",
+        "href": "/danh-muc/giay-goi-thuc-pham"
+      },
+      {
+        "icon": "lucide:package",
+        "label": "Hộp giấy",
+        "href": "/danh-muc/hop-dung-thuc-an"
+      },
+      {
+        "icon": "lucide:cup-soda",
+        "label": "Cốc giấy",
+        "href": "/danh-muc/coc-1-lop"
+      },
+      {
+        "icon": "straw",
+        "label": "Ống hút giấy",
+        "href": "/danh-muc/ong-hut-giay"
+      }
     ]
   },
   "bestsellers": {
@@ -24,12 +44,15 @@
   },
   "news": {
     "title": "Tin tức – Xu hướng thiết kế",
-    "action": { "label": "Khám phá thêm ›", "href": "/blog" },
+    "action": {
+      "label": "Khám phá thêm ›",
+      "href": "/blog"
+    },
     "limit": 3
   },
   "reels": {
     "label": "Mẫu túi bánh mì que in 4 màu theo yêu cầu",
-    "video": "/video/tui-banh-mi-in-mau.mp4",
-    "poster": "/video/tui-banh-mi-in-mau-poster.jpg"
+    "video": "/video/nha-may.mp4",
+    "poster": "/video/nha-may-poster.png"
   }
 }
