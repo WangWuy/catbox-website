@@ -14,7 +14,7 @@ export const prerender = true;
  */
 import type { ImageMetadata } from "astro";
 import { getCollection } from "astro:content";
-import { categoryTitle } from "@config/categories";
+import { buildCategoryTree, categoryTitle, descendantSlugs } from "@config/categories";
 import { parseCatalog, parseHomepage } from "@config/pages";
 import Layout from "../layouts/Layout.astro";
 import catalogData from "../content/pages-data/catalog.json";
@@ -105,20 +105,12 @@ const bestsellers = products
   .slice(0, home.bestsellers.limit)
   .map(toCard);
 
-// Tab cố định theo yêu cầu — không tự sinh từ dữ liệu bestseller vì danh mục
-// sản phẩm thật (19 category CMS) chi tiết hơn nhóm hiển thị mong muốn ở đây.
-// Mỗi tab gom nhiều category slug; "coc-giay-ong-hut" (gộp cốc & ống hút)
-// được tính vào cả 2 tab Cốc giấy và Ống hút giấy.
-const bestsellerTabGroups = [
-  { label: "Túi giấy thực phẩm", slugs: ["tui-giay-thuc-pham"] },
-  { label: "Giấy gói thực phẩm", slugs: ["giay-goi-thuc-pham", "giay-goi-hamburger"] },
-  {
-    label: "Hộp đựng thức ăn giấy",
-    slugs: ["hop-dung-thuc-an", "hop-dung-xoi", "hop-dung-salad", "khay-do-chien"],
-  },
-  { label: "Cốc giấy", slugs: ["coc-giay-ong-hut", "coc-1-lop", "coc-2-lop"] },
-  { label: "Ống hút giấy", slugs: ["coc-giay-ong-hut", "ong-hut-giay"] },
-];
+// Tab = các danh mục gốc trong CMS (cùng cây với /products), mỗi tab gom cả
+// nhánh con qua `descendantSlugs` — khách đổi/thêm danh mục thì tab tự theo.
+// Bỏ tab không có sản phẩm bán chạy nào để không bấm vào ra trang trống.
+const bestsellerTabGroups = buildCategoryTree(categories)
+  .map((root) => ({ label: root.label, slugs: descendantSlugs(categories, root.slug) }))
+  .filter((g) => bestsellers.some((p) => g.slugs.includes(p.categorySlug)));
 ---
 
 <Layout title={home.seo.title} description={home.seo.description} overlapTrustStrip>
