@@ -1,11 +1,9 @@
 ---
 /**
- * Khối video xưởng / giới thiệu.
- * Hỗ trợ 2 biến thể:
- * - `variant="controls"` (Trang chủ): Bộ player tương tác độc lập, đầy đủ nút Play/Pause,
- *   thanh tiến trình (Seek bar), Bật/Tắt âm thanh, slider volume, và Fullscreen.
- * - `variant="pill"` (Về chúng tôi): Dáng viên thuốc bo tròn 2 đầu (1000 × 399.2),
- *   tự động phát ngầm (ambient reel) theo khung nhìn cuộn qua.
+ * Khối video xưởng / giới thiệu — player tương tác độc lập, tỉ lệ 21:9, đủ nút
+ * Play/Pause, thanh tiến trình, Bật/Tắt âm thanh, volume và Fullscreen; tự phát
+ * khi cuộn tới. Mặc định tràn viền (Trang chủ); `framed` thu về khung giữa trang
+ * tối đa --width-reel-framed (Về chúng tôi).
  */
 import { Icon } from "astro-icon/components";
 import type { AssetMap } from "../lib/images";
@@ -15,24 +13,28 @@ interface Props {
   assets: AssetMap;
   /** Tên gọi cho trình đọc màn hình — không hiển thị trên trang */
   label: string;
-  /** Video trong public/ — khung pill dẹt hoặc player có controls */
+  /** Video trong public/ — khung framed hoặc player có controls */
   video?: string;
   /** Ảnh hiển thị trước khi bấm play (public/) */
   poster?: string;
   /** Ảnh tĩnh thay thế khi chưa có video (src/assets qua SmartImage) */
   image?: string;
-  /** Biến thể giao diện: "controls" (trang chủ) hoặc "pill" (về chúng tôi) */
-  variant?: "pill" | "controls";
+  /** Thu khung về max-w-(--width-reel-framed), không tràn viền (Về chúng tôi) */
+  framed?: boolean;
 }
 
-const { assets, label, video, poster, image, variant = "pill" } = Astro.props;
+const { assets, label, video, poster, image, framed = false } = Astro.props;
 ---
 
 {
-  variant === "controls" ? (
-    <section class="pb-10 md:pb-16" aria-label={label} data-reveal>
+  (
+    <section class={framed ? "pb-8 md:pb-12" : "pb-10 md:pb-16"} aria-label={label} data-reveal>
+      <div class={framed ? "site-container" : undefined}>
       <div
-        class="custom-video-player group relative aspect-(--aspect-reel-cinematic) w-full overflow-hidden border border-line-soft/40 bg-primary-ink shadow-xl"
+        class:list={[
+          "custom-video-player group relative aspect-(--aspect-reel-cinematic) w-full overflow-hidden border border-line-soft/40 bg-primary-ink shadow-xl",
+          framed && "mx-auto max-w-(--width-reel-framed)",
+        ]}
         data-custom-player
         tabindex="0"
       >
@@ -150,37 +152,6 @@ const { assets, label, video, poster, image, variant = "pill" } = Astro.props;
             />
           )}
       </div>
-    </section>
-  ) : (
-    /* Khung Pill cho Về chúng tôi (bo tròn 2 đầu, ambient reel tự phát) */
-    <section class="pb-8 md:pb-12" aria-label={label} data-reveal>
-      <div class="site-container">
-        {video ? (
-          <video
-            preload="metadata"
-            playsinline
-            muted
-            loop
-            poster={poster}
-            class="mx-auto aspect-(--aspect-reel-pill) w-full max-w-(--width-reel-pill) rounded-(--radius-reel-pill) bg-primary-ink object-contain cursor-pointer"
-            aria-label={label}
-            data-factory-reel
-          >
-            <source src={video} type="video/mp4" />
-            Trình duyệt của bạn không phát được video này.
-          </video>
-        ) : (
-          <SmartImage
-            {assets}
-            src={image}
-            alt={label}
-            width={1000}
-            height={399}
-            ratio="16x9"
-            variant={4}
-            class="mx-auto aspect-(--aspect-reel-pill) w-full max-w-(--width-reel-pill) rounded-(--radius-reel-pill) bg-primary-ink object-cover"
-          />
-        )}
       </div>
     </section>
   )
@@ -189,32 +160,7 @@ const { assets, label, video, poster, image, variant = "pill" } = Astro.props;
 <script is:inline>
   (() => {
     function initVideoComponents() {
-      // 1. Khung Pill (Về chúng tôi) — tự phát khi cuộn vào khung nhìn, dừng khi cuộn qua, click để toggle
-      const pillVideos = document.querySelectorAll("[data-factory-reel]");
-      if (pillVideos.length && "IntersectionObserver" in window) {
-        const io = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              const el = entry.target;
-              if (entry.isIntersecting) {
-                el.play().catch(() => {});
-              } else {
-                el.pause();
-              }
-            });
-          },
-          { threshold: 0.5 },
-        );
-        pillVideos.forEach((el) => {
-          io.observe(el);
-          el.addEventListener("click", () => {
-            if (el.paused) el.play().catch(() => {});
-            else el.pause();
-          });
-        });
-      }
-
-      // 2. Khung Custom Player có Controls (Trang chủ)
+      // Custom Player có Controls
       const players = document.querySelectorAll("[data-custom-player]");
       players.forEach((player) => {
         const video = player.querySelector(".video-element");

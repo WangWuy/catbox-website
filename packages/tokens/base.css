@@ -430,21 +430,13 @@
   --cols-weekly-choice: 1.6fr 1fr;
   --offset-tooltip: 10px; /* khoảng hở giữa tooltip và phần tử neo */
 
-  /* Khung video giới thiệu dạng viên thuốc (FactoryReels) — không còn chạy hết
-   * bề ngang site-container mà thu về một cửa sổ hẹp hơn, bo tròn hai đầu.
-   * 1000 × 399.2 theo mockup: khai tỉ lệ thay vì chốt chiều cao cứng để khung
-   * tự co đúng dáng trên màn hẹp hơn 1000px. */
-  --width-reel-pill: 1000px;
-  --aspect-reel-pill: 1000 / 399.2;
-  /* Bo hai đầu thành nửa hình tròn. Phải là một số px lớn, KHÔNG phải `50%`:
-   * `50%` cho bán kính theo cả hai trục nên bốn góc thành cung ELIP và cạnh
-   * trên/dưới cong hết chiều dài — ra hình bầu dục, không phải viên thuốc. Số
-   * px lớn bị trình duyệt tự kẹp xuống nửa chiều cao khung, nên hai đầu luôn
-   * là nửa tròn hoàn hảo còn cạnh trên/dưới vẫn thẳng, ở mọi bề ngang. */
-  --radius-reel-pill: 999px;
+  /* Khung video giới thiệu (FactoryReels variant="framed" ở Về chúng tôi) —
+   * không chạy hết bề ngang site-container mà thu về một cửa sổ hẹp hơn, góc
+   * vuông, cùng tỉ lệ --aspect-reel-cinematic với player Trang chủ. */
+  --width-reel-framed: 1000px;
 
-  /* Player video full-bleed (FactoryReels variant="controls" ở Trang chủ) —
-   * tràn hết chiều ngang viewport, tỉ lệ điện ảnh 21:9 rộng hơn 16:9 thường. */
+  /* Tỉ lệ điện ảnh 21:9 (rộng hơn 16:9 thường) dùng chung cho cả player
+   * full-bleed ở Trang chủ (variant="controls") lẫn khung "framed" ở Về chúng tôi. */
   --aspect-reel-cinematic: 21 / 9;
 
   /* Mũi tam giác trong nút play (WhyChooseUs) — vẽ bằng border nên cần cả bề
