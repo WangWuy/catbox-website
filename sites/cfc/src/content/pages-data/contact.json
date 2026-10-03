@@ -23,20 +23,20 @@
     "imageAlt": "CFC Factory — Đội ngũ và giải pháp in ấn toàn diện",
     "stats": [
       {
-        "num": "8+",
+        "num": "12+",
         "label": "Năm kinh nghiệm",
         "color": "text-[#0284C7]",
         "highlight": false
       },
       {
-        "num": "5.000+",
+        "num": "2.000+",
         "label": "Khách hàng, đối tác",
         "color": "text-[#D97706]",
         "highlight": false
       },
       {
-        "num": "20.000+",
-        "label": "Đơn hàng thành phẩm",
+        "num": "100 triệu",
+        "label": "Sản phẩm",
         "color": "text-[#E11D48]",
         "highlight": false
       },
@@ -48,7 +48,7 @@
       }
     ],
     "body": [
-      "8+ năm kinh nghiệm trong lĩnh vực thiết kế và in ấn, <strong class=\"font-bold text-[#0284C7]\">CFC Factory</strong> tự hào là đối tác tin cậy của hàng nghìn doanh nghiệp, cửa hàng và thương hiệu trên toàn quốc.",
+      "12+ năm kinh nghiệm trong lĩnh vực thiết kế và in ấn, <strong class=\"font-bold text-[#0284C7]\">CFC Factory</strong> tự hào là đối tác tin cậy của hàng nghìn doanh nghiệp, cửa hàng và thương hiệu trên toàn quốc.",
       "Sở hữu đội ngũ thiết kế sáng tạo chuyên nghiệp, cùng hệ thống xưởng in hiện đại, quy trình kiểm soát chất lượng chặt chẽ, chúng tôi mang đến các giải pháp in ấn từ ý tưởng – thiết kế – sản xuất – hoàn thiện, đáp ứng linh hoạt mọi nhu cầu từ đơn lẻ đến số lượng lớn."
     ]
   },
