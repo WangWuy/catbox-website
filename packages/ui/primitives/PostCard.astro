@@ -5,7 +5,7 @@
  * bài. Trước đây 4 chỗ này chép tay cùng một khối markup nên mỗi lần chỉnh
  * lại lệch nhau một ít.
  *
- * Theo concept CFC: ảnh 16:10 dán thẳng lên nền trang (KHÔNG khung, không
+ * Theo concept CFC: ảnh 16:9 dán thẳng lên nền trang (KHÔNG khung, không
  * viền), badge ngày đè góc trên trái, tiêu đề đậm căn giữa, mô tả ngắn xám
  * căn giữa cắt 2 dòng. Badge tự đổi biến thể theo ngày đăng (xem `DateBadge`).
  *
@@ -47,8 +47,8 @@ interface Props {
   variant?: number;
   /** Ảnh nhỏ hơn ở lưới 3–4 cột dày; mặc định vừa cho lưới 3 cột */
   width?: number;
-  /** Tỉ lệ khung hình ảnh bìa: 16x10 (mặc định) hoặc 16x9 */
-  ratio?: "16x10" | "16x9";
+  /** Tỉ lệ khung hình ảnh bìa: 16x9 (mặc định) hoặc 16x10 */
+  ratio?: "16x9" | "16x10";
   /**
    * Bật ở lưới DÀY — 4 cột trang chủ, hoặc 3 cột trong khối hẹp (bài liên quan).
    * Card ở đó chỉ ~283–293px nên max-width mặc định (38ch/50ch ≈ 323px/425px)
@@ -75,7 +75,7 @@ const {
   as: Heading = "h3",
   variant = 1,
   width = 600,
-  ratio = "16x10",
+  ratio = "16x9",
   dense = false,
   showDate = true,
   showDivider = true,
@@ -84,10 +84,10 @@ const {
 } = Astro.props;
 
 const imgHeight =
-  ratio === "16x9"
-    ? Math.round((width * 9) / 16)
-    : Math.round((width * 10) / 16);
-const aspectClass = ratio === "16x9" ? "aspect-16/9" : "aspect-16/10";
+  ratio === "16x10"
+    ? Math.round((width * 10) / 16)
+    : Math.round((width * 9) / 16);
+const aspectClass = ratio === "16x10" ? "aspect-16/10" : "aspect-16/9";
 
 const titleWidth = dense
   ? "max-w-(--width-post-card-title-dense)"

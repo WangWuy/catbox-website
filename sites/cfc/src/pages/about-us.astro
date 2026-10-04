@@ -87,7 +87,7 @@ const description = about.seo.description;
               title={p.title}
               body={p.body}
               glowFrom={i === 0 ? "top-right" : "top-left"}
-              tone={p.tone ?? (i === 1 ? "eco" : "primary")}
+              tone={p.tone ?? "primary"}
             />
           ))
         }
@@ -120,7 +120,6 @@ const description = about.seo.description;
         label={about.video.reels.label}
         video={about.video.reels.video}
         poster={about.video.reels.poster}
-        framed
       />
     </div>
 

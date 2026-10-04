@@ -288,29 +288,21 @@
   --size-icon-watermark: 160px;
   /* Mờ tới mức chỉ còn là vệt nền: đậm hơn thì icon tranh chấp với icon thật
    * trong panel, nhạt hơn thì mất hẳn trên nền beige. */
-  --opacity-watermark: 0.07;
+  --opacity-watermark: 0.05;
 
   /* Banner đầu trang trong (PageHero) — dải nền màu chạy hết bề ngang, chứa
-   * tiêu đề lớn + breadcrumb bên trái, ảnh sản phẩm nghiêng bên phải.
+   * tiêu đề lớn + breadcrumb bên trái, ảnh sản phẩm/minh họa căn thẳng hàng bên phải.
    * Thay cho kiểu "Breadcrumb + h1 phẳng" trước đây ở /blog, /products,
    * /danh-muc — xem `packages/ui/patterns/PageHero.astro`. */
   --height-page-hero: 220px;
-  /* Bề ngang khối ảnh bên phải. Ảnh tràn CAO hơn dải nền (xem
-   * --overflow-page-hero-image) nên khối này không dùng height, chỉ neo mép. */
+  /* Bề ngang khối ảnh bên phải. */
   --width-page-hero-image: 260px;
-  /* Tỉ lệ khung ảnh. Nằm ngang (không vuông) vì khung còn bị XOAY: một khung
-   * vuông 260px sau khi nghiêng có hộp bao cao hơn hẳn dải nền 220px nên thò
-   * xuống che mất phần đầu lưới nội dung bên dưới. */
+  /* Tỉ lệ khung ảnh (4:3 chuẩn). */
   --aspect-page-hero-image: 4 / 3;
-  /* Ảnh nhô lên trên và thò xuống dưới mép dải nền, tạo cảm giác vật thể đặt
-   * trước phông thay vì dán phẳng vào nền. Giữ ở mức nhỏ: ảnh sản phẩm thường
-   * có nền trắng (không tách nền), thò ra nhiều thì mảng trắng của ảnh lộ hẳn
-   * ra ngoài dải nền tint và trông như một khối lỗi. */
-  --overflow-page-hero-image: 12px;
-  /* Độ nghiêng của ảnh sản phẩm (mockup: ly giấy nghiêng nhẹ sang phải) */
-  --rotate-page-hero-image: 12deg;
-  /* Đổ bóng cho khung ảnh nghiêng — tách khung khỏi nền tint cùng tông sáng.
-   * Nghiêng nên bóng phải toả đều, không lệch theo một hướng. */
+  --overflow-page-hero-image: 0px;
+  /* Độ nghiêng của ảnh sản phẩm (0deg = thẳng hàng theo bố cục) */
+  --rotate-page-hero-image: 0deg;
+  /* Đổ bóng cho khung ảnh — tách khung khỏi nền banner cùng tông sáng. */
   --shadow-page-hero-image: 0 10px 30px rgb(0 0 0 / 0.16);
   /* Đổ bóng thẻ nổi trên nền trang (StrategicGoals). Nhạt hơn hẳn
    * --shadow-header: thẻ đứng thành lưới 3 cái cạnh nhau nên bóng đậm bị nhân
@@ -339,9 +331,8 @@
   /* Độ mờ nút điều hướng khi không còn dùng được (ví dụ nút next ở ảnh cuối
    * gallery) — vẫn thấy nút, chỉ báo hiệu bằng độ mờ thay vì ẩn hẳn. */
   --opacity-disabled: 0.35;
-  /* Khoảng cách từ mép phải khối nội dung tới ảnh — giữ ảnh không đè lên chữ
-   * ở màn hình hẹp vừa (lg), nơi hai bên gần chạm nhau nhất. */
-  --offset-page-hero-image-right: 2rem;
+  /* Khoảng cách từ mép phải khối nội dung tới ảnh (0px khi bám lề lưới container) */
+  --offset-page-hero-image-right: 0px;
   /* Tiêu đề banner: lớn hơn --text-section (nhãn của một khối) vì đứng một
    * mình đầu trang, nhưng nhỏ hơn --text-hero của banner ảnh trang chủ. */
   --text-page-hero-title: 3rem; /* 48px — desktop */

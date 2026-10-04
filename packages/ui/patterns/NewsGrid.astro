@@ -1,16 +1,10 @@
 ---
 /**
- * TIN TỨC — lưới 3 cột trên trang chủ, dựng bằng `PostCard` (card dùng chung
- * với /blog, /blog/tag và khối bài liên quan).
+ * TIN TỨC — Khối bài viết trên trang chủ CFC dạng dãy thẻ trượt ngang (CSS scroll-snap),
+ * cuộn mượt từ trái qua phải trên mọi kích thước màn hình.
  *
- * Mobile (`<md:`): carousel cuộn ngang scroll-snap thay cho lưới — cùng pattern
- * với `ProductCarousel` (track + 2 nút mũi tên), card khít đúng 2/trang qua
- * `--width-news-carousel-card` (KHÔNG hé mép card thứ 3 — card đó chỉ có ảnh
- * nên hé một dải mỏng trông như vỡ layout, không phải gợi ý cuộn tiếp). Card
- * carousel ẩn mô tả (`hideExcerptMobile`), chỉ còn ảnh + tiêu đề vì bề ngang
- * không đủ chỗ. Nút mũi tên hiện luôn ở mobile (khác ProductCarousel chỉ hiện
- * từ md:) vì đây là cách điều hướng chính trên màn hẹp. Từ `md:` trở lên
- * carousel ẩn, quay lại lưới 3 cột tĩnh như cũ.
+ * Cuối dãy trượt ngang là thẻ "Khám phá thêm" (action) dẫn tới trang /blog,
+ * thay thế nút bấm đặt phía dưới trước đây.
  */
 import type { AssetMap } from "../lib/images";
 import SectionHeader from "@ui/primitives/SectionHeader.astro";
@@ -39,16 +33,14 @@ const { assets, title = "Tin tức", action, items } = Astro.props;
 <section class="site-container" aria-labelledby="news-heading" data-reveal>
   <SectionHeader id="news-heading" {title} />
 
-  {/* Mobile: carousel cuộn ngang. `md:hidden` gỡ hẳn khỏi layout thay vì chỉ
-      ẩn — nếu không track vẫn chiếm chỗ và JS vẫn gắn scroll listener thừa. */}
-  <div class="relative md:hidden" data-carousel>
+  <div class="relative" data-carousel>
     <div
-      class="flex snap-x snap-mandatory gap-(--space-news-carousel-gap) overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      class="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-4 pt-1 items-stretch [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       data-carousel-track
     >
       {
         items.map((a, i) => (
-          <div class="w-(--width-news-carousel-card) shrink-0 snap-start">
+          <div class="w-[280px] shrink-0 snap-start sm:w-[calc((100%-1.5rem)/2)] md:w-[calc((100%-3rem)/3)]">
             <PostCard
               {assets}
               title={a.title}
@@ -58,11 +50,32 @@ const { assets, title = "Tin tức", action, items } = Astro.props;
               description={a.description}
               variant={i + 1}
               showDate={false}
-              hideExcerptMobile
               ratio="16x9"
+              class="h-full"
             />
           </div>
         ))
+      }
+
+      {
+        action && (
+          <div class="w-[280px] shrink-0 snap-start sm:w-[calc((100%-1.5rem)/2)] md:w-[calc((100%-3rem)/3)]">
+            <div class="group relative flex h-full min-h-[340px] flex-col items-center justify-center p-6 text-center md:p-8">
+              <h3 class="mb-3 text-card-title font-bold text-ink transition-colors group-hover:text-primary">
+                Xem tất cả bài viết
+              </h3>
+              <p class="mb-6 max-w-[26ch] text-body leading-relaxed text-ink-muted text-pretty">
+                Khám phá thêm xu hướng thiết kế và kiến thức bao bì F&B
+              </p>
+              <PillButton
+                text={action.label}
+                href={action.href}
+                tone="solid"
+                class="after:absolute after:inset-0 pointer-events-auto"
+              />
+            </div>
+          </div>
+        )
       }
     </div>
 
@@ -71,7 +84,7 @@ const { assets, title = "Tin tức", action, items } = Astro.props;
       data-carousel-prev
       aria-label="Xem tin trước"
       hidden
-      class="absolute top-1/3 left-0 grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-line bg-surface text-ink shadow-header transition-colors hover:bg-surface-alt size-(--size-carousel-nav)"
+      class="absolute top-[80px] sm:top-[100px] md:top-[110px] left-1 sm:left-0 -translate-y-1/2 sm:-translate-x-1/2 grid place-items-center rounded-full border border-line bg-surface text-ink shadow-header transition-colors hover:bg-surface-alt size-(--size-carousel-nav) z-10 cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
     >
       <Icon name="lucide:chevron-left" class="size-4" aria-hidden="true" />
     </button>
@@ -79,57 +92,30 @@ const { assets, title = "Tin tức", action, items } = Astro.props;
       type="button"
       data-carousel-next
       aria-label="Xem tin tiếp theo"
-      class="absolute top-1/3 right-0 grid -translate-y-1/2 translate-x-1/2 place-items-center rounded-full border border-line bg-surface text-ink shadow-header transition-colors hover:bg-surface-alt size-(--size-carousel-nav)"
+      class="absolute top-[80px] sm:top-[100px] md:top-[110px] right-1 sm:right-0 -translate-y-1/2 sm:translate-x-1/2 grid place-items-center rounded-full border border-line bg-surface text-ink shadow-header transition-colors hover:bg-surface-alt size-(--size-carousel-nav) z-10 cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
     >
       <Icon name="lucide:chevron-right" class="size-4" aria-hidden="true" />
     </button>
   </div>
-
-  {/* Từ md: trở lên: lưới 3 cột tĩnh như cũ */}
-  <div class="hidden gap-x-6 gap-y-10 md:grid md:grid-cols-3" data-reveal-group>
-    {
-      items.map((a, i) => (
-        <PostCard
-          {assets}
-          title={a.title}
-          href={a.href}
-          date={a.date}
-          cover={a.cover}
-          description={a.description}
-          variant={i + 1}
-          showDate={false}
-          ratio="16x9"
-        />
-      ))
-    }
-  </div>
-
-  {
-    action && (
-      <div class="mt-10 flex justify-center">
-        <PillButton text={action.label} href={action.href} tone="solid" />
-      </div>
-    )
-  }
 </section>
 
 <script>
-  // Cùng logic điều khiển carousel với ProductCarousel: track cuộn bằng CSS
-  // scroll-snap, JS chỉ lo 2 nút mũi tên + ẩn/hiện theo vị trí cuộn. Chọn theo
-  // `data-carousel` nên nhiều carousel trên cùng trang không đụng nhau.
+  // Điều khiển carousel: track cuộn bằng CSS scroll-snap,
+  // JS lo 2 nút mũi tên + cập nhật trạng thái ẩn/hiện theo vị trí cuộn.
   document.querySelectorAll<HTMLElement>("[data-carousel]").forEach((root) => {
+    if (root.dataset.carouselReady) return;
+    root.dataset.carouselReady = "true";
+
     const track = root.querySelector<HTMLElement>("[data-carousel-track]");
     const prev = root.querySelector<HTMLButtonElement>("[data-carousel-prev]");
     const next = root.querySelector<HTMLButtonElement>("[data-carousel-next]");
     if (!track || !prev || !next) return;
 
-    // Cuộn đúng bề ngang 1 card + gap (không phải 0.9 * clientWidth như
-    // ProductCarousel): card ở đây khít 2/trang, cuộn lệch tỉ lệ sẽ dừng giữa
-    // card kế tiếp thay vì đúng mép snap, lộ crop xấu như card thứ 3 trước đây.
+    // Cuộn đúng bề ngang 1 card + gap để mép snap khít vào card kế tiếp
     const step = () => {
       const first = track.firstElementChild as HTMLElement | null;
       if (!first) return track.clientWidth;
-      const gap = parseFloat(getComputedStyle(track).columnGap || "0");
+      const gap = parseFloat(getComputedStyle(track).columnGap || "24");
       return first.getBoundingClientRect().width + gap;
     };
 
@@ -145,5 +131,9 @@ const { assets, title = "Tin tức", action, items } = Astro.props;
     track.addEventListener("scroll", updateButtons, { passive: true });
     window.addEventListener("resize", updateButtons);
     updateButtons();
+
+    // Đồng bộ lại khi ảnh/layout hoàn tất
+    requestAnimationFrame(updateButtons);
+    setTimeout(updateButtons, 300);
   });
 </script>

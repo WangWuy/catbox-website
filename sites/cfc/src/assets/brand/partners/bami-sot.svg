@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 48" width="150" height="48">
+  <g fill="none" fill-rule="evenodd">
+    <!-- Sauce badge -->
+    <rect x="4" y="6" width="36" height="36" rx="8" fill="#FEF2F2"/>
+    <circle cx="22" cy="24" r="13" fill="#DC2626"/>
+    <!-- Sauce droplet -->
+    <path d="M22 15c-3 4-6 6.5-6 9.5a6 6 0 0 0 12 0c0-3-3-5.5-6-9.5z" fill="#FFFFFF"/>
+    <!-- Brand text -->
+    <text x="47" y="26" font-family="'Montserrat', 'Arial Black', -apple-system, sans-serif" font-size="15" font-weight="900" fill="#991B1B" letter-spacing="0.8">BAMI SỐT</text>
+    <text x="47" y="37" font-family="'Montserrat', -apple-system, sans-serif" font-size="7.5" font-weight="700" fill="#DC2626" letter-spacing="1">ĐẬM ĐÀ VỊ SỐT</text>
+  </g>
+</svg>

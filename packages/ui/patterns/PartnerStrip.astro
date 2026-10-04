@@ -15,6 +15,9 @@
  *    logo: đường dẫn nội bộ (/partners/...) hoặc URL tuyệt đối.
  */
 
+import SmartImage from "../primitives/SmartImage.astro";
+import type { AssetMap } from "../lib/images";
+
 interface Partner {
   name: string;
   /** Đường dẫn tới file ảnh logo (relative /... hoặc URL tuyệt đối) */
@@ -24,6 +27,8 @@ interface Partner {
 }
 
 interface Props {
+  /** Bản đồ ảnh do site truyền vào (import.meta.glob) để tối ưu hoá ảnh từ CMS */
+  assets?: AssetMap;
   /** Nhãn nhỏ bên trái (ví dụ "Đối tác tin cậy của") */
   title?: string;
   /** Phần đuôi tô màu primary, tách biệt khỏi `title` (ví dụ tên brand "CFC") */
@@ -31,7 +36,7 @@ interface Props {
   partners: Partner[];
 }
 
-const { title = "Đối tác tin cậy của", accent = "CFC", partners } = Astro.props;
+const { title, accent, partners, assets } = Astro.props;
 
 // Nhân đôi để track dài gấp 2 danh sách gốc — animation trượt đúng 50% rồi
 // lặp lại là ghép liền vào bản sao, mắt không nhận ra điểm nối.
@@ -54,14 +59,23 @@ const track = [...partners, ...partners];
       <div class="marquee-track flex w-max items-center gap-8">
         {
           track.map((p) => {
-            const img = (
+            const img = assets ? (
+              <SmartImage
+                assets={assets}
+                src={p.logo}
+                alt={p.name}
+                width={140}
+                height={48}
+                class="h-9 md:h-10 w-auto max-w-[130px] cursor-pointer object-contain grayscale opacity-70 transition-all duration-300 hover:grayscale-0 hover:opacity-100 hover:scale-105"
+              />
+            ) : (
               <img
                 src={p.logo}
                 alt={p.name}
-                width="120"
+                width="140"
                 height="48"
                 loading="lazy"
-                class="h-10 w-auto max-w-[120px] cursor-pointer object-contain grayscale transition duration-300 hover:grayscale-0"
+                class="h-9 md:h-10 w-auto max-w-[130px] cursor-pointer object-contain grayscale opacity-70 transition-all duration-300 hover:grayscale-0 hover:opacity-100 hover:scale-105"
               />
             );
             return (

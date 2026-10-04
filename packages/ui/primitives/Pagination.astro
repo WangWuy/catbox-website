@@ -46,7 +46,7 @@ const { total, perPage = PRODUCTS_PER_PAGE } = Astro.props;
         type="button"
         data-page-prev
         aria-label="Trang trước"
-        class="pill size-(--size-page-btn) justify-center border border-line text-(length:--text-page-btn) text-ink-muted transition-colors hover:bg-surface-alt disabled:pointer-events-none disabled:opacity-40"
+        class="pill size-(--size-page-btn) cursor-pointer justify-center border border-line text-(length:--text-page-btn) text-ink-muted transition-colors hover:bg-surface-alt disabled:pointer-events-none disabled:opacity-40"
       >
         <Icon name="lucide:chevron-left" class="size-4" aria-hidden="true" />
       </button>
@@ -59,7 +59,7 @@ const { total, perPage = PRODUCTS_PER_PAGE } = Astro.props;
         type="button"
         data-page-next
         aria-label="Trang sau"
-        class="pill size-(--size-page-btn) justify-center border border-line text-(length:--text-page-btn) text-ink-muted transition-colors hover:bg-surface-alt disabled:pointer-events-none disabled:opacity-40"
+        class="pill size-(--size-page-btn) cursor-pointer justify-center border border-line text-(length:--text-page-btn) text-ink-muted transition-colors hover:bg-surface-alt disabled:pointer-events-none disabled:opacity-40"
       >
         <Icon name="lucide:chevron-right" class="size-4" aria-hidden="true" />
       </button>
@@ -120,7 +120,7 @@ const { total, perPage = PRODUCTS_PER_PAGE } = Astro.props;
       b.textContent = String(n);
       b.dataset.page = String(n);
       const active = n === page;
-      b.className = `pill size-(--size-page-btn) justify-center border text-(length:--text-page-btn) transition-colors ${
+      b.className = `pill size-(--size-page-btn) cursor-pointer justify-center border text-(length:--text-page-btn) transition-colors ${
         active
           ? "border-primary bg-primary text-white"
           : "border-line text-ink-muted hover:bg-surface-alt"

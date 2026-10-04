@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 48" width="160" height="48">
+  <g fill="none" fill-rule="evenodd">
+    <!-- Crown icon -->
+    <rect x="4" y="6" width="36" height="36" rx="8" fill="#FFF7ED"/>
+    <path d="M12 28h20l2.5-12-6.5 4-4-7-4 7-6.5-4L12 28z" fill="#D97706"/>
+    <circle cx="12" cy="14" r="1.5" fill="#B45309"/>
+    <circle cx="22" cy="11" r="1.8" fill="#B45309"/>
+    <circle cx="32" cy="14" r="1.5" fill="#B45309"/>
+    <rect x="12" y="30" width="20" height="2" rx="1" fill="#B45309"/>
+    <!-- Brand text -->
+    <text x="47" y="26" font-family="'Montserrat', 'Arial Black', -apple-system, sans-serif" font-size="15" font-weight="900" fill="#9A3412" letter-spacing="0.8">BAMI KING</text>
+    <text x="47" y="37" font-family="'Montserrat', -apple-system, sans-serif" font-size="7.5" font-weight="700" fill="#D97706" letter-spacing="1">VUA BÁNH MÌ BÒ</text>
+  </g>
+</svg>

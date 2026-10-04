@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 48" width="150" height="48">
+  <g fill="none" fill-rule="evenodd">
+    <!-- Burger & Cleaver Badge -->
+    <rect x="4" y="6" width="36" height="36" rx="8" fill="#1F2937"/>
+    <!-- Stylized bun and grill mark -->
+    <path d="M12 21c0-4.4 4.5-8 10-8s10 3.6 10 8H12z" fill="#E74C3C"/>
+    <rect x="11" y="23" width="22" height="3.5" rx="1.75" fill="#F59E0B"/>
+    <path d="M13 28.5c1.5 1.5 4.5 2.5 9 2.5s7.5-1 9-2.5H13z" fill="#E74C3C"/>
+    <!-- Brand text -->
+    <text x="48" y="27" font-family="'Montserrat', 'Arial Black', -apple-system, sans-serif" font-size="19" font-weight="900" fill="#111827" letter-spacing="1.2">CHOPS</text>
+    <text x="48" y="38" font-family="'Montserrat', -apple-system, sans-serif" font-size="7.5" font-weight="700" fill="#E74C3C" letter-spacing="1.8">BURGERS &amp; CRAFT</text>
+  </g>
+</svg>

@@ -2,29 +2,18 @@
 /**
  * Banner đầu trang cho các trang trong (/blog, /products, /danh-muc...).
  *
- * Thay cho kiểu "Breadcrumb + h1 phẳng" dùng trước đây: một dải nền màu chạy
- * hết bề ngang, bên trái là tiêu đề lớn + breadcrumb (breadcrumb nằm DƯỚI tiêu
- * đề, khác thứ tự cũ), bên phải là ảnh sản phẩm nghiêng nhẹ.
- *
- * CỐ Ý không có đoạn mô tả: banner chỉ mang tiêu đề + breadcrumb. Mô tả trang
- * vẫn đi vào <meta name="description"> qua Layout nên SEO không mất gì.
+ * Dải nền màu chạy hết bề ngang (--color-surface-page-hero), bên trái là
+ * tiêu đề lớn + breadcrumb, bên phải là ảnh sản phẩm/minh họa căn thẳng hàng
+ * theo bố cục site-container.
  *
  * Nền dùng `--color-surface-page-hero` (nâu giấy kraft) nên chữ phải là bộ
  * SÁNG: `--color-ink-on-hero` cho tiêu đề, Breadcrumb nhận `tone="dark"`.
- * Đừng đổi nền sang màu sáng mà quên đổi lại hai chỗ này.
  *
- * Ảnh bên phải cố ý tràn cao hơn dải nền (--overflow-page-hero-image) nên khối
- * bọc ngoài KHÔNG được `overflow-hidden` — nếu chặn overflow thì ảnh bị cắt
- * phẳng theo mép dải và mất hẳn hiệu ứng "vật thể đặt trước phông".
+ * Ảnh bên phải căn theo lưới nội dung site-container, thẳng hàng với mép phải
+ * của thanh tìm kiếm phía trên và các khối nội dung bên dưới.
  *
- * Ảnh nằm trong một khung trắng nghiêng (như tấm ảnh đặt chéo) chứ không thả
- * trôi trực tiếp trên nền: ảnh sản phẩm của kho hiện đều KHÔNG tách nền
- * (hasAlpha: no), thả thẳng lên nền tint thì mảng trắng hình chữ nhật của ảnh
- * lộ ra thành một khối lỗi. Khi nào có ảnh PNG tách nền thì bỏ khung trắng và
- * `object-contain` là ra đúng kiểu "vật thể trôi" của mockup.
- *
- * Ảnh chỉ hiện từ md trở lên: ở mobile bề ngang không đủ cho hai cột, ảnh sẽ
- * đè lên chữ.
+ * Ảnh chỉ hiện từ md trở lên: ở mobile bề ngang không đủ cho hai cột, ảnh ẩn
+ * để ưu tiên hiển thị tiêu đề và breadcrumb.
  */
 import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 import SmartImage from "@ui/primitives/SmartImage.astro";
@@ -52,9 +41,9 @@ const showImage = !!assets && !!image;
 
 <section class="relative bg-(--color-surface-page-hero)">
   <div
-    class="site-container relative flex min-h-(--height-page-hero) flex-col justify-center py-10"
+    class="site-container flex min-h-(--height-page-hero) flex-col justify-center gap-4 py-8 md:flex-row md:items-center md:justify-between md:gap-8 md:py-6"
   >
-    <div class:list={["flex flex-col gap-3", showImage && "md:pr-(--width-page-hero-image)"]}>
+    <div class="flex flex-col gap-3">
       <h1
         class="text-(length:--text-page-hero-title-mobile) font-extrabold tracking-tight text-balance text-(--color-ink-on-hero) md:text-(length:--text-page-hero-title)"
       >
@@ -68,9 +57,9 @@ const showImage = !!assets && !!image;
       showImage && (
         <div
           aria-hidden={imageAlt === "" ? "true" : undefined}
-          class="pointer-events-none absolute end-(--offset-page-hero-image-right) -top-(--overflow-page-hero-image) -bottom-(--overflow-page-hero-image) hidden w-(--width-page-hero-image) items-center justify-end md:flex"
+          class="hidden shrink-0 items-center justify-end md:flex"
         >
-          <div class="w-full rotate-(--rotate-page-hero-image) overflow-hidden rounded-panel bg-white shadow-(--shadow-page-hero-image)">
+          <div class="w-(--width-page-hero-image) overflow-hidden rounded-panel bg-white shadow-(--shadow-page-hero-image)">
             <SmartImage
               assets={assets!}
               src={image}

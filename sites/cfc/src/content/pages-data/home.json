@@ -9,7 +9,11 @@
     "title": "Bao bì giấy F&B tận xưởng cùng",
     "titleAccent": "CFC",
     "subtitle": "Túi giấy, giấy gói và hộp đựng thực phẩm in theo yêu cầu. Không qua trung gian, báo giá trong 30 phút.",
-    "hashtag": "ưu đãi cho chuỗi",
+    "hashtag": "ưu đãi",
+    "cta": {
+      "label": "Liên hệ",
+      "href": "/contact"
+    },
     "stats": [
       {
         "icon": "lucide:shopping-bag",
@@ -38,6 +42,44 @@
       }
     ]
   },
+  "partners": [
+    {
+      "name": "Chops",
+      "logo": "",
+      "logoUrl": "/partners/chops.svg",
+      "href": ""
+    },
+    {
+      "name": "Mr Eco",
+      "logo": "",
+      "logoUrl": "/partners/mr-eco.svg",
+      "href": ""
+    },
+    {
+      "name": "Bami King",
+      "logo": "",
+      "logoUrl": "/partners/bami-king.svg",
+      "href": ""
+    },
+    {
+      "name": "Bami Sốt",
+      "logo": "",
+      "logoUrl": "/partners/bami-sot.svg",
+      "href": ""
+    },
+    {
+      "name": "Bami Bread",
+      "logo": "",
+      "logoUrl": "/partners/bami-bread.svg",
+      "href": ""
+    },
+    {
+      "name": "Vợ Ong Vàng",
+      "logo": "",
+      "logoUrl": "/partners/vo-ong-vang.svg",
+      "href": ""
+    }
+  ],
   "bestsellers": {
     "title": "Bán chạy",
     "limit": 50
@@ -48,7 +90,7 @@
       "label": "Khám phá thêm ›",
       "href": "/blog"
     },
-    "limit": 3
+    "limit": 6
   },
   "reels": {
     "label": "Mẫu túi bánh mì que in 4 màu theo yêu cầu",

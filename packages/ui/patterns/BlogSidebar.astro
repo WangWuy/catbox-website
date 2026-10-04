@@ -83,7 +83,7 @@ const {
                       height={128}
                       ratio="1x1"
                       variant={(i % 6) + 1}
-                      class="size-full object-cover"
+                      class="size-full object-contain"
                     />
                   </div>
                   <div class="flex flex-1 flex-col justify-center min-w-0">
@@ -125,14 +125,14 @@ const {
             return (
               <li class="border-b border-dashed border-line py-3.5 first:pt-0 last:border-0 last:pb-0">
                 <a href={href} class="group flex items-center gap-3">
-                  <div class="size-16 shrink-0 overflow-hidden bg-surface-tint transition-shadow duration-(--duration-base) group-hover:shadow-(--shadow-media-hover)">
+                  <div class="w-24 aspect-16/9 shrink-0 overflow-hidden bg-surface-tint transition-shadow duration-(--duration-base) group-hover:shadow-(--shadow-media-hover)">
                     <SmartImage
                       {assets}
                       src={cover}
                       alt={title}
-                      width={128}
-                      height={128}
-                      ratio="1x1"
+                      width={192}
+                      height={108}
+                      ratio="16x9"
                       variant={(i % 6) + 1}
                       class="size-full object-cover"
                     />

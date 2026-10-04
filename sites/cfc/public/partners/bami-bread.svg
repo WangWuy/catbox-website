@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 48" width="160" height="48">
+  <g fill="none" fill-rule="evenodd">
+    <!-- Bread loaf icon -->
+    <rect x="4" y="6" width="36" height="36" rx="8" fill="#FFFBEB"/>
+    <ellipse cx="22" cy="24" rx="14" ry="9" fill="#D97706"/>
+    <path d="M15 22c2-2 4-3 7-3M18 26c2-2 4-3 7-3M22 30c1.5-1.5 3-2 5-2" stroke="#FEF3C7" stroke-width="1.6" stroke-linecap="round"/>
+    <!-- Brand text -->
+    <text x="47" y="26" font-family="'Montserrat', 'Arial Black', -apple-system, sans-serif" font-size="15" font-weight="900" fill="#78350F" letter-spacing="0.5">Bami Bread</text>
+    <text x="47" y="37" font-family="'Montserrat', -apple-system, sans-serif" font-size="7.5" font-weight="700" fill="#B45309" letter-spacing="1">BÁNH MÌ HỘI AN</text>
+  </g>
+</svg>

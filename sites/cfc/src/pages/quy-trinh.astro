@@ -8,8 +8,7 @@ export const prerender = true;
  * dòng có badge giá thay vì vẽ cây thật, để không vỡ trên mobile.
  *
  * Nội dung đọc từ singleton "Trang quy trình" trong Keystatic. Link Shopee /
- * TikTok Shop vẫn để trống trong CMS — mục nào trống thì render dạng chữ tĩnh,
- * không ra thẻ <a> rỗng; khách điền link là tự thành nút bấm được.
+ * TikTok Shop có thể cấu hình trong CMS hoặc tự dùng fallback link mặc định.
  */
 import { Icon } from "astro-icon/components";
 import { parseProcess } from "@config/pages";
@@ -73,24 +72,25 @@ const BADGE_TONE = {
                   {flow.channelsLabel}
                 </h3>
                 <div class="flex flex-wrap gap-2.5">
-                  {flow.channels.map((c) =>
-                    c.href ? (
+                  {flow.channels.map((c) => {
+                    const fallbackHref = c.label.toLowerCase().includes("shopee")
+                      ? "https://shopee.vn"
+                      : c.label.toLowerCase().includes("tiktok")
+                        ? "https://www.tiktok.com"
+                        : "#";
+                    const href = c.href || fallbackHref;
+                    return (
                       <a
-                        href={c.href}
+                        href={href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        class={`${CHANNEL_BASE} transition-colors hover:border-primary hover:text-primary`}
+                        class={`${CHANNEL_BASE} transition-colors hover:border-primary hover:text-primary hover:bg-surface`}
                       >
                         <Icon name={c.icon} class="size-(--size-icon-inline)" aria-hidden="true" />
                         {c.label}
                       </a>
-                    ) : (
-                      <span class={CHANNEL_BASE}>
-                        <Icon name={c.icon} class="size-(--size-icon-inline)" aria-hidden="true" />
-                        {c.label}
-                      </span>
-                    ),
-                  )}
+                    );
+                  })}
                 </div>
               </div>
             )}

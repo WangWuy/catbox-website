@@ -33,11 +33,15 @@ interface Props {
   titleAccent?: string;
   subtitle?: string;
   hashtag?: string;
+  /** Nút CTA bên cạnh hashtag */
+  cta?: { label?: string; href?: string };
   /** Thẻ thống kê hoặc danh mục đè lên đáy banner */
   stats?: HeroStat[];
 }
 
-const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } = Astro.props;
+const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, cta, stats } = Astro.props;
+const ctaLabel = cta?.label || "Liên hệ";
+const ctaHref = cta?.href || "/contact";
 ---
 
 {/* Banner full màn hình — ảnh tràn viền edge-to-edge, các thẻ danh mục không bo góc theo mẫu 2T Print */}
@@ -53,7 +57,7 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
         ratio="16x9"
         priority
         sizes="100vw"
-        class="h-(--height-hero-mobile) w-full object-cover sm:h-(--height-hero-sm) md:h-(--height-hero) md:min-h-(--height-hero-min,400px)"
+        class="h-(--height-hero-mobile) w-full object-cover sm:h-(--height-hero-sm) md:h-(--height-hero,500px) md:min-h-(--height-hero-min,500px)"
       />
 
       <!-- Gradient từ trái sang giúp chữ đọc được trên mọi ảnh khách gửi sau -->
@@ -111,17 +115,27 @@ const { assets, image, eyebrow, title, titleAccent, subtitle, hashtag, stats } =
               )
             }
 
-            {
-              hashtag && (
-                <p
-                  data-reveal
-                  style="--reveal-delay: calc(var(--stagger-reveal) * 3)"
-                  class="text-xs sm:text-sm font-semibold text-white/80"
-                >
-                  #nhận nhiều <span class="text-cta">{hashtag}</span>
-                </p>
-              )
-            }
+            <div
+              data-reveal
+              style="--reveal-delay: calc(var(--stagger-reveal) * 3)"
+              class="flex flex-wrap items-center gap-3.5 pt-1 sm:gap-4.5"
+            >
+              <a
+                href={ctaHref}
+                data-analytics="click_hero_contact"
+                class="inline-flex items-center justify-center rounded-chip bg-primary px-5 py-2 text-xs font-bold text-white shadow-md transition-all duration-200 hover:scale-[1.02] hover:bg-primary-hover hover:shadow-lg sm:px-6 sm:py-2.5 sm:text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              >
+                {ctaLabel}
+              </a>
+
+              {
+                hashtag && (
+                  <p class="text-xs sm:text-sm font-semibold text-white/85">
+                    #nhận nhiều <span class="text-cta font-bold">{hashtag}</span>
+                  </p>
+                )
+              }
+            </div>
           </div>
         </div>
       </div>

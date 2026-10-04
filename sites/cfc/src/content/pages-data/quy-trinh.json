@@ -17,8 +17,8 @@
       "body": "Các mẫu bao bì tiêu chuẩn của xưởng được bán sẵn trên sàn thương mại điện tử. Khách đặt trực tiếp, không cần chờ duyệt file hay đợi lịch chạy máy.",
       "channelsLabel": "Đặt nhanh qua",
       "channels": [
-        { "label": "Shopee", "icon": "lucide:shopping-bag", "href": null },
-        { "label": "TikTok Shop", "icon": "lucide:shopping-bag", "href": null }
+        { "label": "Shopee", "icon": "lucide:shopping-bag", "href": "https://shopee.vn" },
+        { "label": "TikTok Shop", "icon": "lucide:shopping-bag", "href": "https://www.tiktok.com" }
       ],
       "branches": []
     },

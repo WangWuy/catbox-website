@@ -37,7 +37,7 @@
         "icon": "lucide:target",
         "title": "Sứ mệnh",
         "body": "Cung cấp bao bì mà còn trở thành đối tác chiến lược của khách hàng, đồng hành trong việc kiến tạo hình ảnh thương hiệu mạnh mẽ, nâng tầm giá trị sản phẩm, và thúc đẩy sự phát triển bền vững của doanh nghiệp.",
-        "tone": "eco"
+        "tone": "primary"
       }
     ]
   },
@@ -51,7 +51,7 @@
         "desc": "- Tôn trọng kỷ luật tập thể\n- Tinh thần trách nhiệm và cam kết với công việc\n- Tuân thủ nội quy, quy trình làm việc\n- Chấp hành đúng giờ giấc làm việc"
       },
       {
-        "title": "Trung thực ",
+        "title": "Trung thực",
         "tagline": "Minh bạch là nền tảng – Đạo đức là nguyên tắc",
         "desc": "- Trong kinh doanh, CFC tin rằng: “Không nhất thiết cần thật, nhưng phải trung thực.”\n- Trung thực trong mọi hoạt động, đặc biệt là các vấn đề liên quan đến tài chính và thông tin với khách hàng.\n- Luôn minh bạch với đồng đội, với công ty và với đối tác."
       },
@@ -68,7 +68,7 @@
       {
         "title": "Đồng hành",
         "tagline": "Cùng khách hàng phát triển – Cùng CFC lớn mạnh",
-        "desc": "- Luôn lấy sự phát triển của khách hàng làm kim chỉ nam cho sự phát triển của chính mình và công ty.\n- Hiểu khách hàng, sử dụng sản phẩm/dịch vụ của kh\n- Khách hàng để thấu cảm và phục vụ tốt hơn.\n- Đồng hành cùng CPS chinh phục các mục tiêu lớn vì một hành trình phát triển bản thân bền vững."
+        "desc": "- Luôn lấy sự phát triển của khách hàng làm kim chỉ nam cho sự phát triển của chính mình và công ty.\n- Hiểu khách hàng, sử dụng sản phẩm/dịch vụ của khách hàng để thấu cảm và phục vụ tốt hơn.\n- Đồng hành cùng CFC chinh phục các mục tiêu lớn vì một hành trình phát triển bản thân bền vững."
       }
     ]
   },

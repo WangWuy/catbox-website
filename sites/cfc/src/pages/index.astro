@@ -28,16 +28,6 @@ import PartnerStrip from "@ui/patterns/PartnerStrip.astro";
 import TrustStrip, { type TrustStripItem } from "@ui/patterns/TrustStrip.astro";
 import { BRANDS } from "@config/brands";
 
-// Danh sách đối tác CFC — thay file SVG trong /public/partners/ bằng logo thật.
-const PARTNERS = [
-  { name: "HABECO", logo: "/partners/habeco.svg" },
-  { name: "Phú Quý", logo: "/partners/phuquy.svg" },
-  { name: "Samsung", logo: "/partners/samsung.svg" },
-  { name: "Nutifood", logo: "/partners/nutifood.svg" },
-  { name: "Vietnam Airlines", logo: "/partners/vietnam-airlines.svg" },
-  { name: "VietinBank", logo: "/partners/vietinbank.svg" },
-];
-
 const cfc = BRANDS.cfc;
 const trustItems: TrustStripItem[] = [
   {
@@ -69,10 +59,28 @@ const home = parseHomepage(homeData);
 // /products và /danh-muc, nên dùng chung một nguồn.
 const catalog = parseCatalog(catalogData);
 
+// Danh sách thương hiệu đối tác đọc từ CMS (home.json), dự phòng mảng mặc định nếu chưa cấu hình
+const partners = (home.partners && home.partners.length > 0)
+  ? home.partners
+      .map((p) => ({
+        name: p.name,
+        logo: p.logo || p.logoUrl || "",
+        href: p.href,
+      }))
+      .filter((p) => !!p.logo)
+  : [
+      { name: "Chops", logo: "/partners/chops.svg" },
+      { name: "Mr Eco", logo: "/partners/mr-eco.svg" },
+      { name: "Bami King", logo: "/partners/bami-king.svg" },
+      { name: "Bami Sốt", logo: "/partners/bami-sot.svg" },
+      { name: "Bami Bread", logo: "/partners/bami-bread.svg" },
+      { name: "Vợ Ong Vàng", logo: "/partners/vo-ong-vang.svg" },
+    ];
+
 // Bản đồ ảnh cho SmartImage — glob phải nằm ở site vì đường dẫn tương đối
 // với chính project này (xem packages/ui/lib/images.ts).
 const assets = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/**/*.{png,jpg,jpeg,webp,avif}",
+  "/src/assets/**/*.{png,jpg,jpeg,webp,avif,svg}",
   { eager: true },
 );
 
@@ -122,6 +130,7 @@ const bestsellerTabGroups = buildCategoryTree(categories)
     titleAccent={home.hero.titleAccent}
     subtitle={home.hero.subtitle}
     hashtag={home.hero.hashtag}
+    cta={home.hero.cta}
     stats={home.hero.stats}
   />
 
@@ -168,7 +177,7 @@ const bestsellerTabGroups = buildCategoryTree(categories)
        margin âm; `relative z-(--z-trust-strip-overlap)` để thẻ nổi trên nền
        tối của Footer render ngay sau nó trong DOM. -->
   <div class="bg-surface-section-alt">
-    <PartnerStrip partners={PARTNERS} title="Đối tác tin cậy của" accent="CFC" />
+    <PartnerStrip {assets} partners={partners} />
 
     <div class="site-container relative z-(--z-trust-strip-overlap) pt-(--space-trust-strip-top) -mb-(--overlap-trust-strip) md:pt-(--space-trust-strip-top-lg)">
       <TrustStrip items={trustItems} variant="panel" />

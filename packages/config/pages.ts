@@ -47,6 +47,14 @@ const heroStat = z.object({
   href: z.string().optional(),
 });
 
+/** Đối tác thương hiệu trong dải logo */
+const partnerItem = z.object({
+  name: z.string(),
+  logo: z.string().optional(),
+  logoUrl: z.string().optional(),
+  href: z.string().optional(),
+});
+
 export const homepageSchema = z.object({
   seo,
   hero: z.object({
@@ -58,8 +66,12 @@ export const homepageSchema = z.object({
     subtitle: z.string().optional(),
     /** Phần đuôi của dòng "#nhận nhiều ..." */
     hashtag: z.string().optional(),
+    /** Nút CTA trên banner ("Liên hệ" trỏ tới /contact) */
+    cta: cta.default({ label: "Liên hệ", href: "/contact" }),
     stats: z.array(heroStat).default([]),
   }),
+  /** Dải logo các thương hiệu đối tác */
+  partners: z.array(partnerItem).default([]),
   bestsellers: z.object({
     title: z.string(),
     /** Số sản phẩm bán chạy tối đa hiện trên trang chủ */

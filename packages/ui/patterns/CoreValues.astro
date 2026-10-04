@@ -114,7 +114,7 @@ const orbitalCoords = [
                 alt="Brand Logo"
                 width="400"
                 height="225"
-                class="pointer-events-none absolute inset-0 m-auto max-h-[50%] max-w-[70%] object-contain opacity-15 select-none"
+                class="pointer-events-none absolute inset-0 m-auto max-h-[50%] max-w-[70%] object-contain opacity-(--opacity-watermark) grayscale select-none"
                 aria-hidden="true"
               />
             )}
@@ -139,9 +139,14 @@ const orbitalCoords = [
                     {v.tagline}
                   </p>
                 )}
-                <p class="mt-1 line-clamp-3 text-[10px] leading-relaxed text-ink-muted sm:mt-2 sm:line-clamp-4 sm:text-xs md:line-clamp-none md:text-meta">
-                  {v.desc}
-                </p>
+                <div
+                  data-desc
+                  class="mt-1.5 flex flex-col gap-1 text-[11px] font-semibold leading-relaxed text-ink sm:mt-2 sm:gap-1.5 sm:text-xs md:text-meta"
+                >
+                  {v.desc.split("\n").filter(Boolean).map((line) => (
+                    <p class="leading-relaxed">{line.trim()}</p>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
@@ -157,9 +162,14 @@ const orbitalCoords = [
               {values[0]?.tagline}
             </p>
           )}
-          <p class="mt-1 text-meta leading-relaxed text-ink-muted" data-mobile-desc>
-            {values[0]?.desc}
-          </p>
+          <div
+            class="mt-1.5 flex flex-col gap-1 text-meta leading-relaxed font-semibold text-ink"
+            data-mobile-desc
+          >
+            {values[0]?.desc.split("\n").filter(Boolean).map((line) => (
+              <p>{line.trim()}</p>
+            ))}
+          </div>
         </div>
       </div>
     ) : (
@@ -219,7 +229,11 @@ const orbitalCoords = [
             {v.tagline && (
               <p class="text-(length:--text-card-title) font-bold text-primary italic">{v.tagline}</p>
             )}
-            <p class="leading-relaxed text-ink-muted">{v.desc}</p>
+            <div class="flex flex-col gap-1.5 font-semibold text-ink">
+              {v.desc.split("\n").filter(Boolean).map((line) => (
+                <p class="leading-relaxed">{line.trim()}</p>
+              ))}
+            </div>
           </div>
         ))}
       </div>
@@ -310,13 +324,13 @@ const orbitalCoords = [
           // Cập nhật card chi tiết mobile
           const h3 = panel.querySelector("h3");
           const tagline = panel.querySelector("p.italic");
-          const desc = panel.querySelectorAll("p")[tagline ? 1 : 0];
+          const desc = panel.querySelector("[data-desc]");
           if (mobileTitle && h3) mobileTitle.textContent = h3.textContent;
           if (mobileTagline) {
             mobileTagline.textContent = tagline?.textContent ?? "";
             mobileTagline.style.display = tagline ? "block" : "none";
           }
-          if (mobileDesc && desc) mobileDesc.textContent = desc.textContent;
+          if (mobileDesc && desc) mobileDesc.innerHTML = desc.innerHTML;
         } else {
           panel.classList.remove("opacity-100", "scale-100");
           panel.classList.add("opacity-0", "scale-95", "pointer-events-none");

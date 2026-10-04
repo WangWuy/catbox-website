@@ -533,6 +533,7 @@ export function homepageFields(imageDir: string) {
           description: "Trang hiển thị “#nhận nhiều <đuôi>”. Chỉ điền phần đuôi.",
           validation: { isRequired: false },
         }),
+        cta: ctaFields("Nút hành động (CTA)"),
         stats: fields.array(
           fields.object({
             icon: fields.select({
@@ -551,6 +552,32 @@ export function homepageFields(imageDir: string) {
         ),
       },
       { label: "Banner đầu trang" },
+    ),
+    partners: fields.array(
+      fields.object({
+        name: fields.text({ label: "Tên thương hiệu đối tác" }),
+        logo: fields.image({
+          label: "Ảnh logo (PNG trong suốt hoặc SVG)",
+          description: "Tải file logo PNG trong suốt hoặc SVG từ máy. Bỏ trống nếu nhập đường dẫn bên dưới.",
+          ...asset(imageDir),
+          validation: { isRequired: false },
+        }),
+        logoUrl: fields.text({
+          label: "Đường dẫn file logo (nếu không upload trực tiếp)",
+          description: "Ví dụ: /partners/chops.svg hoặc link URL. Bỏ trống nếu đã upload ảnh ở trên.",
+          validation: { isRequired: false },
+        }),
+        href: fields.text({
+          label: "Link website / fanpage của đối tác (tùy chọn)",
+          description: "Ví dụ: https://chops.vn. Bỏ trống nếu không cần click mở trang.",
+          validation: { isRequired: false },
+        }),
+      }),
+      {
+        label: "Dải logo đối tác thương hiệu",
+        description: "Danh sách thương hiệu F&B đối tác tin cậy trượt ngang trên trang chủ.",
+        itemLabel: (props) => props.fields.name.value || "Đối tác",
+      },
     ),
     bestsellers: fields.object(
       {
@@ -995,7 +1022,7 @@ export function processFields() {
             href: fields.text({
               label: "Link gian hàng",
               description:
-                "Bỏ trống thì tên kênh hiện dạng chữ tĩnh, không bấm được — dùng khi chưa mở gian hàng.",
+                "Link dẫn đến gian hàng (ví dụ: https://shopee.vn/... hoặc https://www.tiktok.com/@...). Bỏ trống sẽ dùng link mặc định.",
               validation: { isRequired: false },
             }),
           }),
