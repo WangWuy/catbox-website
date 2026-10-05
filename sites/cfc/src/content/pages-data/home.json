@@ -45,39 +45,28 @@
   "partners": [
     {
       "name": "Chops",
-      "logo": "",
-      "logoUrl": "/partners/chops.svg",
-      "href": ""
+      "logo": "brand/partners/0/logo.jpg",
+      "logoUrl": "/partners/chops.svg"
     },
     {
       "name": "Mr Eco",
-      "logo": "",
-      "logoUrl": "/partners/mr-eco.svg",
-      "href": ""
+      "logoUrl": "/partners/mr-eco.svg"
     },
     {
       "name": "Bami King",
-      "logo": "",
-      "logoUrl": "/partners/bami-king.svg",
-      "href": ""
+      "logoUrl": "/partners/bami-king.svg"
     },
     {
       "name": "Bami Sốt",
-      "logo": "",
-      "logoUrl": "/partners/bami-sot.svg",
-      "href": ""
+      "logoUrl": "/partners/bami-sot.svg"
     },
     {
       "name": "Bami Bread",
-      "logo": "",
-      "logoUrl": "/partners/bami-bread.svg",
-      "href": ""
+      "logoUrl": "/partners/bami-bread.svg"
     },
     {
       "name": "Vợ Ong Vàng",
-      "logo": "",
-      "logoUrl": "/partners/vo-ong-vang.svg",
-      "href": ""
+      "logoUrl": "/partners/vo-ong-vang.svg"
     }
   ],
   "bestsellers": {
