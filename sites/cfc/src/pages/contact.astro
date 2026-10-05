@@ -88,9 +88,16 @@ const jsonLd = [
   },
 ];
 
+function extractIframeSrc(input?: string): string | undefined {
+  if (!input) return undefined;
+  const trimmed = input.trim();
+  const match = trimmed.match(/src=["']([^"']+)["']/i);
+  return match ? match[1] : trimmed;
+}
+
 const defaultMapUrl =
   "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d17829.05192815368!2d105.80006!3d20.996869!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ad2298500cbd%3A0x82b22a45c6855808!2zMlRwcmludCAtIEPDtG5nIHR5IFROSEggxJDhuqd1IFTGsCBWw6AgVGjGsMahbmcgTeG6oWkgMlQ!5e1!3m2!1svi!2sus!4v1773502804489!5m2!1svi!2sus";
-const mapUrl = page.map?.iframeUrl || defaultMapUrl;
+const mapUrl = extractIframeSrc(page.map?.iframeUrl) || defaultMapUrl;
 ---
 
 <Layout title={page.seo.title} {description} {jsonLd}>
