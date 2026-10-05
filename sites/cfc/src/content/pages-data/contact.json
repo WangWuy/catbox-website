@@ -47,15 +47,16 @@
       }
     ],
     "body": [
-      "12+ năm kinh nghiệm trong lĩnh vực thiết kế và in ấn, <strong class=\"font-bold text-[#0284C7]\">CFC Factory</strong> đã đồng hành cùng hơn 2.000 đối tác và hoàn thiện hơn 100 triệu sản phẩm. Chúng tôi tự hào mang đến những giải pháp in ấn chất lượng, phù hợp với nhu cầu đa dạng của doanh nghiệp, cửa hàng và thương hiệu trên toàn quốc.",
-      "Sở hữu hệ thống sản xuất hiện đại, đội ngũ giàu kinh nghiệm và quy trình kiểm soát chất lượng chặt chẽ, CFC Factory cung cấp giải pháp trọn gói từ tư vấn, thiết kế đến sản xuất và hoàn thiện. Dù là đơn hàng nhỏ hay số lượng lớn, chúng tôi luôn đảm bảo sự linh hoạt, ổn định và đúng tiến độ cho từng dự án."
+      "Là thành viên chủ lực trong hệ sinh thái Catbox, <strong class=\"font-bold text-[#0284C7]\">CFC</strong> chuyên sâu vào giải pháp bao bì giấy dành riêng cho ngành hàng F&B.",
+      "Với nền tảng 12 năm kinh nghiệm sản xuất, <strong class=\"font-bold text-[#0284C7]\">CFC</strong> tự hào đồng hành cùng hơn 2.000 khách hàng B2B, cung ứng hơn 100 triệu sản phẩm ra thị trường và trở thành đối tác chiến lược của nhiều chuỗi F&B hàng đầu tại Việt Nam.",
+      "Sở hữu hệ thống quản trị bài bản cùng hai dây chuyền in Offset và Flexo hiện đại, CFC tự tin đáp ứng linh hoạt mọi quy mô đơn hàng — từ số lượng nhỏ đến các dự án lớn theo yêu cầu khắt khe của từng đối tác. CFC không ngừng đổi mới hướng tới sản xuất bền vững, vững vàng vị thế đối tác tin cậy của cộng đồng doanh nghiệp trong nước và quốc tế."
     ]
   },
   "form": {
     "title": "Gửi yêu cầu cho chúng tôi"
   },
   "map": {
-    "iframeUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.444879299199!2d105.86095467548935!3d21.01487808063102!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abf089b8d389%3A0xfab3b43ae73bda36!2sC%C3%B4ng%20ty%20TNHH%20Catbox%20Vi%E1%BB%87t%20Nam!5e0!3m2!1svi!2s!4v1791171362392!5m2!1svi!2s"
+    "iframeUrl": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.444879299199!2d105.86095467548935!3d21.01487808063102!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abf089b8d389%3A0xfab3b43ae73bda36!2sC%C3%B4ng%20ty%20TNHH%20Catbox%20Vi%E1%BB%87t%20Nam!5e0!3m2!1svi!2s!4v1791171362392!5m2!1svi!2s\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"strict-origin-when-cross-origin\"></iframe>"
   },
   "faq": {
     "title": "Một số câu hỏi thường gặp",
@@ -102,29 +103,7 @@
     ]
   },
   "company": {
-    "blocks": [
-      {
-        "title": "Mục tiêu chất lượng",
-        "body": [
-          "Hướng đến sự hoàn hảo trong từng sản phẩm, đảm bảo đáp ứng mọi yêu cầu về chất lượng và an toàn.",
-          "Không ngừng cải tiến quy trình sản xuất để mang đến những sản phẩm tốt nhất với chi phí hợp lý."
-        ]
-      },
-      {
-        "title": "Cam kết chất lượng",
-        "body": [
-          "Sử dụng nguồn nguyên liệu được kiểm soát chặt chẽ, đạt tiêu chuẩn an toàn vệ sinh thực phẩm.",
-          "Sản phẩm đa dạng về chủng loại và kích thước, đáp ứng nhu cầu đa dạng của khách hàng.",
-          "Dịch vụ hỗ trợ chuyên nghiệp, nhanh chóng và tận tình."
-        ]
-      },
-      {
-        "title": "Giá trị thương hiệu",
-        "body": [
-          "Chất lượng, uy tín, tận tâm và hướng đến sự hài lòng của khách hàng."
-        ]
-      }
-    ]
+    "blocks": []
   },
   "business": {
     "priceRange": "$$",
