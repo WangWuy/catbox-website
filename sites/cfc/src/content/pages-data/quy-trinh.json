@@ -3,7 +3,10 @@
     "title": "Quy trình làm việc",
     "description": "Quy trình làm việc tại xưởng bao bì giấy CFC — mua mẫu có sẵn qua sàn thương mại điện tử hoặc đặt in theo yêu cầu, kèm chính sách thiết kế."
   },
-  "parentCrumb": { "label": "Về chúng tôi", "href": "/about-us" },
+  "parentCrumb": {
+    "label": "Về chúng tôi",
+    "href": "/about-us"
+  },
   "intro": {
     "title": "Quy trình làm việc",
     "body": "Tuỳ việc khách lấy mẫu có sẵn hay đặt in riêng thương hiệu, xưởng có hai luồng xử lý khác nhau. Chọn đúng luồng ngay từ đầu giúp rút ngắn thời gian từ lúc hỏi tới lúc nhận hàng."
@@ -17,8 +20,16 @@
       "body": "Các mẫu bao bì tiêu chuẩn của xưởng được bán sẵn trên sàn thương mại điện tử. Khách đặt trực tiếp, không cần chờ duyệt file hay đợi lịch chạy máy.",
       "channelsLabel": "Đặt nhanh qua",
       "channels": [
-        { "label": "Shopee", "icon": "lucide:shopping-bag", "href": "https://shopee.vn" },
-        { "label": "TikTok Shop", "icon": "lucide:shopping-bag", "href": "https://www.tiktok.com" }
+        {
+          "label": "Shopee",
+          "icon": "lucide:shopping-bag",
+          "href": "https://shopee.vn"
+        },
+        {
+          "label": "TikTok Shop",
+          "icon": "lucide:shopping-bag",
+          "href": "https://www.tiktok.com"
+        }
       ],
       "branches": []
     },
@@ -61,39 +72,42 @@
     "items": [
       {
         "num": "01",
-        "title": "Tiếp nhận yêu cầu",
-        "desc": "Ghi nhận loại bao bì, kích thước, chất liệu và số lượng."
+        "title": "Tiếp nhận nhu cầu & Tư vấn kỹ thuật",
+        "desc": "Tiếp nhận yêu cầu cụ thể về chủng loại bao bì thực phẩm, kích thước, định lượng giấy (GSM) và mục đích sử dụng.\nTư vấn giải pháp tối ưu công nghệ in (chọn Flexo cho sản lượng lớn/chi phí tối ưu hoặc Offset cho hình ảnh sắc nét, nhiều màu) và kết cấu bao bì phù hợp."
       },
       {
         "num": "02",
-        "title": "Báo giá & duyệt mẫu",
-        "desc": "Báo giá trong 30 phút; in mẫu thật nếu khách cần xem trước."
+        "title": "Lập báo giá & Kế hoạch tiến độ",
+        "desc": "Phân tích giá thành dựa trên số lượng, quy cách gia công sau in và lựa chọn vật liệu giấy an toàn thực phẩm.\nGửi bảng báo giá chi tiết, các mức chiết khấu theo quy mô đơn hàng kèm cam kết thời gian giao hàng (Lead time) cụ thể."
       },
       {
         "num": "03",
-        "title": "Dàn file & canh khuôn",
-        "desc": "Xưởng dàn file, canh khuôn bế và tràn lề — miễn phí."
+        "title": "Xác nhận đơn hàng & Hợp đồng",
+        "desc": "Thống nhất các điều khoản thương mại, quy cách kỹ thuật, tiêu chuẩn kiểm thử chất lượng và phương thức thanh toán.\nKý kết hợp đồng nguyên tắc/đơn đặt hàng và lập lệnh triển khai sản xuất nội bộ vào hệ thống."
       },
       {
         "num": "04",
-        "title": "In flexo cuộn",
-        "desc": "In 1–4 màu bằng mực gốc nước đạt chuẩn tiếp xúc thực phẩm."
+        "title": "Thiết kế & Duyệt Marquette",
+        "desc": "Kiểm tra file thiết kế chuyên dụng cho in ấn & mockup sản phẩm\nKhách hàng có thể đến trực tiếp kiểm tra form dáng, kích thước và màu sắc trước khi ra bản kẽm/trục in."
       },
       {
         "num": "05",
-        "title": "Bế, gấp dán, kiểm tra",
-        "desc": "Gấp dán tự động, kiểm tra ngẫu nhiên theo lô trước khi đóng gói."
+        "title": "Sản xuất hàng loạt",
+        "desc": "Chế bản: Xuất kẽm CTP (Offset) hoặc khuôn polymer (Flexo).\nIn ấn & Gia công sau in: Vận hành in theo dải màu tiêu chuẩn tráng phủ an toàn thực phẩm, bế dán, đột lỗ, gia công thành phẩm ."
       },
       {
         "num": "06",
-        "title": "Đóng gói & giao hàng",
-        "desc": "Giao toàn quốc; khu vực Hà Nội / Hà Nam giao trong 24–48h."
+        "title": "Kiểm soát chất lượng (QC) & Giao hàng",
+        "desc": "Kiểm định chất lượng KCS theo từng sản phẩm đảm bảo độ chính xác và tính an toàn vệ sinh.\nĐóng thùng, bao bọc màng co bảo vệ chống ẩm/bụi bẩn và vận chuyển tận nơi theo đúng tiến độ cam kết."
       }
     ]
   },
   "cta": {
     "title": "Bắt đầu đơn hàng",
     "body": "Gửi loại bao bì, kích thước và số lượng dự kiến — xưởng báo giá trong 30 phút.",
-    "action": { "label": "Liên hệ nhận báo giá", "href": "/contact" }
+    "action": {
+      "label": "Liên hệ nhận báo giá",
+      "href": "/contact"
+    }
   }
 }
