@@ -417,12 +417,19 @@ export const contactSchema = z.object({
     })
     .optional(),
   form: z.object({ title: z.string() }),
-  faq: z.object({
-    title: z.string(),
-    items: z
-      .array(z.object({ q: z.string(), a: z.array(z.string()).default([]) }))
-      .default([]),
-  }),
+  map: z
+    .object({
+      iframeUrl: z.string().optional(),
+    })
+    .optional(),
+  faq: z
+    .object({
+      title: z.string(),
+      items: z
+        .array(z.object({ q: z.string(), a: z.array(z.string()).default([]) }))
+        .default([]),
+    })
+    .optional(),
   company: z.object({
     blocks: z
       .array(z.object({ title: z.string(), body: z.array(z.string()).default([]) }))

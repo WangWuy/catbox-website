@@ -1167,6 +1167,16 @@ export function contactFields(imageDir: string) {
       },
     ),
     form: fields.object({ title: fields.text({ label: "Tiêu đề khối" }) }, { label: "Form liên hệ" }),
+    map: fields.object(
+      {
+        iframeUrl: fields.text({
+          label: "Link Google Maps iframe (src)",
+          description: "URL src trong thẻ iframe lấy từ Google Maps Chia sẻ > Nhúng bản đồ.",
+          multiline: true,
+        }),
+      },
+      { label: "Bản đồ Google Maps" },
+    ),
     faq: fields.object(
       {
         title: fields.text({ label: "Tiêu đề khối" }),
