@@ -6,7 +6,7 @@
   "hotline": "094.789.5599",
   "hotlineHref": "tel:+8494 789 5599",
   "zalo": "094.789.5599",
-  "email": "cfc@cfc.vn",
+  "email": "cfc@catbox.vn",
   "searchPlaceholder": "Tìm bao bánh mì, bánh mì que, bánh chuối chiên, hộp đựng thực phẩm",
   "promoPill": "Miễn phí giao hàng từ 2.000 túi",
   "headerCta": {
@@ -42,6 +42,19 @@
   ],
   "locations": [
     {
+      "icon": "lucide:building-2",
+      "label": "Văn phòng",
+      "streetAddress": "Số 7 ngõ 37 Phố Tây Kết - P. Hồng Hà - TP. Hà Nội",
+      "locality": "Hà Nội",
+      "country": "VN",
+      "hours": {
+        "days": "Thứ 2 - Thứ 7",
+        "opens": "08:00",
+        "closes": "17:00"
+      },
+      "image": "brand/hero-banner.png"
+    },
+    {
       "icon": "lucide:factory",
       "label": "Nhà máy",
       "streetAddress": "KCN Đồng Văn, Duy Tiên",
@@ -51,19 +64,6 @@
         "days": "Thứ 2 - Thứ 7",
         "opens": "08:00",
         "closes": "17:30"
-      },
-      "image": "brand/hero-banner.png"
-    },
-    {
-      "icon": "lucide:building-2",
-      "label": "Văn phòng",
-      "streetAddress": "Số 7, ngõ 37, Phố Tây Kết, phường Hồng Hà",
-      "locality": "Hà Nội",
-      "country": "VN",
-      "hours": {
-        "days": "Thứ 2 - Thứ 7",
-        "opens": "08:00",
-        "closes": "17:00"
       },
       "image": "brand/hero-banner.png"
     }
