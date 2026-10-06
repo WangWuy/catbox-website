@@ -45,6 +45,7 @@
       "icon": "lucide:building-2",
       "label": "Văn phòng",
       "streetAddress": "Số 7 ngõ 37 Phố Tây Kết - P. Hồng Hà - TP. Hà Nội",
+      "locality": "TP. Hà Nôi",
       "country": "VN",
       "hours": {
         "days": "Thứ 2 - Thứ 7",
