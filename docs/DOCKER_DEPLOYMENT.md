@@ -104,15 +104,59 @@ Khởi động Caddy: `caddy run` (Caddy sẽ tự động đăng ký SSL Let's 
 
 ---
 
-### Lựa chọn B: Nginx trên máy chủ Host
-Cấu hình Virtual Host cho Nginx ngoài VPS trỏ vào các container:
+### Lựa chọn B: Nginx trên máy chủ Host (Định tuyến chung 1 domain cho cả Site & /keystatic)
+Cấu hình Virtual Host cho Nginx ngoài VPS:
+- Toàn bộ trang web tĩnh trỏ vào container `cfc` (cổng `8080`).
+- Route `/keystatic` và `/api/keystatic` trỏ vào container `cfc-admin` (cổng `4321`).
+- Route `/_astro/` ưu tiên lấy từ container tĩnh, nếu không thấy (ví dụ JS/CSS của Keystatic) sẽ tự động fallback sang container admin:
+
 ```nginx
+upstream cfc_static {
+    server 127.0.0.1:8080;
+}
+
+upstream cfc_admin {
+    server 127.0.0.1:4321;
+}
+
 server {
     listen 80;
-    server_name cfc.vn www.cfc.vn;
+    server_name baobicfc.vn www.baobicfc.vn;
 
+    # Cho phép upload ảnh sản phẩm qua Keystatic CMS
+    client_max_body_size 50M;
+
+    # 1. Định tuyến riêng cho Keystatic Admin SSR
+    location ~ ^/(keystatic|api/keystatic) {
+        proxy_pass http://cfc_admin;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 2. Xử lý bundle assets: Thử site tĩnh trước, nếu 404 (assets của admin) thì fallback sang admin
+    location /_astro/ {
+        proxy_pass http://cfc_static;
+        proxy_intercept_errors on;
+        error_page 404 = @astro_admin_fallback;
+        proxy_set_header Host $host;
+    }
+
+    location @astro_admin_fallback {
+        proxy_pass http://cfc_admin;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 3. Tất cả các trang công khai còn lại phục vụ từ container tĩnh
     location / {
-        proxy_pass http://127.0.0.1:8080;
+        proxy_pass http://cfc_static;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -122,7 +166,7 @@ server {
 ```
 Dùng Certbot lấy chứng chỉ SSL miễn phí:
 ```bash
-certbot --nginx -d cfc.vn -d www.cfc.vn
+sudo certbot --nginx -d baobicfc.vn -d www.baobicfc.vn
 ```
 
 ---
@@ -135,4 +179,23 @@ Nếu domain quản lý trên Cloudflare:
    - `catbox.vn` -> `http://localhost:8081`
    - `tetta.vn` -> `http://localhost:8082`
 3. Không cần mở bất kỳ port 80/443 nào trên Firewall VPS.
+
+---
+
+## 🤖 4. Tự động hóa CI/CD qua GitHub Actions
+
+Dự án đã tích hợp sẵn workflow tại [`.github/workflows/deploy.yml`](file:///.github/workflows/deploy.yml). Mỗi khi có commit mới đẩy lên branch `main` (kể cả bài viết do **Keystatic Cloud bot** tự commit khi người dùng ấn Lưu), GitHub Actions sẽ tự động SSH vào VPS để kéo code và rebuild lại các container.
+
+### Các GitHub Secrets cần cấu hình:
+Vào GitHub Repository → **Settings** → **Secrets and variables** → **Actions** → Thêm:
+
+| Secret | Mô tả | Ví dụ |
+|---|---|---|
+| `VPS_HOST` | Địa chỉ IP hoặc tên miền của VPS | `103.xxx.xxx.xxx` |
+| `VPS_USERNAME` | Tên user đăng nhập SSH | `root` hoặc `ubuntu` |
+| `VPS_SSH_KEY` | Private SSH key (nội dung file `~/.ssh/id_rsa` hoặc `id_ed25519`) | `-----BEGIN OPENSSH PRIVATE KEY-----...` |
+| `VPS_PASSWORD` | Mật khẩu VPS (nếu không dùng SSH key) | `mat_khau_vps` |
+| `VPS_PORT` | Cổng SSH (mặc định: 22) | `22` |
+| `VPS_PROJECT_DIR` | Đường dẫn thư mục chứa source trên VPS | `/var/www/catbox` hoặc `/home/ubuntu/catbox` |
+
 

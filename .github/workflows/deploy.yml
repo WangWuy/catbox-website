@@ -1,0 +1,75 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy Docker Containers to VPS
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          passphrase: ${{ secrets.VPS_PASSPHRASE }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          envs: GITHUB_TOKEN
+          script_stop: true
+          script: |
+            TARGET_DIR="${{ secrets.VPS_PROJECT_DIR }}"
+            if [ -z "$TARGET_DIR" ]; then
+              TARGET_DIR="/opt/catbox"
+            fi
+            echo "🚀 Navigating to $TARGET_DIR..."
+            cd "$TARGET_DIR"
+
+            # 1. Khởi tạo Git repo nếu chưa có và cấu hình xác thực qua GITHUB_TOKEN
+            if [ ! -d .git ]; then
+              echo "🔧 Initializing git repository in $TARGET_DIR..."
+              git init -b main
+              git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+            else
+              git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+            fi
+
+            # 2. Kéo code mới nhất từ branch main (kể cả commit do Keystatic Cloud bot đẩy lên)
+            echo "📥 Fetching and syncing latest code..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            # 3. Xoá token khỏi remote URL sau khi pull để bảo mật
+            git remote set-url origin "https://github.com/${{ github.repository }}.git"
+
+            # 4. Đảm bảo file .env tồn tại trên server
+            if [ ! -f .env ]; then
+              if [ -f .env.example ]; then
+                echo "⚠️ .env not found, creating from .env.example..."
+                cp .env.example .env
+              fi
+            fi
+
+            # 5. Build và khởi động lại các container (kèm profile admin cho Keystatic SSR)
+            echo "🐳 Building and starting Docker containers..."
+            docker compose --profile admin up -d --build
+
+            # 6. Dọn dẹp Docker images không dùng để giải phóng dung lượng đĩa
+            echo "🧹 Pruning dangling docker images..."
+            docker image prune -f
+
+            echo "✅ Deployment finished successfully!"

@@ -1,6 +1,6 @@
 services:
   # ============================================================================
-  # 1. Site CFC (cfc.vn) - Industrial Fast-Commerce
+  # 1. Site CFC (baobicfc.vn) - Industrial Fast-Commerce
   # ============================================================================
   cfc:
     build:

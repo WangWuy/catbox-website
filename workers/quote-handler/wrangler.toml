@@ -5,7 +5,7 @@ compatibility_date = "2026-08-01"
 # 3 site nằm trên 3 domain riêng — Worker chỉ nhận request từ đúng 3 origin này.
 # Cập nhật khi khách chốt domain thật (TECH_STACK_v2 §13.5).
 [vars]
-ALLOWED_ORIGINS = "https://catbox.vn,https://tetta.vn,https://cfc.vn"
+ALLOWED_ORIGINS = "https://catbox.vn,https://tetta.vn,https://baobicfc.vn"
 
 # Secret — KHÔNG commit, đặt bằng:
 #   wrangler secret put TELEGRAM_BOT_TOKEN

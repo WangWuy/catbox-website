@@ -31,4 +31,4 @@ Allow: /
 User-agent: Applebot-Extended
 Allow: /
 
-Sitemap: https://cfc.vn/sitemap-index.xml
+Sitemap: https://baobicfc.vn/sitemap-index.xml

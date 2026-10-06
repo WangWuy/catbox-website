@@ -53,7 +53,7 @@ const siteUrl =
     : null) ||
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
   (process.env.CF_PAGES_URL ? process.env.CF_PAGES_URL : null) ||
-  'https://cfc.vn';
+  'https://baobicfc.vn';
 
 // Site cfc — deploy thành project Cloudflare Pages riêng, domain riêng.
 // Đổi `site` khi khách chốt domain thật (TECH_STACK_v2 §13.5).

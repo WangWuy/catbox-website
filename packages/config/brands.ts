@@ -108,8 +108,8 @@ const INFRA: Record<BrandId, BrandInfra> = {
     id: "cfc",
     short: "CFC",
     icon: "lucide:croissant",
-    domain: "cfc.vn", // TODO
-    site: "https://cfc.vn",
+    domain: "baobicfc.vn",
+    site: "https://baobicfc.vn",
     themeColor: "#E67E22", // = --color-theme trong tokens/cfc.css
     favicon: "/logo.png",
     ogImage: "/og/og-image.png",

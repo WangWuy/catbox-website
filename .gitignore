@@ -11,4 +11,4 @@ sites/*/public/placeholders/
 .code-review-graph/
 .claude/*.local.json
 .vercel/
-
+infra/
