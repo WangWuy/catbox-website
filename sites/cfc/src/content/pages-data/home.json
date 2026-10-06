@@ -84,7 +84,7 @@
     "limit": 50
   },
   "news": {
-    "title": "Tin tức & Cẩm nang ",
+    "title": "Tin tức & Cẩm nang",
     "action": {
       "label": "Khám phá thêm ›",
       "href": "/blog"

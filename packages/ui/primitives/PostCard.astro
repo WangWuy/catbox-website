@@ -160,7 +160,7 @@ const excerpt = description ? clip(description, excerptChars) : undefined;
     <time datetime={date.toISOString()} class="sr-only">{fmt(date)}</time>
 
     <Heading
-      class:list={[titleWidth, "text-card-title leading-snug font-bold text-pretty"]}
+      class:list={[titleWidth, "text-(length:--text-post-card-title) leading-snug font-bold text-pretty"]}
     >
       {/* `after:` phủ link ra toàn card — cả ảnh cũng bấm được */}
       <a
@@ -185,7 +185,7 @@ const excerpt = description ? clip(description, excerptChars) : undefined;
           )}
           <p
             class:list={[
-              "clamp-excerpt text-body leading-relaxed text-pretty text-ink-muted",
+              "clamp-excerpt text-(length:--text-post-card-excerpt) leading-relaxed text-pretty text-ink-muted",
               excerptWidth,
               hideExcerptMobile && "hidden md:block",
             ]}

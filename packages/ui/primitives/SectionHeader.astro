@@ -58,6 +58,7 @@ interface Props {
   /** Căn lề tiêu đề: 'left' (mặc định, trái trên desktop) hoặc 'center' (luôn căn giữa mọi màn hình) */
   align?: "left" | "center";
   class?: string;
+  titleClass?: string;
 }
 
 const {
@@ -73,6 +74,7 @@ const {
   spacing = "default",
   align = "left",
   class: className = "",
+  titleClass = "",
 } = Astro.props;
 
 /* `accent` nhận cả chuỗi lẫn mảng — chuẩn hoá về mảng một lần ở đây để phần
@@ -102,7 +104,10 @@ const isCenter = align === "center";
   >
     <h2
       {id}
-      class="text-(length:--text-section-mobile) font-bold tracking-tight uppercase md:text-(length:--text-section-title)"
+      class:list={[
+        titleClass || "text-(length:--text-section-mobile) md:text-(length:--text-section-title)",
+        "font-bold tracking-tight uppercase",
+      ]}
     >
       {title}{
         accentText && (

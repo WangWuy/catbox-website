@@ -87,14 +87,14 @@ const minimal = layout === "minimal";
 
   {
     minimal ? (
-      <h3 class="px-2 pt-3.5 text-left text-body leading-snug font-medium text-balance">
+      <h3 class="px-2 pt-3.5 text-left text-(length:--text-product-card-mobile) sm:text-(length:--text-product-card) leading-snug font-medium text-balance">
         <a href={href} class="transition-colors hover:text-primary">
           {title}
         </a>
       </h3>
     ) : (
       <div class="flex flex-1 flex-col items-start gap-2 px-2 pt-3.5 text-left">
-        <h3 class="text-body leading-snug font-medium text-balance">
+        <h3 class="text-(length:--text-product-card-mobile) sm:text-(length:--text-product-card) leading-snug font-medium text-balance">
           <a href={href} class="transition-colors hover:text-primary">
             {title}
           </a>

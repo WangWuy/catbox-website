@@ -31,7 +31,7 @@ const { assets, title = "Tin tức", action, items } = Astro.props;
 ---
 
 <section class="site-container" aria-labelledby="news-heading" data-reveal>
-  <SectionHeader id="news-heading" {title} />
+  <SectionHeader id="news-heading" {title} titleClass="text-[1.25rem] md:text-[1.625rem]" />
 
   <div class="relative" data-carousel>
     <div
@@ -61,10 +61,10 @@ const { assets, title = "Tin tức", action, items } = Astro.props;
         action && (
           <div class="w-[280px] shrink-0 snap-start sm:w-[calc((100%-1.5rem)/2)] md:w-[calc((100%-3rem)/3)]">
             <div class="group relative flex h-full min-h-[340px] flex-col items-center justify-center p-6 text-center md:p-8">
-              <h3 class="mb-3 text-card-title font-bold text-ink transition-colors group-hover:text-primary">
+              <h3 class="mb-3 text-(length:--text-post-card-title) font-bold text-ink transition-colors group-hover:text-primary">
                 Xem tất cả bài viết
               </h3>
-              <p class="mb-6 max-w-[26ch] text-body leading-relaxed text-ink-muted text-pretty">
+              <p class="mb-6 max-w-[26ch] text-(length:--text-post-card-excerpt) leading-relaxed text-ink-muted text-pretty">
                 Khám phá thêm xu hướng thiết kế và kiến thức bao bì F&B
               </p>
               <PillButton
