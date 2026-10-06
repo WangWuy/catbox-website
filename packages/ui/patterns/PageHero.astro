@@ -1,19 +1,10 @@
 ---
 /**
- * Banner đầu trang cho các trang trong (/blog, /products, /danh-muc...).
+ * Banner đầu trang cho các trang trong (/about-us, /products, /danh-muc...).
  *
- * Dải nền màu chạy hết bề ngang (--color-surface-page-hero), bên trái là
- * tiêu đề lớn + breadcrumb, bên phải là ảnh sản phẩm/minh họa căn thẳng hàng
- * theo bố cục site-container.
- *
- * Nền dùng `--color-surface-page-hero` (nâu giấy kraft) nên chữ phải là bộ
- * SÁNG: `--color-ink-on-hero` cho tiêu đề, Breadcrumb nhận `tone="dark"`.
- *
- * Ảnh bên phải căn theo lưới nội dung site-container, thẳng hàng với mép phải
- * của thanh tìm kiếm phía trên và các khối nội dung bên dưới.
- *
- * Ảnh chỉ hiện từ md trở lên: ở mobile bề ngang không đủ cho hai cột, ảnh ẩn
- * để ưu tiên hiển thị tiêu đề và breadcrumb.
+ * Banner ảnh full-width tràn 2 viền màn hình (edge-to-edge) giống HeroBanner
+ * của Trang chủ. Bên trên có lớp phủ gradient tối giúp tiêu đề trắng và
+ * breadcrumb đọc rõ trên mọi ảnh nền.
  */
 import Breadcrumb from "@ui/primitives/Breadcrumb.astro";
 import SmartImage from "@ui/primitives/SmartImage.astro";
@@ -28,7 +19,7 @@ interface Props {
   title: string;
   /** Đường dẫn breadcrumb, KHÔNG gồm "Trang chủ" (Breadcrumb tự thêm) */
   crumbs: Crumb[];
-  /** Ảnh sản phẩm bên phải; cần `assets` đi kèm mới hiện */
+  /** Ảnh nền banner; cần `assets` đi kèm mới hiện */
   assets?: AssetMap;
   image?: string;
   imageAlt?: string;
@@ -39,41 +30,39 @@ const { title, crumbs, assets, image, imageAlt = "" } = Astro.props;
 const showImage = !!assets && !!image;
 ---
 
-<section class="relative bg-(--color-surface-page-hero)">
-  <div
-    class="site-container flex min-h-(--height-page-hero) flex-col justify-center gap-4 py-8 md:flex-row md:items-center md:justify-between md:gap-8 md:py-6"
-  >
-    <div class="flex flex-col gap-3">
-      <h1
-        class="text-(length:--text-page-hero-title-mobile) font-extrabold tracking-tight text-balance text-(--color-ink-on-hero) md:text-(length:--text-page-hero-title)"
-      >
-        {title}
-      </h1>
-
-      <Breadcrumb items={crumbs} bare tone="dark" />
-    </div>
-
-    {
-      showImage && (
+<section class="relative w-full overflow-hidden bg-(--color-surface-page-hero)">
+  {
+    showImage && (
+      <div class="absolute inset-0 z-0">
+        <SmartImage
+          assets={assets!}
+          src={image}
+          alt={imageAlt}
+          width={1920}
+          height={600}
+          priority
+          sizes="100vw"
+          class="h-full w-full object-cover"
+        />
+        {/* Gradient từ trái sang tương tự HeroBanner Trang chủ giúp chữ đọc rõ ràng */}
         <div
-          aria-hidden={imageAlt === "" ? "true" : undefined}
-          class="hidden shrink-0 items-center justify-end md:flex"
-        >
-          <div class="w-(--width-page-hero-image) overflow-hidden rounded-panel bg-white shadow-(--shadow-page-hero-image)">
-            <SmartImage
-              assets={assets!}
-              src={image}
-              alt={imageAlt}
-              width={520}
-              height={390}
-              ratio="4x3"
-              priority
-              sizes="(min-width: 768px) 260px, 0px"
-              class="aspect-(--aspect-page-hero-image) w-full object-cover"
-            />
-          </div>
-        </div>
-      )
-    }
+          aria-hidden="true"
+          class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/30"
+        />
+      </div>
+    )
+  }
+
+  <div
+    class="site-container relative z-10 flex min-h-(--height-page-hero) flex-col justify-center gap-3 py-8 sm:py-10 md:py-12"
+  >
+    <h1
+      class="text-(length:--text-page-hero-title-mobile) font-extrabold tracking-tight text-balance text-white md:text-(length:--text-page-hero-title)"
+    >
+      {title}
+    </h1>
+
+    <Breadcrumb items={crumbs} bare tone="dark" />
   </div>
 </section>
+

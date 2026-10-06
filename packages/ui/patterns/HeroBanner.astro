@@ -57,7 +57,7 @@ const ctaHref = cta?.href || "/contact";
         ratio="16x9"
         priority
         sizes="100vw"
-        class="h-(--height-hero-mobile) w-full object-cover sm:h-(--height-hero-sm) md:h-(--height-hero,500px) md:min-h-(--height-hero-min,500px)"
+        class="h-(--height-hero-mobile) w-full object-cover sm:h-(--height-hero-sm) md:h-(--height-hero-md,var(--height-hero)) lg:h-(--height-hero) min-h-(--height-hero-min,360px)"
       />
 
       <!-- Gradient từ trái sang giúp chữ đọc được trên mọi ảnh khách gửi sau -->
@@ -153,13 +153,13 @@ const ctaHref = cta?.href || "/contact";
             {stats.map((s, idx) => {
               const Tag = s.href ? "a" : "div";
               return (
-                <div class:list={["h-full", idx >= 4 && "hidden sm:block"]}>
+                <div class:list={["h-full relative hover:z-10", idx >= 4 && "hidden sm:block"]}>
                   <Tag
                     href={s.href}
                     class:list={[
-                      "group flex h-full flex-col items-center justify-center gap-1.5 sm:gap-2.5 rounded-none border border-black/5 bg-white/95 px-2 py-3.5 sm:px-3 sm:py-4.5 text-center shadow-(--shadow-hero-chip) backdrop-blur-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                      "group relative flex h-full flex-col items-center justify-center gap-1.5 sm:gap-2.5 rounded-none border border-black/5 bg-white/95 px-2 py-3.5 sm:px-3 sm:py-4.5 text-center shadow-(--shadow-hero-chip) backdrop-blur-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                       s.href &&
-                        "cursor-pointer transition-shadow duration-300 ease-out hover:shadow-(--shadow-hero-chip-hover) hover:border-black/10"
+                        "cursor-pointer transition-[box-shadow,border-color,background-color] duration-300 ease-out hover:z-10 hover:bg-white hover:shadow-(--shadow-hero-chip-hover) hover:border-black/10"
                     ]}
                   >
                     {/* Icon bao bì custom duotone — không dịch chuyển khi hover */}
