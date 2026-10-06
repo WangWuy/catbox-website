@@ -24,8 +24,8 @@
     ]
   },
   "purpose": {
-    "title": "Văn hóa",
-    "accent": "CFC Factory",
+    "title": "Tầm nhìn -",
+    "accent": "Sứ mệnh",
     "items": [
       {
         "icon": "lucide:eye",
@@ -42,8 +42,8 @@
     ]
   },
   "coreValues": {
-    "title": "Giá trị",
-    "accent": "cốt lõi",
+    "title": "Văn hoá",
+    "accent": "Doanh nghiệp",
     "items": [
       {
         "title": "Kỷ luật",
