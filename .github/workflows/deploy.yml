@@ -49,10 +49,9 @@ jobs:
             if [ ! -d .git ]; then
               echo "🔧 Initializing git repository..."
               git init -b main
-              git remote add origin "$AUTH_URL"
-            else
-              git remote set-url origin "$AUTH_URL"
             fi
+            git remote remove origin 2>/dev/null || true
+            git remote add origin "$AUTH_URL"
 
             # 4. Kéo code mới nhất từ branch main
             echo "📥 Fetching and syncing latest code from main..."
