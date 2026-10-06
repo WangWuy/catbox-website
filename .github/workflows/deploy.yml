@@ -1,4 +1,4 @@
-name: Deploy to VPS
+name: Build and Deploy to VPS
 
 on:
   push:
@@ -8,15 +8,72 @@ on:
 
 concurrency:
   group: production-deploy
-  cancel-in-progress: false
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
-  deploy:
-    name: Deploy Docker Containers to VPS
+  build-and-push:
+    name: Build & Push Docker Images
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
+    strategy:
+      matrix:
+        include:
+          - site: cfc
+            target: runner-static
+            image_name: site-cfc
+            extra_args: ""
+          - site: catbox
+            target: runner-static
+            image_name: site-catbox
+            extra_args: ""
+          - site: tetta
+            target: runner-static
+            image_name: site-tetta
+            extra_args: ""
+          - site: cfc
+            target: runner-ssr
+            image_name: cfc-admin
+            extra_args: KEYSTATIC_ADMIN=node
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set image tag
+        id: meta
+        run: |
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "tag=ghcr.io/${REPO_LOWER}/${{ matrix.image_name }}:latest" >> $GITHUB_OUTPUT
+
+      - name: Build and push ${{ matrix.image_name }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: ${{ matrix.target }}
+          build-args: |
+            SITE=${{ matrix.site }}
+            ${{ matrix.extra_args }}
+          push: true
+          tags: ${{ steps.meta.outputs.tag }}
+          cache-from: type=gha,scope=${{ matrix.image_name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image_name }}
+
+  deploy:
+    name: Deploy to VPS
+    needs: build-and-push
+    runs-on: ubuntu-latest
     steps:
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.2.0
@@ -42,7 +99,7 @@ jobs:
             # 2. Đảm bảo quyền Git trong thư mục
             git config --global --add safe.directory '*'
 
-            # 3. Cấu hình origin với token xác thực từ GitHub Actions
+            # 3. Cấu hình origin với token xác thực từ GitHub Actions để sync file cấu hình
             AUTH_URL="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
             CLEAN_URL="https://github.com/${{ github.repository }}.git"
 
@@ -53,8 +110,8 @@ jobs:
             git remote remove origin 2>/dev/null || true
             git remote add origin "$AUTH_URL"
 
-            # 4. Kéo code mới nhất từ branch main
-            echo "📥 Fetching and syncing latest code from main..."
+            # 4. Kéo cấu hình mới nhất từ branch main (docker-compose.yml, nginx.conf...)
+            echo "📥 Fetching and syncing latest config from main..."
             git fetch origin main
             git reset --hard origin/main
 
@@ -69,12 +126,23 @@ jobs:
               fi
             fi
 
-            # 7. Build và khởi động lại container (bao gồm profile admin cho Keystatic SSR)
-            echo "🐳 Building and starting Docker containers..."
-            docker compose --profile admin up -d --build
+            # 7. Đăng nhập GHCR bằng GITHUB_TOKEN tạm thời để pull prebuilt images
+            echo "🔐 Authenticating with GitHub Container Registry..."
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-            # 8. Dọn dẹp Docker images cũ
+            # 8. Kéo các image đã build sẵn từ GHCR về VPS
+            echo "📥 Pulling latest prebuilt images from GHCR..."
+            docker compose --profile admin pull
+
+            # 9. Khởi động lại container (không tốn CPU biên dịch trên VPS)
+            echo "🐳 Starting Docker containers..."
+            docker compose --profile admin up -d
+
+            # 10. Đăng xuất GHCR để bảo mật
+            docker logout ghcr.io
+
+            # 11. Dọn dẹp Docker images cũ
             echo "🧹 Pruning dangling docker images..."
             docker image prune -f
 
-            echo "✅ Deployment finished successfully!"
+            echo "✅ Deployment finished successfully in seconds!"
