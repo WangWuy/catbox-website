@@ -38,7 +38,7 @@ const pkg = (/** @type {string} */ name) => fileURLToPath(new URL(`../../package
  * (`crypto.getRandomValues`) để sinh OAuth state. Lỗi cũ không còn áp dụng.
  */
 const adminMode = process.env.KEYSTATIC_ADMIN;
-const withAdmin = adminMode === 'true' || adminMode === 'node' || adminMode === 'cloudflare' || adminMode === 'vercel';
+const withAdmin = true;
 
 const adminAdapter = () => {
   if (adminMode === 'cloudflare') return cloudflare({ imageService: 'passthrough' });
