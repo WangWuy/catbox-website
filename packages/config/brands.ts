@@ -23,9 +23,10 @@ import {
   type BrandSettings,
   type BrandStat,
   type SalesRep,
+  type CertBadge,
 } from "./settings";
 
-export type { BrandLocation, BrandStat, SalesRep };
+export type { BrandLocation, BrandStat, SalesRep, CertBadge };
 
 export type BrandId = "catbox" | "tetta" | "cfc";
 

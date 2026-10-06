@@ -39,6 +39,17 @@ const salesRep = z.object({
   phone: z.string(),
 });
 
+/** Logo chứng nhận & kiểm định chân trang (ISO, HACCP, Sở/Bộ Công Thương) */
+export const certBadgeSchema = z.object({
+  id: z.string().optional(),
+  name: z.string(),
+  label: z.string().optional(),
+  sub: z.string().optional(),
+  href: z.string().optional(),
+  src: z.string().optional(),
+  type: z.enum(["iso", "haccp", "bocongthuong", "socongthuong", "custom"]).default("custom").optional(),
+});
+
 /**
  * Một cơ sở (nhà máy / văn phòng) — địa chỉ TÁCH THÀNH PHẦN, không phải một
  * chuỗi liền.
@@ -104,6 +115,8 @@ export const settingsSchema = z.object({
   topbarCta: cta,
 
   certifications: z.array(z.string()).default([]),
+  /** Logo chứng nhận & kiểm định chân trang (ISO, HACCP, Sở/Bộ Công Thương) */
+  certLogos: z.array(certBadgeSchema).default([]),
   /**
    * Số liệu năng lực — dùng ở StatsBar (/about-us) và khối cam kết trước form
    * (/contact). Để ở đây thay vì khai trong từng trang vì hai nơi phải khớp
@@ -137,6 +150,7 @@ export type BrandNavEntry = z.infer<typeof navEntry>;
 export type BrandLocation = z.infer<typeof location>;
 export type BrandStat = z.infer<typeof stat>;
 export type SalesRep = z.infer<typeof salesRep>;
+export type CertBadge = z.infer<typeof certBadgeSchema>;
 
 /** Đọc file settings JSON của một brand — xem `parseData()` cho lý do kiểm tra */
 export const parseSettings = (brand: string, raw: unknown): BrandSettings =>

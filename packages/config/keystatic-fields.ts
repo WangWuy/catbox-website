@@ -342,6 +342,31 @@ export function settingsFields() {
       label: "Chứng nhận",
       itemLabel: (props) => props.value || "(chưa đặt tên)",
     }),
+    certLogos: fields.array(
+      fields.object({
+        name: fields.text({ label: "Tên chứng nhận / logo (ví dụ: ISO 9001:2015, HACCP CODEX, Đã thông báo)" }),
+        label: fields.text({ label: "Mô tả / cơ quan (ví dụ: Quản lý chất lượng, Bộ Công Thương)" }),
+        sub: fields.text({ label: "Dòng phụ (ví dụ: Tiêu chuẩn quốc tế, online.gov.vn)" }),
+        href: fields.text({ label: "Đường dẫn liên kết (tùy chọn)" }),
+        src: fields.text({ label: "Đường dẫn ảnh logo (tùy chọn, để trống dùng biểu trưng chuẩn)" }),
+        type: fields.select({
+          label: "Loại biểu trưng",
+          options: [
+            { label: "ISO (Quản lý chất lượng)", value: "iso" },
+            { label: "HACCP (An toàn thực phẩm)", value: "haccp" },
+            { label: "Bộ Công Thương (Đã thông báo)", value: "bocongthuong" },
+            { label: "Sở Công Thương", value: "socongthuong" },
+            { label: "Tùy biến", value: "custom" },
+          ],
+          defaultValue: "custom",
+        }),
+      }),
+      {
+        label: "Logo chứng nhận & kiểm định chân trang",
+        description: "Hiện dưới phần tư vấn bán hàng và chính sách bán hàng (ISO, HACCP, Sở/Bộ Công Thương).",
+        itemLabel: (props) => props.fields.name.value || "(chưa đặt tên)",
+      },
+    ),
     stats: fields.array(
       fields.object({
         num: fields.text({ label: "Con số", description: "Ví dụ “10+”, “5.000+”, “100%”." }),

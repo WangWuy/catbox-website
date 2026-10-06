@@ -6,8 +6,9 @@
  * còn nằm tĩnh trong Footer.)
  */
 import { Icon } from "astro-icon/components";
-import { BRANDS, POLICY_LINKS, type FnbBrandId } from "@config/brands";
+import { BRANDS, POLICY_LINKS, type FnbBrandId, type CertBadge as CertBadgeType } from "@config/brands";
 import BrandLogo from "@ui/brand/fnb/BrandLogo.astro";
+import CertBadge from "@ui/brand/fnb/CertBadge.astro";
 
 interface Props {
   brand: FnbBrandId;
@@ -25,11 +26,63 @@ interface Props {
    * bù đúng khoảng đó để nội dung cột 1 không bị thẻ che mất.
    */
   overlapTrustStrip?: boolean;
+  /**
+   * Danh sách logo chứng nhận / kiểm định (ISO, HACCP, Sở/Bộ Công Thương...).
+   * Mặc định lấy từ `b.certLogos` trong cài đặt brand.
+   */
+  certLogos?: CertBadgeType[];
+  /**
+   * Tiêu đề nhỏ phía trên nhóm logo chứng nhận.
+   * Mặc định: "Chứng nhận chất lượng & Đăng ký" (để trống nếu không muốn hiện chữ).
+   */
+  certTitle?: string;
 }
 
-const { brand, footerLinks, overlapTrustStrip = false } = Astro.props;
+const {
+  brand,
+  footerLinks,
+  overlapTrustStrip = false,
+  certLogos,
+  certTitle = "Chứng nhận chất lượng & Đăng ký",
+} = Astro.props;
 const policyLinks = footerLinks?.length ? footerLinks : POLICY_LINKS;
 const b = BRANDS[brand];
+
+// Fallback badges nếu chưa khai báo trong JSON
+const fallbackCertLogos: CertBadgeType[] = [
+  {
+    id: "iso",
+    name: "ISO 9001:2015",
+    label: "Quản lý chất lượng",
+    sub: "Tiêu chuẩn quốc tế",
+    type: "iso",
+    href: "/quy-trinh",
+  },
+  {
+    id: "haccp",
+    name: "HACCP CODEX",
+    label: "An toàn thực phẩm",
+    sub: "Đạt chuẩn F&B",
+    type: "haccp",
+    href: "/quy-trinh",
+  },
+  {
+    id: "bocongthuong",
+    name: "ĐÃ THÔNG BÁO",
+    label: "Bộ Công Thương",
+    sub: "online.gov.vn",
+    type: "bocongthuong",
+    href: "http://online.gov.vn",
+  },
+];
+
+const badges = certLogos?.length
+  ? certLogos
+  : b.certLogos?.length
+    ? b.certLogos
+    : brand === "cfc"
+      ? fallbackCertLogos
+      : [];
 
 // Dòng điều khoản dưới cột 2 đọc từ "Cài đặt" của brand — trước đây là một
 // map 3 brand nằm ngay trong component, sửa lời điều khoản phải vào sửa code.
@@ -60,10 +113,10 @@ if (brand === "cfc" && !socialList.some((s) => s.label.toLowerCase().includes("s
 
 <footer class:list={["bg-primary-deep text-white", { "pt-(--overlap-trust-strip)": overlapTrustStrip }]}>
   <div
-    class="site-container grid gap-10 py-14 md:grid-cols-2 md:gap-14 md:py-18 lg:grid-cols-(--cols-footer)"
+    class="site-container grid items-start gap-10 py-14 md:grid-cols-2 md:gap-14 md:py-18 lg:grid-cols-(--cols-footer)"
   >
     <!-- Cột 1: pháp nhân + chứng nhận + liên hệ (policy + social nay ở cột 3) -->
-    <div class="flex flex-col gap-5">
+    <div class="flex flex-col gap-5 lg:row-span-2">
       <div class="flex items-center gap-3">
         <BrandLogo brand={brand} variant="dark" />
       </div>
@@ -223,6 +276,28 @@ if (brand === "cfc" && !socialList.some((s) => s.label.toLowerCase().includes("s
         }
       </div>
     </div>
+
+    <!-- Vị trí logo chứng nhận: ISO, HACCP, Sở / Bộ Công Thương (dưới phần tư vấn bán hàng và chính sách bán hàng) -->
+    {
+      badges.length > 0 && (
+        <div class="border-t border-white/12 pt-6 md:col-span-2 lg:col-start-2 lg:col-span-2">
+          <div class="flex flex-col gap-3">
+            {certTitle && (
+              <span class="text-tiny font-semibold tracking-wide text-white/50 uppercase">
+                {certTitle}
+              </span>
+            )}
+            <div class="flex flex-wrap items-center gap-4.5 pt-1 md:gap-6">
+              <slot name="certifications">
+                {badges.map((item) => (
+                  <CertBadge {...item} />
+                ))}
+              </slot>
+            </div>
+          </div>
+        </div>
+      )
+    }
   </div>
 
   <div class="border-t border-white/12">
