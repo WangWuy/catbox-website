@@ -76,9 +76,17 @@
    * quy trình) — nhỏ hơn h2 section nhưng lớn hơn body. */
   --text-card-title: 1.0625rem; /* 17px */
 
-  /* Tên sản phẩm ở đầu trang chi tiết (/products/<slug>) */
-  --text-product-title: 2.25rem; /* 36px — desktop */
-  --text-product-title-mobile: 1.5rem; /* 24px — mobile */
+  /* Tên sản phẩm trên thẻ ProductCard (trang chủ Bán chạy, catalog, carousel liên quan) */
+  --text-product-card: 0.84375rem; /* 13.5px — desktop (giảm từ 15px --text-body) */
+  --text-product-card-mobile: 0.8125rem; /* 13px — mobile */
+
+  /* Tiêu đề và mô tả trên thẻ bài viết PostCard (khối Tin tức trang chủ, /blog) */
+  --text-post-card-title: 0.9375rem; /* 15px — giảm từ 17px (--text-card-title) */
+  --text-post-card-excerpt: 0.8125rem; /* 13px — giảm từ 15px (--text-body) */
+
+  /* Tên sản phẩm ở đầu trang chi tiết (/products/<slug>) — giảm cỡ chữ theo yêu cầu */
+  --text-product-title: 1.625rem; /* 26px — desktop (giảm từ 36px) */
+  --text-product-title-mobile: 1.25rem; /* 20px — mobile (giảm từ 24px) */
 
   /* Tiêu đề trang chính sách (/policies/<slug>) */
   --text-policy-title: 1.875rem; /* 30px — desktop */
@@ -290,11 +298,10 @@
    * trong panel, nhạt hơn thì mất hẳn trên nền beige. */
   --opacity-watermark: 0.05;
 
-  /* Banner đầu trang trong (PageHero) — dải nền màu chạy hết bề ngang, chứa
-   * tiêu đề lớn + breadcrumb bên trái, ảnh sản phẩm/minh họa căn thẳng hàng bên phải.
-   * Thay cho kiểu "Breadcrumb + h1 phẳng" trước đây ở /blog, /products,
-   * /danh-muc — xem `packages/ui/patterns/PageHero.astro`. */
-  --height-page-hero: 220px;
+  /* Banner đầu trang trong (PageHero) — ảnh nền tràn viền 2 mép màn hình
+   * (edge-to-edge), phủ gradient tối, chứa tiêu đề lớn + breadcrumb
+   * ở /about-us, /products, /danh-muc — xem `packages/ui/patterns/PageHero.astro`. */
+  --height-page-hero: 240px;
   /* Bề ngang khối ảnh bên phải. */
   --width-page-hero-image: 260px;
   /* Tỉ lệ khung ảnh (4:3 chuẩn). */
@@ -324,7 +331,7 @@
   /* Đổ bóng của 5 ô danh mục nổi ở chân HeroBanner — nhẹ ở trạng thái tĩnh,
    * đậm hơn khi hover (chỉ ô có href mới nhận hover, xem HeroBanner.astro). */
   --shadow-hero-chip: 0 4px 16px rgb(0 0 0 / 0.06);
-  --shadow-hero-chip-hover: 0 16px 32px -4px rgb(0 0 0 / 0.18);
+  --shadow-hero-chip-hover: 0 10px 20px -3px rgb(0 0 0 / 0.36), 0 4px 6px -2px rgb(0 0 0 / 0.20);
   /* Độ mờ đánh dấu thumbnail gallery đang active — thay cho viền outline
    * cứng, ảnh đang chọn tự phủ mờ nhẹ thay vì đóng khung. */
   --opacity-thumb-active: 0.55;
@@ -371,6 +378,7 @@
    * người dùng phải cuộn hết một màn mới thấy nội dung. */
   --height-hero-mobile: 340px;
   --height-hero-sm: 420px;
+  --height-hero-md: 480px;
   --height-hero: 520px;
 
   /* Drawer nav mobile (MobileNav.astro). Hẹp hơn màn hình để luôn lộ một dải
