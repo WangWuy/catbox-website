@@ -13,7 +13,11 @@
     "build:tetta": "pnpm --filter @catbox/site-tetta build",
     "build:cfc": "pnpm --filter @catbox/site-cfc build",
     "gen:placeholder": "node scripts/gen-placeholder.mjs",
-    "check:content": "node scripts/check-content.mjs"
+    "check:content": "node scripts/check-content.mjs",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

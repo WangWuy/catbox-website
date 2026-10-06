@@ -1,0 +1,79 @@
+services:
+  # ============================================================================
+  # 1. Site CFC (cfc.vn) - Industrial Fast-Commerce
+  # ============================================================================
+  cfc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner-static
+      args:
+        SITE: cfc
+    container_name: catbox-site-cfc
+    restart: unless-stopped
+    ports:
+      - "${PORT_CFC:-8080}:80"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # ============================================================================
+  # 2. Site Catbox (catbox.vn) - Dark Luxury Studio
+  # ============================================================================
+  catbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner-static
+      args:
+        SITE: catbox
+    container_name: catbox-site-catbox
+    restart: unless-stopped
+    ports:
+      - "${PORT_CATBOX:-8081}:80"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # ============================================================================
+  # 3. Site Tetta (tetta.vn) - Elegant Boutique
+  # ============================================================================
+  tetta:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner-static
+      args:
+        SITE: tetta
+    container_name: catbox-site-tetta
+    restart: unless-stopped
+    ports:
+      - "${PORT_TETTA:-8082}:80"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # ============================================================================
+  # 4. Keystatic Admin SSR (Tùy chọn - chỉ chạy khi thêm cờ --profile admin)
+  # ============================================================================
+  cfc-admin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner-ssr
+      args:
+        SITE: cfc
+        KEYSTATIC_ADMIN: node
+    container_name: catbox-cfc-admin
+    restart: unless-stopped
+    ports:
+      - "${PORT_CFC_ADMIN:-4321}:4321"
+    profiles:
+      - admin
+
