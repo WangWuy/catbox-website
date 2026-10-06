@@ -15,28 +15,94 @@ permissions:
   packages: write
 
 jobs:
+  detect-changes:
+    name: Detect Changed Sites
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      has_changes: ${{ steps.set-matrix.outputs.has_changes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check modified paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            shared:
+              - 'packages/**'
+              - 'scripts/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'Dockerfile'
+              - 'docker-compose.yml'
+              - 'nginx.conf'
+              - '.github/workflows/deploy.yml'
+            cfc:
+              - 'sites/cfc/**'
+            catbox:
+              - 'sites/catbox/**'
+            tetta:
+              - 'sites/tetta/**'
+
+      - name: Compute build matrix
+        id: set-matrix
+        run: |
+          SHARED="${{ steps.filter.outputs.shared }}"
+          IS_DISPATCH="${{ github.event_name == 'workflow_dispatch' }}"
+          CFC="${{ steps.filter.outputs.cfc }}"
+          CATBOX="${{ steps.filter.outputs.catbox }}"
+          TETTA="${{ steps.filter.outputs.tetta }}"
+
+          # If shared code changed or triggered manually, rebuild all sites
+          if [ "$SHARED" = "true" ] || [ "$IS_DISPATCH" = "true" ]; then
+            CFC="true"
+            CATBOX="true"
+            TETTA="true"
+          fi
+
+          echo "Filters detected: shared=$SHARED, cfc=$CFC, catbox=$CATBOX, tetta=$TETTA"
+
+          MATRIX="[]"
+          if [ "$CFC" = "true" ]; then
+            MATRIX=$(echo "$MATRIX" | jq -c '. + [
+              {"site": "cfc", "target": "runner-static", "image_name": "site-cfc", "extra_args": ""},
+              {"site": "cfc", "target": "runner-ssr", "image_name": "cfc-admin", "extra_args": "KEYSTATIC_ADMIN=node"}
+            ]')
+          fi
+          if [ "$CATBOX" = "true" ]; then
+            MATRIX=$(echo "$MATRIX" | jq -c '. + [
+              {"site": "catbox", "target": "runner-static", "image_name": "site-catbox", "extra_args": ""}
+            ]')
+          fi
+          if [ "$TETTA" = "true" ]; then
+            MATRIX=$(echo "$MATRIX" | jq -c '. + [
+              {"site": "tetta", "target": "runner-static", "image_name": "site-tetta", "extra_args": ""}
+            ]')
+          fi
+
+          COUNT=$(echo "$MATRIX" | jq 'length')
+          HAS_CHANGES="false"
+          if [ "$COUNT" -gt 0 ]; then
+            HAS_CHANGES="true"
+          fi
+
+          echo "has_changes=$HAS_CHANGES" >> $GITHUB_OUTPUT
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          echo "Matrix planned ($COUNT targets): $MATRIX"
+
   build-and-push:
     name: Build & Push Docker Images
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include:
-          - site: cfc
-            target: runner-static
-            image_name: site-cfc
-            extra_args: ""
-          - site: catbox
-            target: runner-static
-            image_name: site-catbox
-            extra_args: ""
-          - site: tetta
-            target: runner-static
-            image_name: site-tetta
-            extra_args: ""
-          - site: cfc
-            target: runner-ssr
-            image_name: cfc-admin
-            extra_args: KEYSTATIC_ADMIN=node
+        include: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -72,7 +138,8 @@ jobs:
 
   deploy:
     name: Deploy to VPS
-    needs: build-and-push
+    needs: [detect-changes, build-and-push]
+    if: needs.detect-changes.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to VPS via SSH
