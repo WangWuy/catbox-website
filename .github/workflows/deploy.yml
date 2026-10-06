@@ -20,8 +20,6 @@ jobs:
     steps:
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.2.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
@@ -29,34 +27,42 @@ jobs:
           passphrase: ${{ secrets.VPS_PASSPHRASE }}
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT || 22 }}
-          envs: GITHUB_TOKEN
           script_stop: true
           script: |
-            TARGET_DIR="${{ secrets.VPS_PROJECT_DIR }}"
-            if [ -z "$TARGET_DIR" ]; then
-              TARGET_DIR="/opt/catbox"
-            fi
-            echo "🚀 Navigating to $TARGET_DIR..."
-            cd "$TARGET_DIR"
-
-            # 1. Khởi tạo Git repo nếu chưa có và cấu hình xác thực qua GITHUB_TOKEN
-            if [ ! -d .git ]; then
-              echo "🔧 Initializing git repository in $TARGET_DIR..."
-              git init -b main
-              git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+            # 1. Chuyển vào thư mục dự án trên VPS
+            if [ -d "/opt/catbox" ]; then
+              cd /opt/catbox
+            elif [ -d "/var/www/catbox" ]; then
+              cd /var/www/catbox
             else
-              git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+              cd "${{ secrets.VPS_PROJECT_DIR }}"
+            fi
+            echo "🚀 Working in $(pwd)..."
+
+            # 2. Đảm bảo quyền Git trong thư mục
+            git config --global --add safe.directory '*'
+
+            # 3. Cấu hình origin với token xác thực từ GitHub Actions
+            AUTH_URL="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+            CLEAN_URL="https://github.com/${{ github.repository }}.git"
+
+            if [ ! -d .git ]; then
+              echo "🔧 Initializing git repository..."
+              git init -b main
+              git remote add origin "$AUTH_URL"
+            else
+              git remote set-url origin "$AUTH_URL"
             fi
 
-            # 2. Kéo code mới nhất từ branch main (kể cả commit do Keystatic Cloud bot đẩy lên)
-            echo "📥 Fetching and syncing latest code..."
+            # 4. Kéo code mới nhất từ branch main
+            echo "📥 Fetching and syncing latest code from main..."
             git fetch origin main
             git reset --hard origin/main
 
-            # 3. Xoá token khỏi remote URL sau khi pull để bảo mật
-            git remote set-url origin "https://github.com/${{ github.repository }}.git"
+            # 5. Xoá token khỏi Git config để bảo mật
+            git remote set-url origin "$CLEAN_URL"
 
-            # 4. Đảm bảo file .env tồn tại trên server
+            # 6. Đảm bảo file .env tồn tại
             if [ ! -f .env ]; then
               if [ -f .env.example ]; then
                 echo "⚠️ .env not found, creating from .env.example..."
@@ -64,11 +70,11 @@ jobs:
               fi
             fi
 
-            # 5. Build và khởi động lại các container (kèm profile admin cho Keystatic SSR)
+            # 7. Build và khởi động lại container (bao gồm profile admin cho Keystatic SSR)
             echo "🐳 Building and starting Docker containers..."
             docker compose --profile admin up -d --build
 
-            # 6. Dọn dẹp Docker images không dùng để giải phóng dung lượng đĩa
+            # 8. Dọn dẹp Docker images cũ
             echo "🧹 Pruning dangling docker images..."
             docker image prune -f
 
