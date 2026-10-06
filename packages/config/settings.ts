@@ -55,7 +55,7 @@ const location = z.object({
   /** "Nhà máy" / "Văn phòng" */
   label: z.string(),
   streetAddress: z.string(),
-  locality: z.string(),
+  locality: z.string().default(""),
   country: z.string().default("VN"),
   hours: z
     .object({
@@ -144,7 +144,7 @@ export const parseSettings = (brand: string, raw: unknown): BrandSettings =>
 
 /** Ghép địa chỉ thành chuỗi một dòng để hiển thị: "KCN Đồng Văn, Duy Tiên, Hà Nam" */
 export const formatAddress = (l: BrandLocation): string =>
-  `${l.streetAddress}, ${l.locality}`;
+  l.locality ? `${l.streetAddress}, ${l.locality}` : l.streetAddress;
 
 /** Ghép giờ làm việc thành chuỗi hiển thị: "08:00 - 17:30" */
 export const formatHours = (l: BrandLocation): string | undefined =>
