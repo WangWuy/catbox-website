@@ -16,27 +16,32 @@
     },
     "stats": [
       {
-        "icon": "lucide:shopping-bag",
+        "icon": "lucide:paper-bag",
+        "num": "18M",
         "label": "Túi giấy",
         "href": "/danh-muc/tui-giay-thuc-pham"
       },
       {
-        "icon": "lucide:scroll",
+        "icon": "lucide:layers",
+        "num": "18M",
         "label": "Giấy gói",
         "href": "/danh-muc/giay-goi-thuc-pham"
       },
       {
-        "icon": "lucide:package",
+        "icon": "lucide:boxes",
+        "num": "4M",
         "label": "Hộp giấy",
         "href": "/danh-muc/hop-dung-thuc-an"
       },
       {
         "icon": "lucide:cup-soda",
+        "num": "2,4M",
         "label": "Cốc giấy",
         "href": "/danh-muc/coc-1-lop"
       },
       {
         "icon": "straw",
+        "num": "50M",
         "label": "Ống hút giấy",
         "href": "/danh-muc/ong-hut-giay"
       }
