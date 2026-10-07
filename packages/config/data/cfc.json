@@ -20,7 +20,6 @@
   "certifications": [],
   "certLogos": [
     {
-      "id": "iso",
       "name": "ISO 9001:2015",
       "label": "Quản lý chất lượng",
       "sub": "Tiêu chuẩn quốc tế",
@@ -28,7 +27,6 @@
       "href": "/quy-trinh"
     },
     {
-      "id": "haccp",
       "name": "HACCP CODEX",
       "label": "An toàn thực phẩm",
       "sub": "Đạt chuẩn F&B",
@@ -36,7 +34,6 @@
       "href": "/quy-trinh"
     },
     {
-      "id": "bocongthuong",
       "name": "ĐÃ THÔNG BÁO",
       "label": "Bộ Công Thương",
       "sub": "online.gov.vn",
