@@ -38,7 +38,8 @@
       "label": "Bộ Công Thương",
       "sub": "online.gov.vn",
       "type": "bocongthuong",
-      "href": "http://online.gov.vn"
+      "href": "http://online.gov.vn",
+      "src": "/bo-cong-thuong.png"
     }
   ],
   "stats": [

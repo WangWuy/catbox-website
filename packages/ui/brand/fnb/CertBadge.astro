@@ -28,6 +28,9 @@ const {
   type = "custom",
 } = Astro.props;
 
+// Tự động dùng /bo-cong-thuong.png khi type là bocongthuong nếu chưa truyền src
+const badgeSrc = src || (type === "bocongthuong" ? "/bo-cong-thuong.png" : undefined);
+
 // Tạo ID duy nhất cho các thẻ <defs> SVG tránh trùng lặp giữa các instance
 const uid = id || type || Math.random().toString(36).slice(2, 7);
 const topArcId = `top-arc-${uid}`;
@@ -51,11 +54,11 @@ const linkProps = isLink
   title={`${name}${label ? ` - ${label}` : ""}`}
 >
   {
-    src ? (
+    badgeSrc ? (
       <img
-        src={src}
+        src={badgeSrc}
         alt={name}
-        class="h-11 w-auto max-w-[150px] object-contain drop-shadow-sm md:h-13"
+        class="h-10.5 w-auto max-w-[160px] object-contain drop-shadow-sm md:h-13"
         loading="lazy"
         decoding="async"
       />
