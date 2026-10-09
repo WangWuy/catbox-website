@@ -86,7 +86,7 @@ const displayHotline = formatHotline(b.hotline);
               <a
                 href={b.hotlineHref || `tel:${b.hotline.replace(/\D/g, "")}`}
                 data-analytics="click_hotline"
-                class="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-white shadow-xs transition-all hover:bg-primary-hover hover:scale-[1.02]"
+                class="inline-flex items-center gap-2 rounded-full bg-primary px-4.5 py-1.5 text-sm font-bold text-white shadow-xs transition-all duration-200 hover:bg-primary-hover hover:scale-[1.03] hover:shadow-md"
               >
                 <Icon name="lucide:phone" class="size-3.5 fill-current" aria-hidden="true" />
                 <span>{displayHotline}</span>
@@ -121,22 +121,24 @@ const displayHotline = formatHotline(b.hotline);
           </div>
         </div>
 
-        {/* DÒNG DƯỚI: Nền Nâu — SẢN PHẨM (Button Cam) + Menu Viết Hoa + Thanh Tìm Kiếm */}
+        {/* DÒNG DƯỚI: Nền Nâu — SẢN PHẨM (Button Cam) + Menu Viết Hoa + Thanh Tìm Kiếm (Cao 50px theo chuẩn 2T Print) */}
         <div class="hidden bg-primary-deep text-white shadow-md md:block">
-          <div class="site-container flex h-12 items-center justify-between gap-4">
+          <div class="site-container flex h-[50px] items-center justify-between gap-4">
             {/* Nhóm Điều Hướng Trái */}
-            <div class="flex h-full items-center gap-2 lg:gap-6 min-w-0">
-              {/* Button SẢN PHẨM (Màu Cam) mở Mega Menu */}
+            <div class="flex h-full items-center gap-2 lg:gap-4 min-w-0">
+              {/* Button SẢN PHẨM (Màu Cam) mở Mega Menu - Rộng 240px-270px, cao 50px, font 14px bold in hoa */}
               <div class="group/prod-nav relative flex h-full items-center">
                 <a
                   href="/products"
-                  class="flex h-full items-center gap-2.5 bg-primary px-5 text-(length:--text-header-nav) font-semibold tracking-wider text-white uppercase select-none transition-colors hover:bg-primary-hover"
+                  class="flex h-full w-[220px] items-center justify-between gap-2.5 bg-primary px-5 text-(length:--text-header-nav) font-bold tracking-wider text-white uppercase select-none transition-colors hover:bg-primary-hover lg:w-[260px]"
                 >
-                  <Icon name="lucide:layout-grid" class="size-4" aria-hidden="true" />
-                  <span>SẢN PHẨM</span>
+                  <div class="flex items-center gap-2.5">
+                    <Icon name="lucide:menu" class="size-4.5" aria-hidden="true" />
+                    <span>SẢN PHẨM</span>
+                  </div>
                   <Icon
                     name="lucide:chevron-down"
-                    class="size-3.5 text-white/80 transition-transform duration-200 group-hover/prod-nav:rotate-180"
+                    class="size-4 text-white/80 transition-transform duration-200 group-hover/prod-nav:rotate-180"
                     aria-hidden="true"
                   />
                 </a>
@@ -239,16 +241,16 @@ const displayHotline = formatHotline(b.hotline);
                 )}
               </div>
 
-              {/* Dải menu: TRANG CHỦ, GIỚI THIỆU, TIN TỨC, LIÊN HỆ */}
-              <nav aria-label="Menu chính" class="flex h-full items-center gap-1 lg:gap-3">
+              {/* Dải menu: TRANG CHỦ, GIỚI THIỆU, TIN TỨC, LIÊN HỆ - Font 14px bold in hoa, hover chuyển màu mượt mà */}
+              <nav aria-label="Menu chính" class="flex h-full items-center gap-2 lg:gap-3">
                 {otherItems.map((item) => (
                   <a
                     href={item.href}
                     class:list={[
-                      "relative flex h-full select-none items-center px-3.5 text-(length:--text-header-nav) font-semibold tracking-wider uppercase transition-colors lg:px-4",
+                      "relative flex h-full select-none items-center px-3.5 text-(length:--text-header-nav) font-bold tracking-wider uppercase transition-colors duration-200 lg:px-4.5",
                       isActive(item.href)
-                        ? "text-primary font-bold after:absolute after:bottom-0 after:left-3.5 after:right-3.5 after:h-0.75 after:bg-primary"
-                        : "text-white/90 hover:bg-white/5 hover:text-white",
+                        ? "text-primary font-bold"
+                        : "text-white/95 hover:text-primary",
                     ]}
                   >
                     {item.label}
@@ -257,12 +259,12 @@ const displayHotline = formatHotline(b.hotline);
               </nav>
             </div>
 
-            {/* Góc bên phải: Thanh tìm kiếm */}
+            {/* Góc bên phải: Thanh tìm kiếm cao 38px bo góc nhẹ */}
             <form
               role="search"
               action="/search"
               method="get"
-              class="relative flex h-8.5 overflow-hidden border border-white/10 shadow-xs"
+              class="relative flex h-[38px] overflow-hidden rounded-[3px] border border-white/10 shadow-xs"
             >
               <label for="cfc-search" class="sr-only">
                 Tìm kiếm
@@ -273,12 +275,12 @@ const displayHotline = formatHotline(b.hotline);
                 name="q"
                 placeholder={b.searchPlaceholder || "Tìm kiếm sản phẩm..."}
                 autocomplete="off"
-                class="h-full w-44 bg-white px-3 text-xs text-ink placeholder:text-ink-faint focus:outline-none md:w-52 lg:w-64"
+                class="h-full w-44 bg-white px-3.5 text-xs text-ink placeholder:text-ink-faint focus:outline-none md:w-52 lg:w-64"
               />
               <button
                 type="submit"
                 aria-label="Tìm kiếm"
-                class="flex h-full flex-none items-center justify-center bg-primary px-3.5 text-white transition-colors hover:bg-primary-hover"
+                class="flex h-full flex-none items-center justify-center bg-primary px-4 text-white transition-colors duration-200 hover:bg-primary-hover focus:outline-none"
               >
                 <Icon name="lucide:search" class="size-4" aria-hidden="true" />
               </button>
@@ -288,9 +290,9 @@ const displayHotline = formatHotline(b.hotline);
       </>
     ) : (
       /* =========================================================================
-       * DESKTOP: STICKY CLONE HEADER (Thu gọn trượt xuống khi cuộn)
+       * DESKTOP: STICKY CLONE HEADER (Thu gọn trượt xuống khi cuộn - cao 50px)
        * ========================================================================= */
-      <div class="site-container hidden h-12 items-center justify-between gap-4 md:flex">
+      <div class="site-container hidden h-[50px] items-center justify-between gap-4 md:flex">
         {/* Bên trái: Logo compact + SẢN PHẨM button */}
         <div class="flex h-full items-center gap-4">
           <a
@@ -303,9 +305,9 @@ const displayHotline = formatHotline(b.hotline);
 
           <a
             href="/products"
-            class="flex h-full items-center gap-2 bg-primary px-4 text-xs font-semibold tracking-wider text-white uppercase transition-colors hover:bg-primary-hover"
+            class="flex h-full items-center gap-2 bg-primary px-4 text-xs font-bold tracking-wider text-white uppercase transition-colors hover:bg-primary-hover"
           >
-            <Icon name="lucide:layout-grid" class="size-3.5" aria-hidden="true" />
+            <Icon name="lucide:menu" class="size-3.5" aria-hidden="true" />
             <span>SẢN PHẨM</span>
           </a>
 
@@ -315,10 +317,10 @@ const displayHotline = formatHotline(b.hotline);
               <a
                 href={item.href}
                 class:list={[
-                  "flex h-full select-none items-center px-2.5 text-xs font-semibold tracking-wider uppercase transition-colors",
+                  "flex h-full select-none items-center px-2.5 text-xs font-bold tracking-wider uppercase transition-colors duration-200",
                   isActive(item.href)
                     ? "text-primary font-bold"
-                    : "text-white/90 hover:text-white",
+                    : "text-white/90 hover:text-primary",
                 ]}
               >
                 {item.label}
@@ -331,7 +333,7 @@ const displayHotline = formatHotline(b.hotline);
         <div class="flex items-center gap-3">
           <a
             href={b.hotlineHref || `tel:${b.hotline.replace(/\D/g, "")}`}
-            class="hidden items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-white transition-colors hover:bg-white/20 lg:inline-flex"
+            class="hidden items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-xs font-bold text-white transition-all duration-200 hover:bg-white/20 hover:scale-[1.02] lg:inline-flex"
           >
             <Icon name="lucide:phone" class="size-3 fill-current text-primary" aria-hidden="true" />
             <span>{displayHotline}</span>
@@ -341,19 +343,19 @@ const displayHotline = formatHotline(b.hotline);
             role="search"
             action="/search"
             method="get"
-            class="relative flex h-7.5 overflow-hidden border border-white/10 shadow-xs"
+            class="relative flex h-[34px] overflow-hidden rounded-[3px] border border-white/10 shadow-xs"
           >
             <input
               type="search"
               name="q"
               placeholder="Tìm kiếm..."
               autocomplete="off"
-              class="h-full w-36 bg-white px-2.5 text-xs text-ink placeholder:text-ink-faint focus:outline-none lg:w-48"
+              class="h-full w-36 bg-white px-3 text-xs text-ink placeholder:text-ink-faint focus:outline-none lg:w-48"
             />
             <button
               type="submit"
               aria-label="Tìm kiếm"
-              class="flex h-full flex-none items-center justify-center bg-primary px-2.5 text-white transition-colors hover:bg-primary-hover"
+              class="flex h-full flex-none items-center justify-center bg-primary px-3 text-white transition-colors duration-200 hover:bg-primary-hover focus:outline-none"
             >
               <Icon name="lucide:search" class="size-3.5" aria-hidden="true" />
             </button>

@@ -94,11 +94,9 @@
   --height-hero-mobile: max(360px, calc(100dvh - 200px));
   --height-hero-sm:     max(420px, calc(100vh - 112px));
   --height-hero-sm:     max(420px, calc(100dvh - 112px));
-  --height-hero-md:     max(480px, calc(100vh - 174px));
-  --height-hero-md:     max(480px, calc(100dvh - 174px));
-  --height-hero:        max(520px, calc(100vh - 182px));
-  --height-hero:        max(520px, calc(100dvh - 182px));
-  --height-hero-min:    520px;
+  --height-hero-md:     500px;
+  --height-hero:        500px;
+  --height-hero-min:    500px;
 
   /* Nhịp điệu chuyển động & độ trễ (Motion & Timing) — làm chậm hơn để hiệu ứng đầm, mượt mà hơn */
   --duration-base:        450ms;  /* Mặc định 300ms -> tăng lên 450ms */

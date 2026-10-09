@@ -44,10 +44,10 @@ const ctaLabel = cta?.label || "Liên hệ";
 const ctaHref = cta?.href || "/contact";
 ---
 
-{/* Banner full màn hình — ảnh tràn viền edge-to-edge, các thẻ danh mục không bo góc theo mẫu 2T Print */}
-<section class:list={["w-full", stats && stats.length > 0 && "pb-36 sm:pb-14 lg:pb-16"]}>
+{/* Banner full màn hình — ảnh tràn viền edge-to-edge */}
+<section class="w-full relative">
   <div class="relative w-full">
-    <div class="relative overflow-hidden bg-surface-tint">
+    <div class="relative overflow-hidden bg-surface-tint md:max-h-[500px]">
       <SmartImage
         {assets}
         src={image}
@@ -57,7 +57,7 @@ const ctaHref = cta?.href || "/contact";
         ratio="16x9"
         priority
         sizes="100vw"
-        class="h-(--height-hero-mobile) w-full object-cover sm:h-(--height-hero-sm) md:h-(--height-hero-md,var(--height-hero)) lg:h-(--height-hero) min-h-(--height-hero-min,360px)"
+        class="h-(--height-hero-mobile) w-full object-cover sm:h-(--height-hero-sm) md:h-[500px] md:max-h-[500px] lg:h-[500px] lg:max-h-[500px]"
       />
 
       <!-- Gradient từ trái sang giúp chữ đọc được trên mọi ảnh khách gửi sau -->
@@ -123,7 +123,7 @@ const ctaHref = cta?.href || "/contact";
               <a
                 href={ctaHref}
                 data-analytics="click_hero_contact"
-                class="inline-flex items-center justify-center rounded-chip bg-primary px-5 py-2 text-xs font-bold text-white shadow-md transition-all duration-200 hover:scale-[1.02] hover:bg-primary-hover hover:shadow-lg sm:px-6 sm:py-2.5 sm:text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                class="inline-flex items-center justify-center rounded-full bg-primary px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md transition-all duration-200 hover:scale-[1.03] hover:bg-primary-hover hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
                 {ctaLabel}
               </a>
@@ -140,56 +140,58 @@ const ctaHref = cta?.href || "/contact";
         </div>
       </div>
     </div>
-
-    {
-      stats && stats.length > 0 && (
-        /* Các ô danh mục theo mẫu 2T Print: trên mobile hiển thị lưới 2x2 (4 ô, ẩn ô thứ 5), trên sm+ hiển thị đủ 5 ô */
-        <div class="absolute inset-x-0 -bottom-28 sm:-bottom-10 lg:-bottom-12 z-10 px-3 sm:px-4">
-          <div
-            data-reveal-group
-            style="--duration-reveal: 1500ms; --stagger-reveal: 120ms;"
-            class="mx-auto grid max-w-4xl grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3 lg:gap-4"
-          >
-            {stats.map((s, idx) => {
-              const Tag = s.href ? "a" : "div";
-              return (
-                <div class:list={["h-full relative hover:z-10", idx >= 4 && "hidden sm:block"]}>
-                  <Tag
-                    href={s.href}
-                    class:list={[
-                      "group relative flex h-full flex-col items-center justify-center gap-1.5 sm:gap-2.5 rounded-none border border-black/5 bg-white/95 px-2 py-3.5 sm:px-3 sm:py-4.5 text-center shadow-(--shadow-hero-chip) backdrop-blur-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                      s.href &&
-                        "cursor-pointer transition-[box-shadow,border-color,background-color] duration-300 ease-out hover:z-10 hover:bg-white hover:shadow-(--shadow-hero-chip-hover) hover:border-black/10"
-                    ]}
-                  >
-                    {/* Icon bao bì custom duotone — không dịch chuyển khi hover */}
-                    <div class="flex size-7 sm:size-9 lg:size-10 items-center justify-center text-primary">
-                      <PackagingIcon name={s.icon} class="size-6 sm:size-7 lg:size-8 text-primary" />
-                    </div>
-
-                    {/* Con số thống kê (nếu có) */}
-                    {s.num && (
-                      <span class="font-display text-sm sm:text-lg lg:text-xl font-semibold tracking-tight text-ink">
-                        {s.num}
-                      </span>
-                    )}
-
-                    {/* Tên danh mục */}
-                    <span
-                      class:list={[
-                        "font-display text-xs sm:text-xs lg:text-sm font-bold tracking-wider text-ink uppercase leading-tight",
-                        s.href && "transition-colors group-hover:text-primary"
-                      ]}
-                    >
-                      {s.label}
-                    </span>
-                  </Tag>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )
-    }
   </div>
 </section>
+
+{
+  stats && stats.length > 0 && (
+    /* Dải nền xám cao 184px chứa 5 card nổi chuẩn 100% 2T Print (bg-[#f6f6f6], height: 184px, margin-top: -100px) */
+    <section class="w-full bg-[#f6f6f6] md:h-[184px] flow-root relative">
+      <div class="site-container relative z-10 -mt-[100px] pb-8 md:pb-0">
+        <div
+          data-reveal-group
+          style="--duration-reveal: 1500ms; --stagger-reveal: 120ms;"
+          class="mx-auto flex flex-wrap items-center justify-center gap-3 sm:gap-4 lg:gap-[18px] max-w-[1240px]"
+        >
+          {stats.map((s, idx) => {
+            const Tag = s.href ? "a" : "div";
+            return (
+              <div class:list={["w-[calc(50%-8px)] sm:w-[178.73px] h-[214.81px] relative hover:z-10", idx >= 4 && "hidden sm:block"]}>
+                <Tag
+                  href={s.href}
+                  class:list={[
+                    "group relative flex w-full h-[214.81px] flex-col items-center justify-center rounded-none bg-white pt-[20px] pb-[10px] px-2 text-center shadow-[0_1px_3px_-2px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.20)] transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                    s.href &&
+                      "cursor-pointer hover:z-10 hover:shadow-[0_10px_20px_rgba(0,0,0,0.15),0_6px_6px_rgba(0,0,0,0.18)]"
+                  ]}
+                >
+                  {/* Icon bao bì duotone chiếm ~45% card, phóng to nhẹ 1.1x khi hover theo chuẩn image-zoom của 2T Print */}
+                  <div class="flex h-[80px] w-full items-center justify-center text-primary transition-transform duration-500 ease-out group-hover:scale-110">
+                    <PackagingIcon name={s.icon} class="size-12 text-primary" />
+                  </div>
+
+                  {/* Con số thống kê: bọc trong thẻ h3, font-weight 800 (font-extrabold), cỡ 20px */}
+                  {s.num && (
+                    <h3 class="font-display text-[20px] font-extrabold tracking-tight text-ink mt-2 mb-0.5">
+                      <span style="font-size: 100%;">{s.num}</span>
+                    </h3>
+                  )}
+
+                  {/* Tên danh mục / Đơn vị: thẻ p, chữ 16px */}
+                  <p
+                    class:list={[
+                      "font-display text-[16px] font-medium tracking-normal text-ink-muted leading-snug transition-colors duration-200",
+                      s.href && "group-hover:text-primary"
+                    ]}
+                  >
+                    {s.label}
+                  </p>
+                </Tag>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
