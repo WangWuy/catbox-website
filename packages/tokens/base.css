@@ -63,7 +63,8 @@
    * trong component nên không thể chỉnh tập trung. */
   --text-body:  0.9375rem;    /* 15px — đoạn văn, mô tả */
   --text-nav:   0.90625rem;   /* 14.5px — menu chính, input search */
-  --text-header-nav: 0.875rem;  /* 14px — chữ in hoa trên thanh header theo chuẩn 2T Print (SẢN PHẨM, TRANG CHỦ...) */
+  --text-header-nav: 0.875rem;  /* 14px — nút SẢN PHẨM trên thanh header theo chuẩn 2T Print */
+  --text-header-nav-link: 0.8125rem; /* 13px — dải menu chính trên header (TRANG CHỦ, GIỚI THIỆU, TIN TỨC, LIÊN HỆ) */
   --text-meta:  0.8125rem;    /* 13px — hotline, dòng phụ */
   --text-label: 0.84375rem;   /* 13.5px — nhãn tab, nút pill */
   --text-micro: 0.78125rem;   /* 12.5px — topbar, chip khuyến mãi */

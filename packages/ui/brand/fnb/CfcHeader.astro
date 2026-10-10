@@ -241,13 +241,13 @@ const displayHotline = formatHotline(b.hotline);
                 )}
               </div>
 
-              {/* Dải menu: TRANG CHỦ, GIỚI THIỆU, TIN TỨC, LIÊN HỆ - Font 14px bold in hoa, hover chuyển màu mượt mà */}
+              {/* Dải menu: TRANG CHỦ, GIỚI THIỆU, TIN TỨC, LIÊN HỆ - Font 13px bold in hoa, hover chuyển màu mượt mà */}
               <nav aria-label="Menu chính" class="flex h-full items-center gap-2 lg:gap-3">
                 {otherItems.map((item) => (
                   <a
                     href={item.href}
                     class:list={[
-                      "relative flex h-full select-none items-center px-3.5 text-(length:--text-header-nav) font-bold tracking-wider uppercase transition-colors duration-200 lg:px-4.5",
+                      "relative flex h-full select-none items-center px-3.5 text-(length:--text-header-nav-link) font-bold tracking-wider uppercase transition-colors duration-200 lg:px-4.5",
                       isActive(item.href)
                         ? "text-primary font-bold"
                         : "text-white/95 hover:text-primary",
