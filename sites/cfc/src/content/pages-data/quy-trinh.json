@@ -41,7 +41,7 @@
       "branches": [
         {
           "icon": "lucide:file-question",
-          "title": "Khách chưa có design",
+          "title": "Khách chưa có thiết kế",
           "items": [
             {
               "label": "Chọn mẫu có sẵn của xưởng",
@@ -59,7 +59,7 @@
         },
         {
           "icon": "lucide:file-check",
-          "title": "Khách đã có design",
+          "title": "Khách đã có thiết kế",
           "body": "Gửi file thiết kế cho xưởng. Xưởng dàn file, canh khuôn bế và tràn lề miễn phí, gửi lại bản duyệt trước khi lên máy.",
           "items": []
         }
