@@ -8,16 +8,7 @@
   "categoryFallbackImage": "products/categoryFallbackImage.png",
   "collectionName": "Danh mục sản phẩm CFC",
   "materialLabel": "Chất liệu",
-  "materials": [
-    {
-      "value": "kraft",
-      "label": "Kraft"
-    },
-    {
-      "value": "mg-trang",
-      "label": "MG trắng"
-    }
-  ],
+  "materials": [],
   "shapeLabel": "Hình dáng",
   "shapes": [
     {
@@ -32,6 +23,5 @@
       "value": "tui-det",
       "label": "Túi dẹt"
     }
-  ],
-  "swatchNote": "Kraft / MG"
+  ]
 }
