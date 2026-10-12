@@ -1,0 +1,48 @@
+name: Normalize CFC image paths
+
+# Chạy normalize-images.mjs mỗi khi content/asset của CFC thay đổi trên main.
+# Đường dẫn ảnh lệch slug convention sẽ làm Keystatic báo lỗi
+# "A path was requested for deletion which does not exist" khi Save.
+# Workflow tự sửa rồi commit lại để repo luôn ở trạng thái Keystatic đọc/ghi được.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'sites/cfc/src/content/**'
+      - 'sites/cfc/src/assets/**'
+      - 'sites/cfc/scripts/normalize-images.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: normalize-cfc-images
+  cancel-in-progress: false
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run normalize-images
+        run: node sites/cfc/scripts/normalize-images.mjs
+
+      - name: Commit fixes (if any)
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Không có đường dẫn ảnh nào cần chuẩn hoá."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sites/cfc/src/content sites/cfc/src/assets
+          git commit -m "chore(cfc): tự động chuẩn hoá đường dẫn ảnh theo slug convention"
+          git pull --rebase
+          git push
