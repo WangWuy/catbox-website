@@ -159,6 +159,13 @@ const jsonLd = [
     image={data.image ?? catalog.categoryFallbackImage}
   />
 
+  {/* Mô tả nhóm đặt ĐẦU trang, ngay dưới hero, trước lưới sản phẩm. */}
+  <div class="site-container pt-10">
+    <div class="prose-catbox max-w-none">
+      <Content />
+    </div>
+  </div>
+
   {
     items.length > 0 ? (
       <CatalogLayout {groups} total={items.length} columns={3}>
@@ -211,13 +218,4 @@ const jsonLd = [
       </div>
     )
   }
-
-  {/* Mô tả nhóm đặt DƯỚI lưới (như trang danh mục tham chiếu): khách vào đây để
-      xem hàng trước, đoạn văn SEO đọc sau. Trước đây khối này nằm trên lưới và
-      đẩy sản phẩm xuống quá sâu. */}
-  <div class="site-container pb-16">
-    <div class="prose-catbox max-w-none border-t border-line pt-10">
-      <Content />
-    </div>
-  </div>
 </Layout>

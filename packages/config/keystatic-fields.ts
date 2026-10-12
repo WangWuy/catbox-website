@@ -127,6 +127,7 @@ const ICON_OPTIONS = [
   { label: "Tờ giấy", value: "lucide:file-text" },
   { label: "Hộp", value: "lucide:package" },
   { label: "Cốc", value: "lucide:cup-soda" },
+  { label: "Ống hút", value: "lucide:test-tube" },
   { label: "Bánh mì", value: "lucide:croissant" },
   { label: "Cốc cà phê", value: "lucide:coffee" },
   { label: "Bát", value: "lucide:utensils" },
