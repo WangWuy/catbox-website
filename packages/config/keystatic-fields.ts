@@ -232,7 +232,7 @@ export function blogFields(imageDir: string) {
       description: "Để trống nếu bài chưa sửa lại. Google dùng mốc này cho bài viết cũ.",
       validation: { isRequired: false },
     }),
-    author: fields.text({ label: "Tác giả", defaultValue: "CFC Factory" }),
+    author: fields.text({ label: "Tác giả", defaultValue: "Bao Bì CFC" }),
     tags: fields.array(fields.text({ label: "Thẻ" }), {
       label: "Thẻ (tags)",
       itemLabel: (props) => props.value || "(chưa đặt tên)",
@@ -1299,7 +1299,7 @@ export function blogPageFields(imageDir: string) {
     ),
     rssTitleSuffix: fields.text({
       label: "Đuôi tiêu đề feed RSS",
-      description: "Nối sau tên thương hiệu, ví dụ “CFC Factory — Tin tức & Cẩm nang”.",
+      description: "Nối sau tên thương hiệu, ví dụ “Bao Bì CFC — Tin tức & Cẩm nang”.",
     }),
   };
 }

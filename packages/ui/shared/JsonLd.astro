@@ -36,6 +36,7 @@ const organization: Record<string, unknown> = {
   "@type": "Organization",
   "@id": orgId,
   name: b.name,
+  ...(isCfc && { alternateName: ["CFC Factory", "Bao Bì CFC", "baobicfc"] }),
   legalName: b.legalName,
   url: b.site,
   // Với CFC: dùng logo PNG thật; các brand khác giữ placeholder SVG
@@ -82,6 +83,7 @@ const website = {
   "@id": `${b.site}/#website`,
   url: b.site,
   name: b.name,
+  ...(isCfc && { alternateName: ["CFC Factory", "baobicfc.vn", "baobicfc"] }),
   inLanguage: "vi-VN",
   publisher: { "@id": orgId },
   potentialAction: {
