@@ -24,6 +24,10 @@
     {
       "value": "ford",
       "label": "Ford"
+    },
+    {
+      "value": "po",
+      "label": "PO"
     }
   ],
   "shapeLabel": "Hình dáng",
