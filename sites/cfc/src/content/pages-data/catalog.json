@@ -8,7 +8,16 @@
   "categoryFallbackImage": "products/categoryFallbackImage.png",
   "collectionName": "Danh mục sản phẩm CFC",
   "materialLabel": "Chất liệu",
-  "materials": [],
+  "materials": [
+    {
+      "value": "kraft",
+      "label": "Kraft"
+    },
+    {
+      "value": "ivory",
+      "label": "Ivory"
+    }
+  ],
   "shapeLabel": "Hình dáng",
   "shapes": [
     {
