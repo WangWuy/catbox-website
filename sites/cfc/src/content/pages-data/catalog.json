@@ -43,6 +43,10 @@
     {
       "value": "tui-det",
       "label": "Túi dẹt"
+    },
+    {
+      "value": "giay-lot",
+      "label": "Giấy lót"
     }
   ]
 }
