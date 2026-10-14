@@ -81,7 +81,13 @@ export function productFields(imageDir: string) {
     swatches: fields.array(
       fields.object({
         label: fields.text({ label: "Nhãn" }),
-        color: fields.text({ label: "Mã màu hex (#RRGGBB)" }),
+        color: fields.text({
+          label: "Mã màu hex (#RRGGBB)",
+          validation: {
+            length: { min: 7, max: 7 },
+            pattern: { regex: /^#[0-9A-Fa-f]{6}$/, message: "Phải có dạng #RRGGBB, gồm cả dấu #" },
+          },
+        }),
         image: fields.image({ label: "Ảnh khi chọn", ...asset(imageDir), validation: { isRequired: false } }),
       }),
       { label: "Swatches", itemLabel: (props) => props.fields.label.value || "Swatch" },
