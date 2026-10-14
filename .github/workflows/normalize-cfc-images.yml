@@ -46,3 +46,4 @@ jobs:
           git commit -m "chore(cfc): tự động chuẩn hoá đường dẫn ảnh theo slug convention"
           git pull --rebase
           git push
+
