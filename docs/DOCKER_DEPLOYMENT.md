@@ -182,20 +182,26 @@ Nếu domain quản lý trên Cloudflare:
 
 ---
 
-## 🤖 4. Tự động hóa CI/CD qua GitHub Actions
+## 🤖 4. Tự động hóa CI/CD qua GitHub Self-Hosted Runner (Miễn phí, Không giới hạn phút)
 
-Dự án đã tích hợp sẵn workflow tại [`.github/workflows/deploy.yml`](file:///.github/workflows/deploy.yml). Mỗi khi có commit mới đẩy lên branch `main` (kể cả bài viết do **Keystatic Cloud bot** tự commit khi người dùng ấn Lưu), GitHub Actions sẽ tự động SSH vào VPS để kéo code và rebuild lại các container.
+Dự án đã tích hợp sẵn workflow tại [`.github/workflows/deploy.yml`](file:///.github/workflows/deploy.yml) và [`.github/workflows/normalize-cfc-images.yml`](file:///.github/workflows/normalize-cfc-images.yml) sử dụng **`runs-on: self-hosted`** chạy trực tiếp trên VPS:
+- **0 phút GitHub Actions Cloud**: Hoàn toàn miễn phí, không bao giờ bị giới hạn 2,000 phút/tháng của GitHub Free.
+- **Không tốn dung lượng GHCR & không cần SSH vòng**: Runner nằm ngay trên VPS, tự kiểm tra `git diff` xem site nào thay đổi (`cfc`, `catbox`, `tetta`, hay `shared`), build trực tiếp bằng Docker BuildKit cache sẵn trên ổ NVMe của VPS và khởi động lại đúng container vừa sửa.
+- **Tương thích 100% với Keystatic Cloud**: Khi biên tập viên bấm **Save** trên Keystatic CMS, commit mới đẩy vào nhánh `main` sẽ tự động kích hoạt Self-Hosted Runner trên VPS để chuẩn hoá đường dẫn ảnh và cập nhật web sau ~15–30 giây.
 
-### Các GitHub Secrets cần cấu hình:
-Vào GitHub Repository → **Settings** → **Secrets and variables** → **Actions** → Thêm:
+### Cách cài đặt Self-Hosted Runner trên VPS (Chỉ làm 1 lần):
 
-| Secret | Mô tả | Ví dụ |
-|---|---|---|
-| `VPS_HOST` | Địa chỉ IP hoặc tên miền của VPS | `103.xxx.xxx.xxx` |
-| `VPS_USERNAME` | Tên user đăng nhập SSH | `root` hoặc `ubuntu` |
-| `VPS_SSH_KEY` | Private SSH key (nội dung file `~/.ssh/id_rsa` hoặc `id_ed25519`) | `-----BEGIN OPENSSH PRIVATE KEY-----...` |
-| `VPS_PASSWORD` | Mật khẩu VPS (nếu không dùng SSH key) | `mat_khau_vps` |
-| `VPS_PORT` | Cổng SSH (mặc định: 22) | `22` |
-| `VPS_PROJECT_DIR` | Đường dẫn thư mục chứa source trên VPS | `/var/www/catbox` hoặc `/home/ubuntu/catbox` |
+1. Truy cập GitHub Repository → **Settings** → **Actions** → **Runners** → **New self-hosted runner** (chọn **Linux** / **x64**).
+   - Hoặc vào thẳng: `https://github.com/wangwuy/catbox-website/settings/actions/runners/new?arch=x64&os=linux`
+2. Copy mã **Token** nằm sau cờ `--token` (ví dụ: `A1B2C3D4E5...`).
+3. SSH vào VPS và chạy script cài đặt tự động:
+   ```bash
+   ssh root@160.187.147.126
+   cd /opt/catbox
+   git pull origin main
+   bash scripts/setup-vps-runner.sh <MÃ_TOKEN_CỦA_BẠN>
+   ```
+4. Script sẽ tự động tải Runner, đăng ký với GitHub và cài đặt thành `systemd` service chạy ngầm 24/7 (tự khởi động lại khi reboot VPS).
+
 
 

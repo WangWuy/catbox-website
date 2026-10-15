@@ -23,13 +23,9 @@ concurrency:
 
 jobs:
   normalize:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
 
       - name: Run normalize-images
         run: node sites/cfc/scripts/normalize-images.mjs

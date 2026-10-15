@@ -1,10 +1,16 @@
-name: Build and Deploy to VPS
+name: Build and Deploy (Self-Hosted VPS)
 
 on:
   push:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      force_all:
+        description: 'Build lại toàn bộ các site (bỏ qua kiểm tra git diff)'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: production-deploy
@@ -12,204 +18,170 @@ concurrency:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
-  detect-changes:
-    name: Detect Changed Sites
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-      has_changes: ${{ steps.set-matrix.outputs.has_changes }}
+  deploy:
+    name: Detect, Build & Deploy on VPS
+    runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 100
 
-      - name: Check modified paths
-        id: filter
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            shared:
-              - 'packages/**'
-              - 'scripts/**'
-              - 'package.json'
-              - 'pnpm-lock.yaml'
-              - 'pnpm-workspace.yaml'
-              - 'Dockerfile'
-              - 'docker-compose.yml'
-              - 'nginx.conf'
-              - '.github/workflows/deploy.yml'
-            cfc:
-              - 'sites/cfc/**'
-            catbox:
-              - 'sites/catbox/**'
-            tetta:
-              - 'sites/tetta/**'
-
-      - name: Compute build matrix
-        id: set-matrix
+      - name: Detect changed services
+        id: changes
         run: |
-          SHARED="${{ steps.filter.outputs.shared }}"
           IS_DISPATCH="${{ github.event_name == 'workflow_dispatch' }}"
-          CFC="${{ steps.filter.outputs.cfc }}"
-          CATBOX="${{ steps.filter.outputs.catbox }}"
-          TETTA="${{ steps.filter.outputs.tetta }}"
+          FORCE_ALL="${{ github.event.inputs.force_all }}"
 
-          # If shared code changed or triggered manually, rebuild all sites
-          if [ "$SHARED" = "true" ] || [ "$IS_DISPATCH" = "true" ]; then
+          LAST_SHA=""
+          if [ -f "/opt/catbox/.last_deployed_sha" ]; then
+            LAST_SHA=$(cat /opt/catbox/.last_deployed_sha | tr -d '[:space:]')
+          fi
+
+          SHARED="false"
+          CFC="false"
+          CFC_ADMIN="false"
+          CATBOX="false"
+          TETTA="false"
+
+          if [ "$IS_DISPATCH" = "true" ] || [ "$FORCE_ALL" = "true" ]; then
+            echo "🔄 Manual trigger — rebuilding all services."
+            SHARED="true"
+          elif [ -n "$LAST_SHA" ] && git cat-file -e "${LAST_SHA}^{commit}" 2>/dev/null; then
+            echo "🔍 Comparing current HEAD ($(git rev-parse --short HEAD)) against last deployed SHA (${LAST_SHA:0:7})..."
+            CHANGED_FILES=$(git diff --name-only "$LAST_SHA" HEAD)
+          elif git rev-parse HEAD~1 >/dev/null 2>&1; then
+            echo "🔍 Comparing HEAD~1..HEAD..."
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+          else
+            echo "🔄 Initial commit — rebuilding all services."
+            SHARED="true"
+          fi
+
+          if [ "$SHARED" != "true" ]; then
+            echo "📝 Changed files:"
+            echo "${CHANGED_FILES:-<none>}"
+
+            while IFS= read -r file; do
+              [ -z "$file" ] && continue
+              case "$file" in
+                packages/*|scripts/check-content.mjs|scripts/gen-placeholder.mjs|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|Dockerfile|docker-compose.yml|nginx.conf)
+                  SHARED="true"
+                  ;;
+                sites/cfc/keystatic.config.ts|sites/cfc/astro.config.mjs|sites/cfc/package.json)
+                  CFC="true"
+                  CFC_ADMIN="true"
+                  ;;
+                sites/cfc/*)
+                  CFC="true"
+                  ;;
+                sites/catbox/*)
+                  CATBOX="true"
+                  ;;
+                sites/tetta/*)
+                  TETTA="true"
+                  ;;
+              esac
+            done <<< "${CHANGED_FILES:-}"
+          fi
+
+          if [ "$SHARED" = "true" ]; then
             CFC="true"
+            CFC_ADMIN="true"
             CATBOX="true"
             TETTA="true"
           fi
 
-          echo "Filters detected: shared=$SHARED, cfc=$CFC, catbox=$CATBOX, tetta=$TETTA"
-
-          MATRIX="[]"
+          SERVICES=""
           if [ "$CFC" = "true" ]; then
-            MATRIX=$(echo "$MATRIX" | jq -c '. + [
-              {"site": "cfc", "target": "runner-static", "image_name": "site-cfc", "extra_args": ""},
-              {"site": "cfc", "target": "runner-ssr", "image_name": "cfc-admin", "extra_args": "KEYSTATIC_ADMIN=node"}
-            ]')
+            SERVICES="$SERVICES cfc"
+          fi
+          if [ "$CFC_ADMIN" = "true" ]; then
+            SERVICES="$SERVICES cfc-admin"
           fi
           if [ "$CATBOX" = "true" ]; then
-            MATRIX=$(echo "$MATRIX" | jq -c '. + [
-              {"site": "catbox", "target": "runner-static", "image_name": "site-catbox", "extra_args": ""}
-            ]')
+            SERVICES="$SERVICES catbox"
           fi
           if [ "$TETTA" = "true" ]; then
-            MATRIX=$(echo "$MATRIX" | jq -c '. + [
-              {"site": "tetta", "target": "runner-static", "image_name": "site-tetta", "extra_args": ""}
-            ]')
+            SERVICES="$SERVICES tetta"
           fi
 
-          COUNT=$(echo "$MATRIX" | jq 'length')
-          HAS_CHANGES="false"
-          if [ "$COUNT" -gt 0 ]; then
-            HAS_CHANGES="true"
+          # Trim leading whitespace
+          SERVICES=$(echo "$SERVICES" | xargs)
+
+          if [ -z "$SERVICES" ]; then
+            echo "⏭️ Không có thay đổi nào ảnh hưởng tới các site. Bỏ qua build."
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "services=" >> "$GITHUB_OUTPUT"
+          else
+            echo "🎯 Services cần build & deploy: $SERVICES"
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            echo "services=$SERVICES" >> "$GITHUB_OUTPUT"
           fi
 
-          echo "has_changes=$HAS_CHANGES" >> $GITHUB_OUTPUT
-          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
-          echo "Matrix planned ($COUNT targets): $MATRIX"
-
-  build-and-push:
-    name: Build & Push Docker Images
-    needs: detect-changes
-    if: needs.detect-changes.outputs.has_changes == 'true'
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set image tag
-        id: meta
+      - name: Sync & Deploy on Local VPS Docker
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          SERVICES: ${{ steps.changes.outputs.services }}
+          DOCKER_BUILDKIT: "1"
+          COMPOSE_DOCKER_CLI_BUILD: "1"
         run: |
-          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          echo "tag=ghcr.io/${REPO_LOWER}/${{ matrix.image_name }}:latest" >> $GITHUB_OUTPUT
+          set -euo pipefail
 
-      - name: Build and push ${{ matrix.image_name }}
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          target: ${{ matrix.target }}
-          build-args: |
-            SITE=${{ matrix.site }}
-            ${{ matrix.extra_args }}
-          push: true
-          tags: ${{ steps.meta.outputs.tag }}
-          cache-from: type=gha,scope=${{ matrix.image_name }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.image_name }}
+          # 1. Xác định thư mục dự án trên VPS
+          if [ -d "/opt/catbox" ]; then
+            DEPLOY_DIR="/opt/catbox"
+          elif [ -d "/var/www/catbox" ]; then
+            DEPLOY_DIR="/var/www/catbox"
+          else
+            DEPLOY_DIR="/opt/catbox"
+            sudo mkdir -p "$DEPLOY_DIR"
+            sudo chown -R "$(whoami):$(id -gn)" "$DEPLOY_DIR"
+          fi
 
-  deploy:
-    name: Deploy to VPS
-    needs: [detect-changes, build-and-push]
-    if: needs.detect-changes.outputs.has_changes == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to VPS via SSH
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          passphrase: ${{ secrets.VPS_PASSPHRASE }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          port: ${{ secrets.VPS_PORT || 22 }}
-          script_stop: true
-          script: |
-            # 1. Chuyển vào thư mục dự án trên VPS
-            if [ -d "/opt/catbox" ]; then
-              cd /opt/catbox
-            elif [ -d "/var/www/catbox" ]; then
-              cd /var/www/catbox
-            else
-              cd "${{ secrets.VPS_PROJECT_DIR }}"
+          echo "🚀 Working in $DEPLOY_DIR..."
+
+          # 2. Đồng bộ mã nguồn mới nhất từ workspace của runner sang DEPLOY_DIR (giữ nguyên .env)
+          rsync -a --delete \
+            --exclude='.env' \
+            --exclude='.last_deployed_sha' \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            "$GITHUB_WORKSPACE/" "$DEPLOY_DIR/"
+
+          cd "$DEPLOY_DIR"
+
+          # 3. Chuẩn hoá đường dẫn ảnh CFC trước khi build (tránh lệch slug từ Keystatic)
+          if [[ " $SERVICES " == *" cfc "* ]] && [ -f "sites/cfc/scripts/normalize-images.mjs" ]; then
+            if command -v node >/dev/null 2>&1; then
+              echo "🖼️ Normalizing CFC image paths before build..."
+              node sites/cfc/scripts/normalize-images.mjs || true
             fi
-            echo "🚀 Working in $(pwd)..."
+          fi
 
-            # 2. Đảm bảo quyền Git trong thư mục
-            git config --global --add safe.directory '*'
+          # 4. Đảm bảo file .env tồn tại
+          if [ ! -f .env ] && [ -f .env.example ]; then
+            echo "⚠️ .env not found, creating from .env.example..."
+            cp .env.example .env
+          fi
 
-            # 3. Cấu hình origin với token xác thực từ GitHub Actions để sync file cấu hình
-            AUTH_URL="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-            CLEAN_URL="https://github.com/${{ github.repository }}.git"
+          # 5. Build tuần tự từng service thay đổi để tận dụng Docker layer cache & tiết kiệm RAM VPS
+          for svc in $SERVICES; do
+            echo "🔨 Building Docker image for service: $svc ..."
+            docker compose --profile admin build "$svc"
+          done
 
-            if [ ! -d .git ]; then
-              echo "🔧 Initializing git repository..."
-              git init -b main
-            fi
-            git remote remove origin 2>/dev/null || true
-            git remote add origin "$AUTH_URL"
+          # 6. Khởi động lại đúng các container vừa được cập nhật
+          echo "🐳 Updating running containers: $SERVICES ..."
+          docker compose --profile admin up -d --no-build $SERVICES
 
-            # 4. Kéo cấu hình mới nhất từ branch main (docker-compose.yml, nginx.conf...)
-            echo "📥 Fetching and syncing latest config from main..."
-            git fetch origin main
-            git reset --hard origin/main
+          # 7. Lưu lại commit SHA đã deploy thành công để lần chạy sau so sánh chính xác
+          git -C "$GITHUB_WORKSPACE" rev-parse HEAD > /opt/catbox/.last_deployed_sha
 
-            # 5. Xoá token khỏi Git config để bảo mật
-            git remote set-url origin "$CLEAN_URL"
+          # 8. Dọn dẹp các image tạm (dangling) để giải phóng ổ cứng NVMe
+          echo "🧹 Pruning dangling Docker images..."
+          docker image prune -f
 
-            # 6. Đảm bảo file .env tồn tại
-            if [ ! -f .env ]; then
-              if [ -f .env.example ]; then
-                echo "⚠️ .env not found, creating from .env.example..."
-                cp .env.example .env
-              fi
-            fi
-
-            # 7. Đăng nhập GHCR bằng GITHUB_TOKEN tạm thời để pull prebuilt images
-            echo "🔐 Authenticating with GitHub Container Registry..."
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-
-            # 8. Kéo các image đã build sẵn từ GHCR về VPS
-            echo "📥 Pulling latest prebuilt images from GHCR..."
-            docker compose --profile admin pull
-
-            # 9. Khởi động lại container (không tốn CPU biên dịch trên VPS)
-            echo "🐳 Starting Docker containers..."
-            docker compose --profile admin up -d
-
-            # 10. Đăng xuất GHCR để bảo mật
-            docker logout ghcr.io
-
-            # 11. Dọn dẹp Docker images cũ
-            echo "🧹 Pruning dangling docker images..."
-            docker image prune -f
-
-            echo "✅ Deployment finished successfully in seconds!"
+          echo "✅ Self-hosted deployment completed successfully!"
