@@ -162,6 +162,7 @@ const jsonLd = [
   {/* Mô tả nhóm đặt ĐẦU trang, ngay dưới hero, trước lưới sản phẩm. */}
   <div class="site-container pt-10">
     <div class="prose-catbox max-w-none">
+      {data.description && <p>{data.description}</p>}
       <Content />
     </div>
   </div>
