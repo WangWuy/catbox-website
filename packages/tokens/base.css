@@ -151,6 +151,13 @@
    * Chọn theo bề rộng card thật: 30ch ≈ 255px, 34ch ≈ 289px. */
   --width-post-card-title-dense: 30ch;
   --width-post-card-excerpt-dense: 34ch;
+
+  /* Bài viết: cột đọc (thẳng hàng với tiêu đề max-w-3xl), bề ngang tối đa của
+   * ảnh trong thân bài (ảnh vuông 2000px không được tràn cả cột), và khoảng
+   * cách trên/dưới ảnh. */
+  --width-article-body: 48rem;      /* 768px */
+  --width-article-figure: 28rem;    /* 448px */
+  --space-article-figure: 1.5rem;   /* 24px */
   /* Số ký tự giữ lại của mô tả ngắn trước khi cắt "…" (xem `clip()` trong
    * `PostCard.astro`). Phải có bản `-dense` riêng vì dáng tháp phụ thuộc TỈ LỆ
    * giữa số ký tự và bề rộng card, mà bề rộng card hai lưới lệch nhau nhiều:
@@ -671,6 +678,19 @@
     background: var(--color-surface-alt);
     padding: 0.15em 0.4em;
     font-size: 0.9em;
+  }
+}
+
+/* Bổ sung cho prose-catbox, chỉ dùng ở trang bài blog: giới hạn ảnh trong thân
+ * bài. Tách riêng để mô tả sản phẩm/danh mục/chính sách không bị ảnh hưởng. */
+@utility prose-article {
+  & img {
+    display: block;
+    width: 100%;
+    max-width: var(--width-article-figure);
+    margin-block: var(--space-article-figure);
+    margin-inline: auto;
+    border-radius: var(--radius-panel);
   }
 }
 

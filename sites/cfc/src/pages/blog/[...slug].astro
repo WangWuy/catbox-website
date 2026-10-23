@@ -103,7 +103,7 @@ if (data.faq.length) {
 
     {
       data.cover && (
-        <div class="mx-auto mb-10 max-w-4xl overflow-hidden rounded-panel bg-surface-tint">
+        <div class="mx-auto mb-10 max-w-(--width-article-body) overflow-hidden rounded-panel bg-surface-tint">
           <SmartImage
             {assets}
             src={data.cover}
@@ -118,7 +118,7 @@ if (data.faq.length) {
       )
     }
 
-    <div class="prose-catbox mx-auto">
+    <div class="prose-catbox prose-article mx-auto max-w-(--width-article-body)">
       <Content />
     </div>
 
