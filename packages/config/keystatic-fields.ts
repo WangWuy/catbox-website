@@ -30,6 +30,24 @@ function asset(imageDir: string) {
 }
 
 /**
+ * Ảnh chèn trong thân bài (`fields.mdx`). Mặc định Keystatic ghi ảnh cạnh file
+ * mdx (`<slug>/content/N.png`) rồi viết `![](N.png)` — Vite không resolve được
+ * đường dẫn đó nên build vỡ. Ép vào `<imageDir>/content/` và dùng đường dẫn
+ * tương đối từ `src/content/<collection>/` tới đó.
+ */
+function mdxContent(label: string, imageDir: string) {
+  return fields.mdx({
+    label,
+    options: {
+      image: {
+        directory: `${imageDir}/content`,
+        publicPath: `../../assets/${imageDir.replace(/^.*?src\/assets\//, "").replace(/\/*$/, "")}/content/`,
+      },
+    },
+  });
+}
+
+/**
  * Field Keystatic dùng chung 3 site, map 1-1 với `productSchema` (schema.ts).
  * API `fields.*` xác nhận từ type definitions thật trong
  * node_modules/@keystatic/core/dist/declarations/src/form/fields/*.d.ts —
@@ -118,7 +136,7 @@ export function productFields(imageDir: string) {
     }),
     ogImage: fields.image({ label: "SEO — Ảnh chia sẻ (OG)", ...asset(imageDir), validation: { isRequired: false } }),
     noindex: fields.checkbox({ label: "Chặn Google index", defaultValue: false }),
-    content: fields.mdx({ label: "Nội dung chi tiết" }),
+    content: mdxContent("Nội dung chi tiết", imageDir),
   };
 }
 
@@ -208,7 +226,7 @@ export function categoryFields(imageDir: string) {
       validation: { isRequired: false },
     }),
     noindex: fields.checkbox({ label: "Chặn Google index", defaultValue: false }),
-    content: fields.mdx({ label: "Nội dung mô tả danh mục" }),
+    content: mdxContent("Nội dung mô tả danh mục", imageDir),
   };
 }
 
@@ -269,7 +287,7 @@ export function blogFields(imageDir: string) {
       validation: { isRequired: false },
     }),
     noindex: fields.checkbox({ label: "Chặn Google index", defaultValue: false }),
-    content: fields.mdx({ label: "Nội dung bài viết" }),
+    content: mdxContent("Nội dung bài viết", imageDir),
   };
 }
 
@@ -1352,7 +1370,7 @@ export function policyFields(imageDir: string) {
       validation: { isRequired: false },
     }),
     noindex: fields.checkbox({ label: "Chặn Google index", defaultValue: false }),
-    content: fields.mdx({ label: "Nội dung chính sách" }),
+    content: mdxContent("Nội dung chính sách", imageDir),
   };
 }
 
@@ -1416,7 +1434,7 @@ export function pageFields(imageDir: string) {
       validation: { isRequired: false },
     }),
     noindex: fields.checkbox({ label: "Chặn Google index", defaultValue: false }),
-    content: fields.mdx({ label: "Nội dung trang" }),
+    content: mdxContent("Nội dung trang", imageDir),
   };
 }
 
