@@ -1,0 +1,57 @@
+name: Auto-merge Keystatic branches into main
+
+# Keystatic (cloud/GitHub mode) luôn tạo branch riêng khi tạo/sửa nội dung.
+# Workflow này tự merge mọi branch phụ được push vào main rồi xoá branch đó.
+# Nếu merge conflict thì giữ nguyên branch để xử lý tay.
+#
+# Lưu ý: push bằng GITHUB_TOKEN KHÔNG kích hoạt workflow khác theo sự kiện push,
+# nên sau khi merge phải gọi workflow_dispatch cho deploy + normalize (API dispatch
+# được miễn trừ giới hạn này).
+
+on:
+  push:
+    branches-ignore: [main]
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: auto-merge-keystatic
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Merge branch into main
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout main
+          git pull --ff-only origin main
+          if ! git merge --no-ff -m "Merge branch '$BRANCH' (auto, Keystatic)" "origin/$BRANCH"; then
+            echo "::error::Conflict khi merge $BRANCH vào main — giữ nguyên branch, cần xử lý tay."
+            git merge --abort
+            exit 1
+          fi
+          git push origin main
+          git push origin --delete "$BRANCH"
+
+      - name: Trigger deploy + normalize on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for wf in deploy.yml normalize-cfc-images.yml; do
+            curl -fsS -X POST \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/workflows/$wf/dispatches" \
+              -d '{"ref":"main"}'
+          done
